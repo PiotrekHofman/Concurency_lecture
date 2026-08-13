@@ -1,0 +1,957 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setsansfont{Inter}
+\setmonofont{Latin Modern Mono}
+\usepackage[polish,english]{babel}
+\usepackage{microtype}
+\usepackage[a4paper,margin=22mm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,longtable,tabularx,array,multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{xurl}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{pifont}
+\usepackage{csquotes}
+
+\definecolor{navy}{HTML}{17365D}
+\definecolor{blue}{HTML}{2F5597}
+\definecolor{teal}{HTML}{24747A}
+\definecolor{lightblue}{HTML}{EAF1F8}
+\definecolor{lightteal}{HTML}{E9F4F3}
+\definecolor{lightgray}{HTML}{F3F4F6}
+\definecolor{darkgray}{HTML}{41464B}
+\definecolor{redreview}{HTML}{9C2B2E}
+\definecolor{greenreview}{HTML}{2C6E49}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=navy,
+  urlcolor=blue,
+  citecolor=teal,
+  pdftitle={Teoria współbieżności: sylabus, materiały i ćwiczenia},
+  pdfauthor={opracowanie dydaktyczne},
+  pdfsubject={15 wykładów i 15 ćwiczeń po 90 minut}
+}
+\urlstyle{same}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Teoria współbieżności}
+\rhead{plan 15 $\times$ 90 min}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\Large\sffamily\bfseries\color{navy}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\large\sffamily\bfseries\color{blue}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\sffamily\bfseries\color{teal}}{}{0em}{}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=2pt,topsep=3pt}
+\setlist[description]{leftmargin=1.6em,labelindent=0em,itemsep=3pt,topsep=3pt}
+\renewcommand{\arraystretch}{1.16}
+\setlength{\emergencystretch}{2em}
+
+\newcommand{\core}{\textcolor{greenreview}{\textbf{rdzeń}}}
+\newcommand{\opt}{\textcolor{darkgray}{\textbf{opcjonalnie}}}
+\newcommand{\E}{\textcolor{greenreview}{\textbf{E}}}
+\newcommand{\M}{\textcolor{blue}{\textbf{M}}}
+\newcommand{\Hard}{\textcolor{redreview}{\textbf{H}}}
+\newcommand{\material}[3]{\item \href{#2}{\textbf{#1}} --- #3}
+\newcommand{\zad}[4]{\item[\textbf{#1}] \textbf{#2} [#3]. #4}
+\newcommand{\okmark}{\textcolor{greenreview}{\ding{51}}}
+\newcommand{\warn}{\textcolor{redreview}{\ding{115}}}
+
+\newtcolorbox{summarybox}{colback=lightblue,colframe=navy,boxrule=0.7pt,arc=2mm,left=4mm,right=4mm,top=2mm,bottom=2mm}
+\newtcolorbox{reviewbox}{colback=lightgray,colframe=redreview,boxrule=0.7pt,arc=2mm,left=4mm,right=4mm,top=2mm,bottom=2mm}
+\newtcolorbox{tipbox}{colback=lightteal,colframe=teal,boxrule=0.6pt,arc=2mm,left=4mm,right=4mm,top=2mm,bottom=2mm}
+
+\newenvironment{timing}{\begin{center}\small\begin{tabularx}{0.96\textwidth}{>{\bfseries}p{18mm}X}}{\end{tabularx}\end{center}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{18mm}
+{\sffamily\bfseries\color{navy}\fontsize{28}{34}\selectfont Teoria współbieżności}\par
+\vspace{4mm}
+{\sffamily\color{blue}\fontsize{18}{23}\selectfont Od struktur Kripkego do process mining}\par
+\vspace{15mm}
+{\Large Plan 15 wykładów i 15 ćwiczeń po 90 minut}\par
+\vspace{4mm}
+{\large Punkty do omówienia, otwarte materiały, zadania i niezależna recenzja programu}\par
+\vfill
+\begin{summarybox}
+\textbf{Założony poziom:} studenci informatyki po kursie automatów i podstaw logiki; kurs magisterski albo zaawansowany licencjacki.\\
+\textbf{Główna narracja:} semantyka przeplotowa $\to$ częściowe porządki $\to$ sieci Petriego $\to$ weryfikacja $\to$ workflow i uczenie procesów $\to$ abstrakcja i granice rozstrzygalności.\\
+\textbf{Stan opracowania:} materiały i linki zweryfikowane 31 lipca 2026 r.
+\end{summarybox}
+\vfill
+{\small Opracowanie dydaktyczne w języku polskim; źródła w większości anglojęzyczne.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Rekomendacja w skrócie}
+
+\begin{summarybox}
+Plan jest merytorycznie mocny i może utworzyć wyjątkowo spójny kurs, pod warunkiem zachowania trzech ograniczeń:
+\begin{enumerate}
+\item LTL i CTL należy wykładać jako język specyfikacji oraz przykład model checkingu, a nie jako pełny kurs logik temporalnych.
+\item Spośród logik na śladach Mazurkiewicza jedna powinna zostać omówiona dokładniej, a pozostałe jedynie jako mapa wyników.
+\item Reachability dla ogólnych sieci Petriego powinno pozostać wynikiem orientacyjnym; rdzeń algorytmiczny mają stanowić coverability, WQO, inwarianty, równanie stanu i unfolding.
+\end{enumerate}
+\end{summarybox}
+
+Kurs warto oprzeć na dwóch powracających przykładach:
+\begin{itemize}
+\item \textbf{protokół wzajemnego wykluczania} --- dla LTS, logik temporalnych, bisymulacji, eksplozji przeplotów, inwariantów i unfoldingów;
+\item \textbf{obsługa zamówienia lub wniosku kredytowego} --- dla BPMN, workflow nets, logów zdarzeń, Declare, regionów, Inductive Minera i alignments.
+\end{itemize}
+
+\subsection{Zakładane efekty uczenia}
+Po kursie student powinien umieć:
+\begin{enumerate}
+\item zbudować LTS lub strukturę Kripkego i zapisać podstawowe własności w LTL/CTL;
+\item wykazać lub obalić symulację i bisymulację oraz skonstruować formułę Hennessy'ego--Milnera rozróżniającą stany;
+\item przejść między słowem, klasą śladu, grafem zależności, pomsetem i częściowym porządkiem zdarzeń;
+\item modelować współbieżność w sieci Petriego oraz odróżniać konflikt, przyczynowość i współbieżność;
+\item stosować coverability, inwarianty, równanie stanu, pułapki, syfony i unfolding do analizy modelu;
+\item analizować soundness workflow net oraz rozumieć relację BPMN--sieci Petriego;
+\item wyjaśnić i ręcznie wykonać małe przykłady Declare mining, region-based mining i Inductive Miner;
+\item interpretować fitness, precision i alignment;
+\item rozumieć rolę abstrakcji, CEGAR oraz granice rozstrzygalności równoważności behawioralnych.
+\end{enumerate}
+
+\subsection{Plan semestru}
+\begin{longtable}{@{}p{8mm}p{52mm}p{94mm}@{}}
+\toprule
+\textbf{Nr} & \textbf{Wykład} & \textbf{Główny rezultat}\\
+\midrule
+1 & LTS i struktury Kripkego & model wykonania; safety i liveness\\
+2 & LTL, CTL i model checking & różnica czasu liniowego i rozgałęzionego\\
+3 & Symulacja, bisymulacja, HML & abstrakcja zachowująca obserwowalne zachowanie\\
+4 & Kompozycja i semantyka przeplotowa & źródło eksplozji stanów i utraty niezależności\\
+5 & Posety i ślady Mazurkiewicza & reprezentacja współbieżności bez arbitralnych przeplotów\\
+6 & Logiki na śladach & specyfikacja bezpośrednio na strukturze przyczynowej\\
+7 & Sieci Petriego & model zasobów, konfliktu i współbieżności\\
+8 & Occurrence nets i unfolding & częściowo uporządkowana semantyka wykonań\\
+9 & Techniki algebraiczne i CEGAR & tanie nadaproksymacje i ich uszczegóławianie\\
+10 & Coverability i WQO & główny pełny blok algorytmiczny dla sieci\\
+11 & BPMN, workflow nets i soundness & zastosowanie formalnego modelu do procesów biznesowych\\
+12 & Logi zdarzeń i Declare & deklaratywne uczenie i kontrola procesów\\
+13 & Region-based process mining & synteza miejsc sieci z zachowania\\
+14 & Inductive Miner i conformance & strukturalne odkrywanie procesu i diagnoza odchyleń\\
+15 & Abstrakcja i nierozstrzygalność & spektrum równoważności i granice automatycznej analizy\\
+\bottomrule
+\end{longtable}
+
+\section{Wykład 1: LTS, struktury Kripkego, wykonania}
+
+\subsection{Cele}
+Student rozróżnia system przejść etykietowanych od struktury Kripkego, potrafi wyznaczyć ścieżki maksymalne oraz odróżnia własności stanowe, ścieżkowe, safety i liveness.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--10 & Motywujący przykład: dwa wątki, wspólna zmienna i błąd zależny od kolejności.\\
+10--30 & LTS: stany, akcje, przejścia, ślady, wykonania skończone i nieskończone.\\
+30--45 & Struktury Kripkego i etykietowanie stanów; przejście między LTS a Kripke.\\
+45--65 & Własności stanów i ścieżek; invariance, reachability, deadlock freedom.\\
+65--80 & Safety i liveness; złe prefiksy i intuicja topologiczna bez formalizmu.\\
+80--90 & Mapa kursu: od jednej ścieżki do rozgałęzień i współbieżności.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item LTS $\mathcal{T}=(S,Act,\to,I)$ i notacja $s\xrightarrow{a}s'$.
+\item Ślad jako projekcja wykonania na etykiety; różnica między śladem a wykonaniem stanowym.
+\item Niedeterminizm jako wiele możliwych kontynuacji, nie jako losowość.
+\item Struktura Kripkego $K=(S,R,L,I)$ i totalizacja relacji dla semantyki nieskończonych ścieżek.
+\item Własności: osiągalność, nieosiągalność, brak zakleszczenia, sprawiedliwość.
+\item Safety: każde naruszenie posiada skończony świadek; liveness: żaden skończony prefiks nie przesądza porażki.
+\item Model jako abstrakcja: dobór stanu jest pierwszą decyzją weryfikacyjną.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{G. Winskel, Topics in Concurrency, §§1--2}{https://www.cl.cam.ac.uk/teaching/1617/TopConc/TopicsConc-1617.pdf}{zwarty kurs od systemów przejść do modeli współbieżności; zawiera przykłady i ćwiczenia.}
+\material{Cambridge, Exercises for Model Checking, §§1--2}{https://www.cl.cam.ac.uk/teaching/2425/HLog+ModC/part2-exercises.pdf}{bardzo dobry bank zadań o modelowaniu systemów przejść.}
+\material{C. Baier, J.-P. Katoen, Principles of Model Checking -- materiały kursowe RWTH}{https://moves.rwth-aachen.de/teaching/ws-1617/advanced-model-checking/}{strona kursu z wykładami i ćwiczeniami; poziom uzupełniający.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{1.1}{Modelowanie systemu przejść}{\E}{Zbudować LTS programu z dwoma licznikami i trzema instrukcjami warunkowymi. Jawnie określić, które informacje muszą należeć do stanu. Adaptacja: Cambridge, zad. 2.3--2.4.}
+\zad{1.2}{Dziewięć przełączników}{\M}{Sformalizować stan jako wektor bitów, przejście jako operację XOR, a cel jako zbiór stanów. Zaproponować redukcję symetrii. Adaptacja: Cambridge, zad. 2.8.}
+\zad{1.3}{Safety czy liveness?}{\M}{Dla ośmiu własności protokołu sklasyfikować je jako safety, liveness, obie lub żadna; dla safety podać zły prefiks.}
+\zad{1.4}{Granica skończonej eksploracji}{\Hard}{Podać dwie nieskończone struktury o identycznych prefiksach do głębokości $k$, ale różniące się własnością liveness. Wyjaśnić, dlaczego bounded model checking wymaga dodatkowego argumentu kompletności.}
+\end{description}
+
+\begin{tipbox}
+\textbf{Rezultat ćwiczeń:} jedna strona formalnej specyfikacji LTS oraz zestaw świadków naruszenia safety. Nie używać jeszcze LTL; studenci mają najpierw zobaczyć, co logika będzie miała opisywać.
+\end{tipbox}
+
+\section{Wykład 2: LTL, CTL i podstawy model checkingu}
+
+\subsection{Cele}
+Student zapisuje typowe wymagania w LTL i CTL, rozumie różnicę między kwantyfikacją po ścieżkach a operatorami temporalnymi oraz wykonuje algorytm etykietowania dla CTL na małym modelu.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--12 & Wymagania słowne i ich niejednoznaczność.\\
+12--35 & Składnia i semantyka LTL: $X,F,G,U$; nieskończone słowa.\\
+35--53 & CTL: formuły stanowe, kwantyfikatory $A,E$ i pary operatorów.\\
+53--68 & Przykłady własności rozróżniających LTL i CTL.\\
+68--82 & Bottom-up model checking CTL jako obliczanie punktów stałych.\\
+82--90 & LTL model checking: tylko mapa redukcji do automatu Büchiego.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Semantyka $X$, $U$ oraz definicje $F\varphi$ i $G\varphi$.
+\item Wzorce: response, precedence, persistence, recurrence.
+\item Różnica między $AF\,p$, $EF\,p$, $AG\,EF\,p$ i $EG\,p$.
+\item Przykład rozdzielający $FGp$ od $AFAGp$.
+\item Obliczanie $\mathsf{Sat}(EX\varphi)$, $\mathsf{Sat}(E[\varphi U\psi])$ i $\mathsf{Sat}(EG\varphi)$.
+\item Punkty stałe najmniejsze i największe --- intuicja, bez pełnego rachunku $\mu$.
+\item Kontrprzykład jako ścieżka lub drzewo świadków.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{Stanford CS257, Lecture 5: Temporal Logic and Model Checking}{https://web.stanford.edu/class/cs257/slides/Lecture_5.pdf}{dobre slajdy do pierwszego kontaktu z LTL/CTL.}
+\material{Cambridge, Exercises for Model Checking, §§5--7}{https://www.cl.cam.ac.uk/teaching/2425/HLog+ModC/part2-exercises.pdf}{zadania o semantyce, rozróżnianiu formuł i model checkingu.}
+\material{TU Eindhoven, Exercises Algorithms for Model Checking}{https://timw.win.tue.nl/downloads/exercises1_amc_2010.pdf}{zadania z algorytmu etykietowania CTL i sprawiedliwości.}
+\material{P. Gastin, Model Checking of CTL}{https://lsv.ens-paris-saclay.fr/~gastin/Verif/Verif-M1-12-lecture3\%264-4up.pdf}{materiał uzupełniający; bardziej algorytmiczny.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{2.1}{Tłumaczenie wymagań}{\E}{Zapisać w LTL i, gdy to możliwe, w CTL: wzajemne wykluczanie, brak zagłodzenia, możliwość restartu, nieuchronne zakończenie. Wskazać założenia o sprawiedliwości.}
+\zad{2.2}{Ręczna semantyka}{\M}{Dla pięciostanowej struktury wyznaczyć zbiory stanów spełniających $EFp$, $AFp$, $EG\neg p$, $AG(p\rightarrow AFq)$.}
+\zad{2.3}{Algorytm etykietowania CTL}{\M}{Wykonać kolejne iteracje punktu stałego dla $E[p\,U\,q]$ i $EGp$. Adaptacja: TU Eindhoven, zad. 2.}
+\zad{2.4}{Formuły rozdzielające}{\Hard}{Skonstruować model, w którym $FGp$ i $AFAGp$ mają różne wartości; następnie wyjaśnić typ błędu wynikający z mylenia semantyki liniowej i rozgałęzionej. Adaptacja: Cambridge, zad. 7.2.}
+\end{description}
+
+\section{Wykład 3: Symulacja, bisymulacja i logika Hennessy'ego--Milnera}
+
+\subsection{Cele}
+Student rozpoznaje relację symulacji i bisymulacji, stosuje grę bisymulacyjną, buduje iloraz oraz rozumie logiczną charakterystykę bisymulacji.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Dlaczego równość języków jest za słaba dla systemów interaktywnych.\\
+15--32 & Symulacja jako preorder implementacja--specyfikacja.\\
+32--52 & Bisymulacja, największy punkt stały i gra Spoiler--Duplicator.\\
+52--67 & Algorytm dzielenia partycji dla skończonych LTS.\\
+67--82 & Hennessy--Milner logic i formuły rozróżniające.\\
+82--90 & Ilorazowanie i warunek skończonego rozgałęzienia.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Trace equivalence, simulation equivalence i bisimilarity --- pierwsza część spektrum liniowe--rozgałęzione.
+\item Symulacja jako relacja kierunkowa; refleksyjność i przechodniość.
+\item Bisymulacja jako symetryczne dopasowanie kroków.
+\item Gra bisymulacyjna i konstrukcja krótkiego kontrprzykładu.
+\item HML: $\langle a\rangle\varphi$, $[a]\varphi$, negacja i koniunkcja.
+\item Twierdzenie Hennessy'ego--Milnera dla image-finite LTS.
+\item Minimalizacja przez bisymulację i zachowanie formuł modalnych.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{G. Winskel, Topics in Concurrency, rozdz. 5}{https://www.cl.cam.ac.uk/teaching/1617/TopConc/TopicsConc-1617.pdf}{definicje, przykłady, ćwiczenia i połączenie z logiką modalną.}
+\material{P. Sobociński, Bisimulation, Games, and Hennessy--Milner Logic}{https://web.cs.wpi.edu/~guttman/cs521_website/sobocinski_bisimulation-nup.pdf}{bardzo użyteczny zestaw slajdów z maszyną do kawy, grami i formułami rozróżniającymi.}
+\material{J. Pichon-Pharabod, Exercises for Model Checking, zad. 2.6--2.8}{https://www.cl.cam.ac.uk/teaching/2425/HLog+ModC/part2-exercises.pdf}{symulacja jako preorder i abstrakcja przez symetrię.}
+\material{P. Panangaden, Labelled Transition Systems}{https://www.cs.mcgill.ca/~prakash/Talks/lecture1.pdf}{uzupełnienie o koindukcję i logiczną charakterystykę.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{3.1}{Relacje na dwóch LTS}{\E}{Wyznaczyć największą symulację w obu kierunkach i sprawdzić, czy symulation equivalence implikuje bisymulację w danym przykładzie.}
+\zad{3.2}{Gra bisymulacyjna}{\M}{Dla trzech par stanów podać strategię Duplicatora albo najkrótszą strategię wygrywającą Spoilera.}
+\zad{3.3}{Formuła rozróżniająca}{\M}{Z wygrywającej strategii Spoilera skonstruować formułę HML prawdziwą w jednym stanie i fałszywą w drugim.}
+\zad{3.4}{Iloraz}{\Hard}{Wykonać ręcznie refinement partycji, zbudować iloraz bisymulacyjny i sprawdzić, że zachowuje zestaw wskazanych formuł HML. Adaptacja: Winskel, ćwiczenia do rozdz. 5.}
+\end{description}
+
+\section{Wykład 4: Kompozycja równoległa i problem semantyki przeplotowej}
+
+\subsection{Cele}
+Student buduje produkt synchroniczny/asynchroniczny LTS, rozumie reguły SOS oraz potrafi wskazać, które różnice w przestrzeni stanów są jedynie artefaktem przeplotu niezależnych akcji.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Dwa komponenty i eksplozja liczby stanów.\\
+15--35 & Operatory: prefix, wybór, kompozycja równoległa, synchronizacja, ukrywanie.\\
+35--52 & Reguły SOS i generowanie globalnego LTS.\\
+52--68 & Diament niezależności; $ab$ i $ba$ prowadzące do tego samego stanu.\\
+68--82 & State explosion i liczba liniaryzacji częściowego porządku.\\
+82--90 & Zapowiedź śladów Mazurkiewicza i unfoldingów.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Produkt komponentów jako formalny model kompozycji.
+\item Synchronizacja handshake versus niezależny krok lokalny.
+\item Ukrywanie i akcja $\tau$ jako źródło weak equivalences.
+\item Reguły SOS jako definicja kompozycyjnej semantyki.
+\item Diament komutacji: warunek dynamiczny i statyczna relacja niezależności.
+\item Dwie niezależne sekwencje długości $m,n$ mają $\binom{m+n}{m}$ przeplotów.
+\item Problem: LTS pamięta kolejność liniową, ale nie mówi, że dwa kroki były niezależne.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{G. Winskel, Topics in Concurrency, §§2--4}{https://www.cl.cam.ac.uk/teaching/1617/TopConc/TopicsConc-1617.pdf}{procesy, CCS/SOS, kompozycja i przykłady.}
+\material{G. Winskel, M. Nielsen, Models for Concurrency}{https://www.cl.cam.ac.uk/~gw104/winskel-nielsen-models-for-concurrency.pdf}{klasyczny przegląd modeli przeplotowych i true concurrency.}
+\material{J. Esparza, Unfolding Based Model Checking, slajdy 2--14}{https://teaching.model.in.tum.de/2021ss/petri/material/unfoldings_for_petri_net_course.pdf}{bardzo czytelne porównanie produktu systemów i częściowo uporządkowanego rozwinięcia.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{4.1}{Produkt dwóch komponentów}{\E}{Z dwóch trzy-stanowych LTS zbudować produkt asynchroniczny i produkt z jedną synchronizacją.}
+\zad{4.2}{Reguły SOS}{\M}{Wyprowadzić drzewa dowodowe dla czterech przejść procesu $(a.P+b.Q)\parallel_{\{b\}}R$.}
+\zad{4.3}{Eksplozja przeplotów}{\M}{Policzyć liczbę ścieżek dla $k$ niezależnych komponentów wykonujących po dwa kroki; porównać z liczbą zdarzeń i relacji w jednym pomsecie.}
+\zad{4.4}{Diament i niezależność}{\Hard}{Sformułować wystarczające warunki, przy których $s\xrightarrow{a}s_1\xrightarrow{b}s'$ można zamienić na $s\xrightarrow{b}s_2\xrightarrow{a}s'$. Podać kontrprzykład, gdy akcje współdzielą zasób.}
+\end{description}
+
+\section{Wykład 5: Posety, pomsety i ślady Mazurkiewicza}
+
+\subsection{Cele}
+Student przechodzi między słowem, klasą komutacyjną, grafem zależności i postacią Foaty oraz rozumie, które informacje o współbieżności zachowuje ślad.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--12 & Przypomnienie częściowych porządków, pokryć i diagramów Hassego.\\
+12--28 & Pomsety: etykietowane posety modulo izomorfizm.\\
+28--45 & Alfabet zależności $(\Sigma,I)$ i kongruencja generowana przez $ab=ba$.\\
+45--62 & Graf zależności jako kanoniczna reprezentacja śladu.\\
+62--75 & Postać normalna Foaty i maksymalne kroki równoległe.\\
+75--90 & Związek śladów z wykonaniami sieci Petriego; ograniczenie: brak rozgałęziającego konfliktu.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Poset, liniowe rozszerzenie, antyłańcuch i szerokość.
+\item Pomset jako jedno wykonanie z przyczynowością, nie jako cały system z wyborem.
+\item Niezależność $I$: symetryczna i przeciwzwrotna; zależność $D=(\Sigma\times\Sigma)\setminus I$.
+\item Równoważność słów przez zamianę sąsiednich niezależnych liter.
+\item Graf zależności: wierzchołki jako wystąpienia zdarzeń, krawędzie jako minimalne wymuszenia kolejności.
+\item Postać Foaty jako sekwencja klik niezależności.
+\item Trace-closed language i domknięcie względem komutacji.
+\item Dlaczego jeden ślad nie reprezentuje konfliktu pomiędzy alternatywnymi zdarzeniami.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{V. Diekert, A. Muscholl, Trace Theory}{https://www2.informatik.uni-stuttgart.de/fmi/ti/veroeffentlichungen/pdffiles/DiekertMuscholl2011.pdf}{najlepszy zwięzły tekst referencyjny: monoid śladów, grafy zależności, automaty.}
+\material{MIM UW, Ślady Mazurkiewicza}{https://www.mimuw.edu.pl/~ph209519/zajecia/WSPOLBIEGI2018/Mazurkiewicz.pdf}{slajdy odpowiednie bezpośrednio do wykładu.}
+\material{A. Maarand, T. Uustalu, Certified Foata Normalization}{https://cs.ioc.ee/~tarmo/papers/maarand-uustalu-nfm18.pdf}{precyzyjne definicje i algorytm normalizacji; materiał opcjonalny.}
+\material{M. Koutny, Generalising Mazurkiewicz Traces}{https://www.uni-muenster.de/IFIP-WG22/Web/meeting/Munich14/koutny.pdf}{wizualne przykłady relacji między wykonaniami a porządkami przyczynowymi.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+Niech $\Sigma=\{a,b,c,d\}$ i $I=\{(a,c),(c,a),(a,d),(d,a),(b,d),(d,b)\}$.
+\begin{description}
+\zad{5.1}{Klasa śladu}{\E}{Wypisać wszystkie słowa równoważne $abacd$ i uzasadnić kompletność listy.}
+\zad{5.2}{Graf zależności}{\M}{Zbudować graf zależności dla $abacd$, wykonać redukcję przechodnią i wypisać wszystkie liniowe rozszerzenia.}
+\zad{5.3}{Postać Foaty}{\M}{Obliczyć postać normalną Foaty dwiema metodami: z grafu zależności i przez algorytm zachłanny; porównać.}
+\zad{5.4}{Ślad a konflikt}{\Hard}{Podać dwa systemy o tym samym zbiorze maksymalnych pomsetów długości co najwyżej 2, ale różnej strukturze konfliktu. Wyjaśnić potrzebę event structures lub occurrence nets.}
+\end{description}
+
+\section{Wykład 6: Logiki na śladach Mazurkiewicza}
+
+\subsection{Cele}
+Student rozumie trzy sposoby interpretowania logiki temporalnej dla częściowych porządków: na liniaryzacjach, globalnie na konfiguracjach oraz lokalnie na zdarzeniach. Potrafi rozpoznać własność niezmienniczą względem niezależnych zamian.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Dlaczego zwykłe LTL może zależeć od arbitralnej liniaryzacji.\\
+15--32 & Trace-closed specifications: uniwersalna i egzystencjalna interpretacja na liniaryzacjach.\\
+32--52 & Logiki lokalne na zdarzeniach i relacje następstwa procesowego.\\
+52--68 & Egzystencjalne i uniwersalne until na przedziałach częściowego porządku.\\
+68--80 & FO/MSO nad grafami zależności; twierdzenia o pełności ekspresyjnej jako mapa wyników.\\
+80--90 & Decyzja dydaktyczna: jedna logika w szczegółach, reszta jako panorama.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Semantyka $t\models_\forall\varphi$ wtedy i tylko wtedy, gdy każda liniaryzacja śladu spełnia $\varphi$.
+\item Semantyka egzystencjalna i różnica interpretacyjna.
+\item Niezmienniczość formuły względem zamian liter niezależnych.
+\item Lokalny successor dla procesu/komponentu i modalności zdarzeniowe.
+\item Przedział $[e,f]$ w częściowym porządku; egzystencjalne versus uniwersalne until.
+\item FO nad zdarzeniami z porządkiem i predykatami etykiet.
+\item Wynik Thiagarajana--Walukiewicza: temporalna logika ekspresyjnie kompletna względem odpowiedniego FO --- bez dowodu technicznego.
+\item Granica kursu: nie wprowadzać pełnej teorii automatów asynchronicznych Zielonki.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{M. Mukund, A Quick Tour of Trace Logics}{https://www.cmi.ac.in/~madhavan/presentations/arcachon/trace-logic-survey.pdf}{najlepszy materiał slajdowy: warianty logik lokalnych, diagramy i wyniki ekspresyjności.}
+\material{P. S. Thiagarajan, I. Walukiewicz, An Expressively Complete Linear Time Temporal Logic for Mazurkiewicz Traces}{https://www.brics.dk/RS/96/62/BRICS-RS-96-62.pdf}{główne źródło teoretyczne do jednego reprezentatywnego wyniku.}
+\material{V. Diekert, P. Gastin, Pure Future Local Temporal Logics are Expressively Complete for Mazurkiewicz Traces}{https://lsv.ens-paris-saclay.fr/Publis/PAPERS/PDF/DG-latin04.pdf}{wariant bardziej lokalny; materiał do lektury seminaryjnej.}
+\material{V. Diekert, A. Muscholl, Trace Theory, część logiczna}{https://www2.informatik.uni-stuttgart.de/fmi/ti/veroeffentlichungen/pdffiles/DiekertMuscholl2011.pdf}{kontekst algebraiczny i automatyczny.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{6.1}{Niezmienniczość względem śladu}{\E}{Dla pięciu formuł LTL sprawdzić, czy ich prawdziwość może zmienić zamiana dwóch sąsiednich niezależnych zdarzeń. Dla odpowiedzi negatywnej podać najmniejszy kontrprzykład.}
+\zad{6.2}{Dwie semantyki liniaryzacji}{\M}{Dla jednego pomsetu obliczyć wartość $\models_\forall F(a\wedge Xb)$ i $\models_\exists F(a\wedge Xb)$. Wyjaśnić, dlaczego $X$ jest szczególnie problematyczny.}
+\zad{6.3}{Lokalne until}{\M}{Na podanym diagramie Hassego oznaczyć zdarzenia spełniające egzystencjalne i uniwersalne $\varphi U\psi$. Adaptacja z przykładów Mukunda.}
+\zad{6.4}{FO versus temporalność}{\Hard}{Zapisać w FO własność: „każde $a$ ma późniejsze, zależne przyczynowo $b$, przed którym nie ma $c$”; następnie zaproponować odpowiadającą jej formułę lokalnej logiki temporalnej.}
+\end{description}
+
+\begin{reviewbox}
+\textbf{Kontrola zakresu:} jest to najbardziej ryzykowny wykład semestru. W wersji podstawowej należy dokładnie zdefiniować tylko semantykę na liniaryzacjach i jedną logikę lokalną. Twierdzenia o pełności ekspresyjnej wystarczą jako 10-minutowa panorama.
+\end{reviewbox}
+
+\section{Wykład 7: Sieci Petriego --- składnia i semantyka}
+
+\subsection{Cele}
+Student modeluje zasoby, synchronizację i konflikt w sieci P/T; wyznacza sekwencje odpaleń, znakowania osiągalne i relacje współbieżności.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--12 & Dlaczego posety nie są jeszcze generatywnym modelem systemu.\\
+12--32 & Miejsca, przejścia, łuki, znakowanie i reguła odpalenia.\\
+32--48 & Sekwencje odpaleń i graf osiągalności.\\
+48--63 & Konflikt strukturalny i dynamiczny; współbieżne uaktywnienie.\\
+63--76 & Semantyka krokowa i komutacja niezależnych przejść.\\
+76--90 & Własności: boundedness, safeness, deadlock, liveness, reversibility.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Sieć ważona i jej wariant zwykły; pre- i postset.
+\item Znakowanie jako wektor w $\mathbb{N}^P$.
+\item Monotoniczność odpaleń względem porządku składowego.
+\item Różnica: dwa przejścia uaktywnione razem, konflikt o token, prawdziwa współbieżność.
+\item Krok jako multizbiór przejść; sekwencyzacja kroku.
+\item Graf osiągalności dla sieci ograniczonej.
+\item Przykłady: producent--konsument, semafor, mutual exclusion, fork--join.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{TUM, Petri Nets --- strona kursu}{https://www.cs.cit.tum.de/tcs/lehre/ss22/petri-nets/}{kompletny kurs z notatkami, slajdami, ośmioma zestawami ćwiczeń i rozwiązaniami.}
+\material{TUM, Petri Nets Lecture Notes}{https://teaching.model.in.tum.de/2021ss/petri/material/PNSkript.pdf}{podstawowe źródło do definicji i dalszych algorytmów.}
+\material{TUM, Basic Petri Net Slides}{https://teaching.model.in.tum.de/2021ss/petri/material/petrinets.pdf}{gotowe wizualne przykłady konfliktu, przyczynowości i własności sieci.}
+\material{S. Schwoon, Petri Nets}{https://lsv.ens-paris-saclay.fr/~schwoon/enseignement/verification/ws1819/nets.pdf}{zwarty zestaw slajdów obejmujący podstawy, algebrę i unfolding.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{7.1}{Odpalenia i graf osiągalności}{\E}{Dla małej sieci wypisać wszystkie znakowania, przejścia uaktywnione i graf osiągalności. Adaptacja: TUM, arkusz 1, zad. 1.1.}
+\zad{7.2}{Modelowanie producenta i konsumenta}{\M}{Zbudować sieć z buforem pojemności 2, a następnie wariant z nieograniczonym buforem; wskazać deadlock i boundedness.}
+\zad{7.3}{Wilk, koza i kapusta}{\M}{Zamodelować problem jako bezpieczną sieć, ustalić znakowanie docelowe i znaleźć sekwencję. Adaptacja: TUM, arkusz 2.}
+\zad{7.4}{Konflikt czy współbieżność}{\Hard}{Dla każdej pary przejść sklasyfikować relację strukturalną i dynamiczną oraz podać znakowanie rozróżniające oba pojęcia, jeżeli istnieje.}
+\end{description}
+
+\section{Wykład 8: Occurrence nets, konfiguracje i unfolding}
+
+\subsection{Cele}
+Student interpretuje unfolding jako reprezentację wykonań bez redundancji przeplotów, wyznacza konfiguracje i cięcia oraz rozumie ideę cutoff event i complete finite prefix.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Od jednego śladu do rozgałęzionej historii: potrzeba reprezentacji konfliktu.\\
+15--32 & Occurrence nets: warunki, zdarzenia, acykliczność i nierozgałęziająca się przeszłość.\\
+32--48 & Przyczynowość, konflikt dziedziczny i współbieżność.\\
+48--63 & Konfiguracje, cięcia i odpowiadające znakowania.\\
+63--76 & Konstrukcja unfoldingu małej sieci.\\
+76--90 & Cutoff, adequate order i complete finite prefix --- intuicja algorytmu.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Branching process i homomorfizm etykietujący do sieci pierwotnej.
+\item Lokalna konfiguracja zdarzenia.
+\item To samo przejście sieci może mieć wiele zdarzeń w unfoldingu z różnymi historiami.
+\item Konfiguracje jako skończone, przyczynowo domknięte i bezkonfliktowe zbiory zdarzeń.
+\item Cięcie odpowiada znakowaniu; równoległe zdarzenia nie generują osobnych gałęzi dla każdej kolejności.
+\item Cutoff przez powtórzenie reprezentowanego znakowania i adequate order.
+\item Co complete finite prefix zachowuje dla sieci bezpiecznych/ograniczonych.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{J. Esparza, Unfolding Based Model Checking}{https://teaching.model.in.tum.de/2021ss/petri/material/unfoldings_for_petri_net_course.pdf}{122 slajdy; najlepsze źródło do budowy wykładu i ilustracji.}
+\material{S. Schwoon, Petri Nets, slajdy 50--75}{https://lsv.ens-paris-saclay.fr/~schwoon/enseignement/verification/ws1819/nets.pdf}{krótszy wariant z konstrukcją prefiksu krok po kroku.}
+\material{J. Esparza, K. Heljanko, Unfoldings --- A Partial-Order Approach to Model Checking}{https://www7.in.tum.de/~esparza/bookunf.html}{pełny bezpłatny draft monografii; źródło referencyjne.}
+\material{V. Khomenko, Model Checking Based on Prefixes of Petri Net Unfoldings}{https://homepages.cs.ncl.ac.uk/victor.khomenko/papers/thesis.pdf}{pogłębienie algorytmiczne i zastosowania.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{8.1}{Relacje w occurrence net}{\E}{Dla podanej sieci zdarzeń wyznaczyć $<$, $\#$ i $\mathsf{co}$ dla wskazanych par.}
+\zad{8.2}{Konfiguracje i cięcia}{\M}{Spośród ośmiu zbiorów zdarzeń wybrać konfiguracje; dla każdej wyznaczyć cięcie i znakowanie sieci bazowej. Adaptacja: Esparza, slajdy o configurations.}
+\zad{8.3}{Ręczny unfolding}{\M}{Rozwinąć sieć fork--join z konfliktem do głębokości dwóch powrotów i zaznaczyć powtarzające się znakowania.}
+\zad{8.4}{Cutoff i kompletność}{\Hard}{Wybrać cutoff events w dwóch różnych kolejnościach dodawania zdarzeń; porównać rozmiar prefiksów i uzasadnić, że oba reprezentują wszystkie znakowania. Adaptacja: Schwoon, slajdy 53--67.}
+\end{description}
+
+\section{Wykład 9: Równanie stanu, inwarianty, pułapki, syfony i CEGAR}
+
+\subsection{Cele}
+Student stosuje macierz incydencji i inwarianty do dowodzenia bezpieczeństwa, rozumie niezupełność równania stanu oraz wykonuje prostą iterację counterexample-guided abstraction refinement.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Macierz incydencji i wektor Parikha sekwencji odpaleń.\\
+15--32 & Równanie stanu $M=M_0+C\sigma$ jako warunek konieczny.\\
+32--50 & P-inwarianty i dowody boundedness/mutual exclusion.\\
+50--63 & T-inwarianty i ich ograniczona interpretacja behawioralna.\\
+63--75 & Pułapki i syfony jako informacja utracona przez macierz.\\
+75--90 & CEGAR: rozwiązanie liniowe, sprawdzenie realizowalności, refinement.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item $C=Post-Pre$; równanie stanu i wektor liczności odpaleń.
+\item Rozwiązanie równania nie ustala kolejności i nie gwarantuje uaktywnienia przejść.
+\item P-inwariant $y^TC=0$ i zachowanie $y^TM$.
+\item Dodatni P-inwariant jako wystarczający argument strukturalnego ograniczenia.
+\item T-inwariant $Cx=0$: potencjalny cykl efektów, niekoniecznie wykonywalny.
+\item Pułapka oznaczona pozostaje oznaczona; opróżniony syfon pozostaje pusty.
+\item Abstrakcja liniowa jako nadaproksymacja osiągalności.
+\item Refinement przez ograniczenia kolejnościowe i constraints on transition counts.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{TUM Petri Nets, arkusze 5 i 6}{https://www.cs.cit.tum.de/tcs/lehre/ss22/petri-nets/}{gotowe zadania z równania stanu, P/T-inwariantów, pułapek, syfonów i mutual exclusion.}
+\material{S. Schwoon, Petri Nets, slajdy 34--49}{https://lsv.ens-paris-saclay.fr/~schwoon/enseignement/verification/ws1819/nets.pdf}{bardzo klarowny przykład pokazujący, dlaczego równanie stanu jest tylko nadaproksymacją.}
+\material{H. Wimmel, K. Wolf, Applying CEGAR to the Petri Net State Equation}{https://lmcs.episciences.org/1036/pdf}{bezpośrednie źródło do połączenia algebry sieci Petriego z CEGAR.}
+\material{E. Clarke et al., Counterexample-Guided Abstraction Refinement}{https://web.stanford.edu/class/cs357/cegar.pdf}{klasyczne tło CEGAR; tylko wybrane slajdy/pojęcia.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{9.1}{Równanie stanu}{\E}{Zbudować macierz incydencji, rozwiązać trzy równania dla wskazanych znakowań i zaznaczyć, które przypadki są natychmiast wykluczone. Adaptacja: TUM, arkusz 5, zad. 5.4.}
+\zad{9.2}{Inwarianty}{\M}{Wyznaczyć bazę P-inwariantów i użyć jej do dowodu 1-boundedness oraz mutual exclusion. Adaptacja: TUM, arkusz 6, zad. 6.1 i 6.3.}
+\zad{9.3}{Pułapka usuwa fałszywy świadek}{\M}{Dla rozwiązania równania stanu, które sugeruje niebezpieczne znakowanie, znaleźć oznaczoną pułapkę wykluczającą jego osiągalność.}
+\zad{9.4}{Jedna iteracja CEGAR}{\Hard}{Rozwiązać abstrakcyjny problem ILP, odtworzyć potencjalną kolejność, wykryć blokujący prefix i dodać refinement. Porównać z algorytmem Wimmela--Wolfa na poziomie idei.}
+\end{description}
+
+\section{Wykład 10: Coverability, WQO i problemy podstawowe}
+
+\subsection{Cele}
+Student odróżnia reachability od coverability, konstruuje drzewo/graf Karp--Millera i bazę w algorytmie wstecznym oraz rozumie rolę twierdzenia Dicksona w terminacji.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--12 & Mapa problemów: reachability, coverability, boundedness, termination, deadlock.\\
+12--30 & Porządek składowy na $\mathbb{N}^d$ i twierdzenie Dicksona.\\
+30--52 & Karp--Miller: akceleracja przez $\omega$ i coverability tree/graph.\\
+52--70 & Algorytm wsteczny na zbiorach upward-closed i minimalnych bazach.\\
+70--82 & Redukcje: boundedness, uaktywnienie przejścia, deadlock w wariantach.\\
+82--90 & Reachability: rozstrzygalność i Ackermann-completeness tylko jako orientacja.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item $M$ pokrywa $M_f$, gdy $M\geq M_f$; różnica względem dokładnej osiągalności.
+\item WQO: brak nieskończonych antyłańcuchów i nieskończonych ściśle malejących ciągów.
+\item Akceleracja komponentów rosnących do $\omega$.
+\item Odczytywanie boundedness i coverable markings z drzewa Karp--Millera.
+\item $Pre(\uparrow B)$ i minimalizacja bazy w algorytmie wstecznym.
+\item Monotoniczność sieci jako warunek poprawności WSTS.
+\item Reachability nie powinno być wykładane algorytmicznie; warto podać jedynie status i skalę złożoności.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{TUM, Petri Nets Lecture Notes, rozdziały o coverability}{https://teaching.model.in.tum.de/2021ss/petri/material/PNSkript.pdf}{pełne i dydaktycznie sprawdzone omówienie obu algorytmów.}
+\material{TUM, Exercise Sheet 4}{https://teaching.model.in.tum.de/2021ss/petri/ss2020exercises/ex04.pdf}{zadania z grafu pokrywalności i algorytmu wstecznego wraz z rozwiązaniami.}
+\material{P. Schnoebelen, Algorithmic Aspects of WQOs}{https://www.lsv.fr/~phs/algorithmic_aspects_of_wqos.pdf}{szerszy kontekst WSTS i WQO.}
+\material{J. Leroux, S. Schmitz, Reachability in Vector Addition Systems is Ackermann-complete}{https://arxiv.org/abs/2104.13866}{aktualny punkt odniesienia dla złożoności reachability; tylko jedna plansza.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{10.1}{Karp--Miller}{\E}{Zbudować graf pokrywalności, wskazać miejsca ograniczone i opisać zbiór pokrywalnych znakowań. Adaptacja: TUM, arkusz 4, zad. 4.1.}
+\zad{10.2}{Wpływ kolejności eksploracji}{\M}{Dla tej samej sieci zbudować dwa różne drzewa Karp--Millera wynikające z różnych strategii. Adaptacja: TUM, zad. 4.2.}
+\zad{10.3}{Algorytm wsteczny}{\M}{Obliczać kolejne minimalne bazy $B_i$ dla dwóch celów; jeden ma być pokrywalny, drugi nie. Adaptacja: TUM, zad. 4.3.}
+\zad{10.4}{Dlaczego algorytm się kończy}{\Hard}{Sformułować dowód terminacji algorytmu wstecznego z użyciem WQO; wskazać dokładnie, gdzie potrzebne są monotoniczność i skończona baza predecessorów.}
+\end{description}
+
+\section{Wykład 11: BPMN, workflow nets i soundness}
+
+\subsection{Cele}
+Student rozumie semantyczny rdzeń BPMN, potrafi przełożyć fragment procesu na workflow net oraz sprawdzić podstawowe warianty soundness i typowe błędy modelowania.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--12 & Po co formalizować proces biznesowy; notacja a semantyka.\\
+12--32 & BPMN: events, tasks, sequence flow, XOR/AND gateways, pools i messages.\\
+32--48 & Ograniczony, formalizowalny fragment BPMN.\\
+48--63 & Workflow net: jedno wejście, jedno wyjście, każdy element na ścieżce $i\to o$.\\
+63--78 & Soundness: option to complete, proper completion, no dead transitions.\\
+78--90 & Short-circuit net, boundedness/liveness i przykłady weryfikacji.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Rozdzielenie notacji BPMN od wykonawczej semantyki silnika workflow.
+\item XOR split/join, AND split/join i pułapka niezgodnego łączenia bramek.
+\item Message flow nie jest sequence flow.
+\item Workflow net i znakowania początkowe/końcowe.
+\item Klasyczne soundness oraz krótka wzmianka o relaxed/generalized soundness.
+\item Redukcja soundness do liveness i boundedness po short-circuit.
+\item Błędy: dead transition, deadlock, livelock, pozostawione tokeny.
+\item Narzędzia: WoPeD do wizualizacji i ProM/LoLA do analizy.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{OMG, BPMN 2.0.2 --- oficjalna specyfikacja}{https://www.omg.org/spec/BPMN/2.0.2/About-BPMN}{źródło normatywne; wybierać tylko niewielki fragment notacji.}
+\material{BPMN.org, Documents and Examples}{https://www.bpmn.org/documents}{oficjalne przykłady BPMN 2.0 i poster notacji.}
+\material{A. Marrella, BPMN Lecture Slides}{https://www.diag.uniroma1.it/marrella/slides/Sem_PM_11-12_BPMN.pdf}{gotowe slajdy dydaktyczne o konstrukcjach BPMN.}
+\material{W. van der Aalst, The Application of Petri Nets to Workflow Management}{https://www.vdaalst.rwth-aachen.de/publications/p226.pdf}{klasyczne wprowadzenie do workflow nets i soundness.}
+\material{W. van der Aalst et al., Soundness of Workflow Nets}{https://www.vdaalst.com/publications/p628.pdf}{źródło pogłębione do wariantów soundness.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{11.1}{Model BPMN}{\E}{Narysować proces obsługi zamówienia z równoległą kontrolą płatności i dostępności, anulowaniem oraz ponowieniem płatności.}
+\zad{11.2}{BPMN $\to$ workflow net}{\M}{Przełożyć rdzeń modelu na sieć Petriego i wyjaśnić rolę każdego miejsca kontrolnego.}
+\zad{11.3}{Diagnoza soundness}{\M}{Dla trzech workflow nets znaleźć odpowiednio: dead transition, deadlock i improper completion; podać minimalny ślad ujawniający błąd.}
+\zad{11.4}{Naprawa modelu}{\Hard}{Minimalnie zmodyfikować wadliwy model tak, by stał się sound, i uzasadnić poprawność przez short-circuit oraz inwarianty.}
+\end{description}
+
+\section{Wykład 12: Logi zdarzeń, jakość modeli i Declare}
+
+\subsection{Cele}
+Student rozumie strukturę logu zdarzeń, cztery główne wymiary jakości modelu oraz potrafi zapisać i sprawdzić podstawowe constraints Declare na skończonych śladach.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Case, event, activity, timestamp, lifecycle; ślad i multizbiór śladów.\\
+15--30 & Trzy rodziny zadań: discovery, conformance, enhancement.\\
+30--43 & Fitness, precision, generalization, simplicity.\\
+43--60 & Model imperative versus declarative; założenie open world.\\
+60--78 & Declare: existence, response, precedence, succession, not-coexistence.\\
+78--90 & Discovery constraints: support, confidence i usuwanie redundancji.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Log jako multizbiór skończonych śladów, a nie zbiór wszystkich możliwych zachowań.
+\item Problem niekompletności i szumu; brak śladu nie oznacza niemożliwości.
+\item Model flower: maksymalny fitness, bardzo niska precision.
+\item Model dokładnie odtwarzający log: ryzyko przeuczenia i słabej generalizacji.
+\item Declare jako zbiór constraints o semantyce LTL na skończonych słowach.
+\item Activations, fulfillments, violations i vacuous satisfaction.
+\item Mining jako selekcja instancji templates przekraczających progi.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{W. van der Aalst, Process Mining Courses and Materials}{https://www.vdaalst.com/courses/courses.html}{centralny katalog wykładów, ćwiczeń, datasetów i nagrań.}
+\material{W. van der Aalst, J. Carmona (red.), Process Mining Handbook}{https://iris.unitn.it/retrieve/eb85cc74-b806-4963-862e-d25d3fdbeeac/978-3-031-08848-3-2.pdf}{otwarty podręcznik; rozdziały przeglądowe, discovery, conformance i declarative mining.}
+\material{C. Di Ciccio, M. Montali, Declarative Process Specifications}{https://www.inf.unibz.it/~montali/papers/diciccio-montali-PMBook2022-declarative-mining.pdf}{najpełniejsze źródło do semantyki, reasoning, discovery i monitoring Declare.}
+\material{A. Marrella, Declarative Process Modeling and Mining}{https://www.diag.uniroma1.it/~marrella/slides/pm17/LAB-07-Declarative_Process_Modeling_and_Mining.pdf}{gotowe slajdy z templates, formułami LTLf i przykładami śladów.}
+\material{F. Maggi et al., Declare Component of ProM}{https://ceur-ws.org/Vol-1021/paper_8.pdf}{krótki opis narzędzia i pracy z rzeczywistym logiem.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{12.1}{Od tabeli do logu}{\E}{Z tabeli 20 zdarzeń utworzyć cases, variants i directly-follows counts; wskazać dwa problemy jakości danych.}
+\zad{12.2}{Cztery wymiary jakości}{\M}{Porównać cztery modele dla tego samego logu: flower, enumerator śladów, model blokowy i model z jedną pętlą. Uporządkować je jakościowo według fitness, precision, generalization i simplicity.}
+\zad{12.3}{Semantyka Declare}{\M}{Dla sześciu śladów ocenić ograniczenia $R(A,B)$, $P(A,B)$, $AltR(A,B)$ i $NC(A,B)$ (odpowiednio Response, Precedence, Alternate Response i Not Coexistence); jawnie omówić vacuity. Adaptacja: slajdy Marrelli.}
+\zad{12.4}{Mały Declare Miner}{\Hard}{Dla logu policzyć support i confidence kandydatów z trzech templates, usunąć constraints logicznie implikowane i zinterpretować końcowy model.}
+\end{description}
+
+\section{Wykład 13: Region-based process mining}
+
+\subsection{Cele}
+Student rozumie region jako kandydackie miejsce sieci, formułuje warunki separacji stanów i zdarzeń oraz ręcznie syntetyzuje małą sieć z transition systemu zbudowanego z logu.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Dwa etapy: log $\to$ transition system $\to$ sieć Petriego.\\
+15--32 & Jak budować stany z prefixów, set/bag abstractions i horyzontu.\\
+32--52 & Region jako funkcja stanu i sygnatura zdarzeń; interpretacja miejsca.\\
+52--67 & State separation problem i event/state separation problem.\\
+67--80 & Synteza sieci z rodziny regionów; gwarancje i nadaproksymacja.\\
+80--90 & Wpływ niekompletnego logu i brakujących przeplotów.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Prefix transition system jako najprostsza reprezentacja całego logu.
+\item Abstrakcja stanu steruje generalizacją jeszcze przed syntezą sieci.
+\item Region $r:S\to\mathbb{N}$ oraz stały efekt etykiety na wszystkich jej krawędziach.
+\item Konsumpcja/produkcja tokenów jako sygnatura regionu dla zdarzenia.
+\item SSP: rozdzielenie dwóch różnych stanów; ESSP: zablokowanie etykiety nieobecnej w stanie.
+\item Zestaw regionów daje miejsca; krawędzie TS mają odpowiadać odpaleniom przejść.
+\item Dokładna synteza versus process discovery z niekompletnego logu.
+\item Związek z automatami skończonymi: „zbuduj automat, a następnie złóż/fold do sieci” jest trafną intuicją dydaktyczną, ale regiony nie są prostym scalaniem stanów.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{W. van der Aalst et al., A Two-Step Approach using Transition Systems and Regions}{https://www.vdaalst.com/publications/p359.pdf}{najlepsze źródło bezpośrednio zgodne z narracją log $\to$ TS $\to$ PN.}
+\material{R. Bergenthum et al., Process Mining Based on Regions of Languages}{https://www.fernuni-hagen.de/sttp/docs/2007bpmmintechrep.pdf}{regiony języków i zastosowanie do process mining.}
+\material{J. Carmona et al., A Region-Based Algorithm for Discovering Petri Nets}{https://core.ac.uk/download/pdf/195706781.pdf}{algorytm generujący ograniczoną sieć nadaproksymującą log.}
+\material{W. van der Aalst, Process Mining Lecture: Region-Based Mining}{https://www.youtube.com/watch?v=l9d6kYduPwE}{nagranie wykładu z intuicją i przykładami.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+Dany jest log $L=[\langle a,b,d\rangle^2,\langle a,c,d\rangle^2]$.
+\begin{description}
+\zad{13.1}{Prefix transition system}{\E}{Zbudować deterministyczny prefix automaton/TS, a następnie wariant z abstrakcją „zbiór dotychczas wykonanych aktywności”.}
+\zad{13.2}{Kandydackie regiony}{\M}{Znaleźć regiony odpowiadające: przed $a$, pomiędzy $a$ a wyborem $b/c$, po $b/c$ i przed $d$. Zapisać ich sygnatury.}
+\zad{13.3}{SSP i ESSP}{\M}{Wskazać, które pary stanów i pary stan--zdarzenie muszą zostać rozdzielone, aby reachability graph sieci był izomorficzny z TS.}
+\zad{13.4}{Synteza i brakująca współbieżność}{\Hard}{Dodać do procesu oczekiwaną równoległość $b\parallel c$, ale pozostawić w logu tylko jeden przeplot. Pokazać, jak różne abstractions lub assumptions zmieniają wynik; porównać z ograniczeniem opisanym w pracy o Inductive Minerze.}
+\end{description}
+
+\section{Wykład 14: Inductive Miner, process trees i conformance checking}
+
+\subsection{Cele}
+Student wykonuje rekurencyjną dekompozycję logu na process tree, rozumie gwarancję soundness modeli blokowych oraz oblicza prosty alignment i interpretuje koszt odchylenia.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Process trees: sequence, exclusive choice, parallel, loop, $\tau$.\\
+15--32 & Directly-follows graph i pojęcie cut.\\
+32--55 & Inductive Miner: znajdź cut, podziel log, rekurencja, fall-through.\\
+55--67 & Tłumaczenie process tree na sound workflow net.\\
+67--80 & Conformance: token replay versus alignments.\\
+80--90 & Koszty moves-on-log/model i cztery wymiary jakości.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Process tree jako hierarchiczny model blokowy.
+\item Sequence, XOR, AND i loop cuts z relacji directly-follows/start/end.
+\item Rekurencyjne filtrowanie i projekcja sublogów.
+\item Dlaczego wynik po translacji jest sound z konstrukcji.
+\item Niekompletność logu, rzadkie zachowanie i warianty IMf/IMi.
+\item Alignment jako najtańsza synchronizacja śladu z wykonaniem modelu.
+\item Synchronous move, move on log, move on model.
+\item Fitness z kosztu alignmentu; precision jako osobny problem.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{S. Leemans, D. Fahland, W. van der Aalst, Discovering Block-Structured Process Models}{https://leemans.ch/publications/papers/bpi2013leemans.pdf}{oryginalny Inductive Miner dla zachowania rzadkiego; główne źródło algorytmu.}
+\material{S. Leemans et al., Discovering Process Models from Incomplete Event Logs}{https://www.vdaalst.com/publications/p771.pdf}{czytelny opis process trees, divide-and-conquer i problemu niekompletności.}
+\material{ProM, Background Information on the Inductive Miner}{https://promtools.org/background-information-on-the-inductive-miner/}{krótkie wyjaśnienie i odsyłacze do implementacji.}
+\material{J. Carmona et al., Conformance Checking: Foundations, Milestones and Challenges}{https://link.springer.com/chapter/10.1007/978-3-031-08848-3_5}{rozdział podręcznikowy o conformance i alignments.}
+\material{RWTH Process Mining Lecture 12: Conformance Checking}{https://www.youtube.com/watch?v=Dc2Q-8qJWX8}{materiał wideo do przygotowania fragmentu o alignments.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{14.1}{Cuts w directly-follows graph}{\E}{Dla czterech małych logów rozpoznać kolejno sequence, XOR, parallel i loop cut.}
+\zad{14.2}{Ręczny Inductive Miner}{\M}{Dla logu $[\langle a,b,c,e\rangle,\langle a,c,b,e\rangle,\langle a,d,e\rangle]$ skonstruować pełne process tree, pokazując wszystkie sublogi.}
+\zad{14.3}{Process tree $\to$ workflow net}{\M}{Przetłumaczyć wynik na sieć i podać argument soundness indukcyjny względem operatorów drzewa.}
+\zad{14.4}{Alignment}{\M}{Dla śladu $\langle a,c,d,e\rangle$ i modelu z zad. 14.2 znaleźć alignment minimalnego kosztu przy koszcie 1 dla ruchu niesynchronicznego.}
+\zad{14.5}{Porównanie trzech minerów}{\Hard}{Dla tego samego logu przewidzieć jakościowo modele Declare, region-based i Inductive Miner: co każdy z nich gwarantuje, co generalizuje i na jaki rodzaj niekompletności jest wrażliwy.}
+\end{description}
+
+\section{Wykład 15: Abstrakcja, słabe bisymulacje i granice rozstrzygalności}
+
+\subsection{Cele}
+Student rozumie rolę niewidocznych kroków, rozróżnia strong, weak, branching i stuttering equivalence oraz potrafi czytać mapę wyników rozstrzygalności dla sieci Petriego bez utożsamiania jej z wynikami dla skończonych LTS.
+
+\subsection{Plan 90 minut}
+\begin{center}\small\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{18mm}X@{}}
+0--15 & Po co ukrywać szczegóły i dlaczego strong bisimulation bywa zbyt drobna.\\
+15--35 & Weak transitions $\Rightarrow$, weak bisimulation i obserwowalne ślady.\\
+35--50 & Branching bisimulation i zachowanie punktu rozgałęzienia.\\
+50--62 & Stuttering equivalence dla struktur Kripkego i CTL$\setminus X$.\\
+62--75 & CEGAR jako operacyjny schemat abstrakcji; powrót do wykładu 9.\\
+75--90 & Krajobraz: skończone LTS versus nieskończone grafy osiągalności sieci; nierozstrzygalności.\\
+\end{tabularx}\end{center}
+
+\subsection{Punkty do omówienia}
+\begin{itemize}
+\item Ukrycie akcji wewnętrznych i relacja $\xRightarrow{a}=\xrightarrow{\tau *}\xrightarrow{a}\xrightarrow{\tau *}$.
+\item Weak bisimulation może pominąć rozgałęzienia wewnętrzne, które branching bisimulation zachowuje.
+\item Divergence sensitivity jako osobny wybór semantyczny.
+\item Stuttering equivalence i formuły bez next.
+\item Relacja abstrakcyjna musi być dobrana do klasy sprawdzanych własności.
+\item Dla skończonego LTS bisimilarity jest efektywnie rozstrzygalna; trudność dotyczy nieskończonych LTS generowanych przez sieci.
+\item Strong bisimilarity, weak bisimilarity, trace/language equivalence i simulation mają różne statusy; podawać tabelę z precyzyjną klasą sieci i rodzajem etykietowania.
+\item Jedna redukcja jako szkic: kodowanie maszyny licznikowej/zero testu przez grę bisymulacyjną; bez technicznych gadżetów pełnego dowodu.
+\end{itemize}
+
+\subsection{Materiały}
+\begin{itemize}
+\material{J. Esparza, M. Nielsen, Decidability Issues for Petri Nets --- a Survey}{https://arxiv.org/abs/2411.01592}{zaktualizowana mapa własności, równoważności i logik dla sieci Petriego.}
+\material{P. Jančar, High Undecidability of Weak Bisimilarity for Petri Nets}{https://link.springer.com/chapter/10.1007/3-540-59293-8_206}{główne źródło do pokazania siły nierozstrzygalności weak bisimilarity.}
+\material{R. van Glabbeek, The Linear Time--Branching Time Spectrum}{https://www.cse.unsw.edu.au/~rvg/pub/spectrum90.pdf}{mapa równoważności i preorderów; źródło uzupełniające.}
+\material{R. De Nicola, F. Vaandrager, Three Logics for Branching Bisimulation}{https://ir.cwi.nl/pub/1370/1370D.pdf}{połączenie branching bisimulation z logiką.}
+\material{H. Wimmel, K. Wolf, Applying CEGAR to the Petri Net State Equation}{https://lmcs.episciences.org/1036/pdf}{powrót do praktycznej abstrakcji i refinementu.}
+\end{itemize}
+
+\subsection{Ćwiczenia 90 minut}
+\begin{description}
+\zad{15.1}{Strong versus weak}{\E}{Dla czterech par procesów zdecydować strong i weak bisimilarity; dla odpowiedzi negatywnej podać ruch Spoilera.}
+\zad{15.2}{Weak versus branching}{\M}{Skonstruować najmniejszą parę LTS weak-bisimilar, ale nie branching-bisimilar, i wyjaśnić, które rozgałęzienie zostaje utracone.}
+\zad{15.3}{Stuttering}{\M}{Zminimalizować strukturę Kripkego względem stuttering equivalence i sprawdzić trzy formuły CTL bez $X$ oraz jedną z $X$.}
+\zad{15.4}{Czytanie tabeli rozstrzygalności}{\M}{Na podstawie survey przypisać 12 problemom status: rozstrzygalny, nierozstrzygalny, zależny od klasy sieci, lub wymagający doprecyzowania. Celem jest wychwycenie niepełnych sformułowań.}
+\zad{15.5}{Szkic redukcji}{\Hard}{Opisać moduły, które redukcja z maszyny dwulicznikowej musi wymusić w grze bisymulacyjnej: increment, decrement, test zera i kara za oszustwo. Nie wymagać pełnego dowodu.}
+\end{description}
+
+\section{Projekt przewodni i organizacja ćwiczeń}
+
+\subsection{Projekt: proces obsługi zamówienia}
+Jeden model można rozwijać w kolejnych tygodniach:
+\begin{enumerate}
+\item LTS z akcjami \texttt{receive}, \texttt{credit}, \texttt{stock}, \texttt{pay}, \texttt{ship}, \texttt{cancel}.
+\item Specyfikacje LTL/CTL: nie wysyłaj bez płatności; każde przyjęte zamówienie zostanie wysłane albo anulowane.
+\item Abstrakcja przez symulację/bisymulację: ukrycie kontroli magazynu.
+\item Identyfikacja niezależności \texttt{credit} $I$ \texttt{stock} i grafów zależności.
+\item Model w sieci Petriego, inwarianty i unfolding.
+\item Model BPMN i analiza soundness.
+\item Wygenerowany mały log z rzadką ścieżką anulowania.
+\item Trzy modele odkryte: Declare, region-based, Inductive Miner.
+\item Alignment dla błędnego śladu \texttt{receive, ship, pay}.
+\end{enumerate}
+
+\subsection{Zalecany rytm ćwiczeń}
+\begin{itemize}
+\item 10 min: krótki quiz diagnostyczny z poprzedniego wykładu;
+\item 25 min: jedno zadanie techniczne prowadzone wspólnie;
+\item 35 min: praca w parach nad zadaniem średnim;
+\item 15 min: dyskusja dwóch rozwiązań i typowych błędów;
+\item 5 min: sformułowanie zadania domowego/projektowego.
+\end{itemize}
+
+\subsection{Narzędzia}
+\begin{itemize}
+\item \href{https://woped.dhbw-karlsruhe.de/}{WoPeD} --- workflow nets, soundness i wizualizacja token game;
+\item \href{https://promtools.org/}{ProM} --- discovery, Declare, region miner, Inductive Miner i conformance;
+\item \href{https://pm4py.fit.fraunhofer.de/}{PM4Py} --- reprodukowalne notebooki do process mining;
+\item \href{https://github.com/CvO-Theory/apt}{APT} --- analiza sieci z wiersza poleceń;
+\item \href{https://service-technology.org/lola/}{LoLA} --- własności sieci Petriego.
+\end{itemize}
+
+\section{Macierz źródeł i przydatność materiałów}
+
+{\footnotesize
+\begin{longtable}{@{}p{35mm}p{26mm}p{18mm}p{71mm}@{}}
+\toprule
+\textbf{Źródło} & \textbf{Format} & \textbf{Ocena} & \textbf{Najlepsze zastosowanie}\\
+\midrule
+Winskel, Topics in Concurrency & notes i ćwiczenia & A & LTS, SOS, bisymulacja, HML, podstawy sieci; szkielet pierwszej części kursu.\\
+Cambridge Model Checking Exercises & arkusz zadań & A & modelowanie, symulacja, LTL/CTL, formuły rozdzielające.\\
+Diekert--Muscholl, Trace Theory & rozdział podręcznikowy & A & definicje śladów, grafów zależności i wyników algebraicznych.\\
+Mukund, Trace Logics & slajdy & A- & najlepsze ilustracje logik lokalnych; wymaga selekcji i komentarza prowadzącego.\\
+TUM Petri Nets & pełny kurs & A+ & podstawowe źródło dla wykładów 7--10 i ćwiczeń z rozwiązaniami.\\
+Esparza, Unfolding Based MC & slajdy/tutorial & A+ & kompletny wykład 8; wysoka jakość przykładów graficznych.\\
+Wimmel--Wolf CEGAR & artykuł & A & bezpośredni most między algebrą sieci i abstrakcją.\\
+OMG BPMN 2.0.2 & standard & A/normatywne & definicje notacji; nie używać jako głównego podręcznika dydaktycznego.\\
+Van der Aalst, Workflow & tutorial & A & workflow nets, soundness i zastosowania.\\
+Process Mining Handbook & otwarty podręcznik & A+ & współczesne źródło referencyjne dla wykładów 12--14.\\
+Marrella Declare Lab & slajdy & A- & gotowe przykłady templates i LTLf; sprawdzić notację operatorów.\\
+Two-Step Regions & artykuł & A & dokładnie odpowiada koncepcji automat/TS $\to$ regiony $\to$ sieć.\\
+Leemans et al., Inductive Miner & artykuł & A & process trees, cuts i gwarancja soundness.\\
+Esparza--Nielsen survey & survey & A & finałowa mapa rozstrzygalności; wymaga precyzyjnego określenia wariantu problemu.\\
+\bottomrule
+\end{longtable}
+}
+
+Ocena A oznacza źródło, które może stanowić bezpośrednią podstawę slajdów i przygotowania zadań; A- wymaga większej redakcji lub ujednolicenia notacji; A+ jest materiałem szczególnie kompletnym i dydaktycznie spójnym.
+
+\section{Niezależna recenzja ekspercka programu}
+
+\subsection{Metoda oceny}
+Program oceniono ponownie po jego ułożeniu, przyjmując sześć kryteriów: spójność narracji, obciążenie pojęciowe, adekwatność ćwiczeń, reprezentatywność teorii współbieżności, siła części aplikacyjnej oraz aktualność i dostępność źródeł.
+
+\subsection{Mocne strony}
+\begin{itemize}
+\item[\okmark] \textbf{Wyraźna historia intelektualna.} Kurs nie jest katalogiem modeli: każdy kolejny formalizm odpowiada na konkretny problem poprzedniego.
+\item[\okmark] \textbf{Prawdziwe połączenie teorii i praktyki.} Workflow/process mining nie jest dodatkiem; wykorzystuje LTL, automaty, regiony, sieci i własności behawioralne.
+\item[\okmark] \textbf{Dobre jądro algorytmiczne.} Coverability, WQO, inwarianty i unfolding są wykładalne, mają czytelne przykłady i nie wymagają ukrywania zasadniczych argumentów.
+\item[\okmark] \textbf{Ćwiczenia są równoważne rangą wykładom.} Obejmują dowody, ręczne algorytmy, modelowanie i pracę narzędziową.
+\item[\okmark] \textbf{Źródła są mocne.} Rdzeń pochodzi z pełnych kursów Cambridge i TUM oraz uznanych tutoriali i podręcznika process mining.
+\end{itemize}
+
+\subsection{Ryzyka i konieczne korekty}
+\begin{itemize}
+\item[\warn] \textbf{Wykład 2 jest zbyt szeroki, jeżeli studenci nie znają logik temporalnych.} Nie należy dowodzić obu pełnych algorytmów LTL i CTL. Rekomendacja: CTL bottom-up szczegółowo, LTL automata-theoretic tylko jako schemat albo odwrotnie.
+\item[\warn] \textbf{Wykład 6 może zerwać narrację.} Zbyt wiele logik śladów obniży zrozumienie. Rekomendacja: 45 minut na semantykę liniaryzacji, 25 minut na jedną logikę lokalną, 10 minut na FO/pełność, 10 minut na przykłady.
+\item[\warn] \textbf{Wykład 9 nie może stać się kursem ILP.} Równanie stanu i refinement mają być interpretowane strukturalnie; solver jest narzędziem, nie tematem.
+\item[\warn] \textbf{Wykład 14 łączy dwa duże tematy.} Inductive Miner powinien zająć około 60 minut, a alignment 30 minut. Pełne miary precision należy zostawić do ćwiczeń lub projektu.
+\item[\warn] \textbf{Wyniki nierozstrzygalności są podatne na błędne skróty.} Zawsze trzeba podać: strong/weak, simulation/bisimulation, labelled/unlabelled, dwie sieci czy sieć kontra skończony system, oraz klasę sieci.
+\end{itemize}
+
+\subsection{Ocena obciążenia}
+\begin{longtable}{@{}p{43mm}p{23mm}p{84mm}@{}}
+\toprule
+\textbf{Blok} & \textbf{Ocena} & \textbf{Komentarz}\\
+\midrule
+LTS, logiki, bisymulacja (1--4) & odpowiedni & Cztery spotkania dają wystarczające podstawy i język abstrakcji.\\
+Ślady i logiki śladów (5--6) & wysoki & Dobry dla kursu magisterskiego; na poziomie licencjackim wykład 6 powinien być przeglądowy.\\
+Sieci i weryfikacja (7--10) & odpowiedni/ambitny & Najbardziej spójny blok; cztery wykłady są minimalnym sensownym wymiarem.\\
+Workflow i mining (11--14) & odpowiedni & Cztery spotkania pozwalają pokazać zastosowanie bez sprowadzenia go do demonstracji narzędzia.\\
+Abstrakcja i granice (15) & wysoki & Dobry finał, o ile CEGAR został już przećwiczony w wykładzie 9.\\
+\bottomrule
+\end{longtable}
+
+\subsection{Rekomendowany rdzeń egzaminacyjny}
+\begin{itemize}
+\item definicje LTS/Kripke, LTL/CTL, symulacji i bisymulacji;
+\item trace equivalence, graf zależności i Foata normal form;
+\item semantyka sieci, boundedness, deadlock, coverability;
+\item P-inwariant, równanie stanu, trap/siphon;
+\item konfiguracja i complete finite prefix na małym przykładzie;
+\item workflow net i soundness;
+\item zasada działania Declare, region miner i Inductive Miner;
+\item alignment na małym przykładzie;
+\item różnica strong/weak/branching bisimulation i świadomość granic rozstrzygalności.
+\end{itemize}
+Nie należy wymagać na egzaminie dowodu pełności logiki śladów, algorytmu ogólnego reachability ani technicznego dowodu nierozstrzygalności bisymulacji sieci.
+
+\subsection{Werdykt}
+\begin{reviewbox}
+\textbf{Ocena końcowa: 8.5/10 dla kursu magisterskiego i 7/10 dla kursu licencjackiego bez redukcji zakresu.}
+
+Po ograniczeniu wykładu 6 do jednego formalizmu, pozostawieniu reachability jako panoramy oraz przeniesieniu części conformance do ćwiczeń plan jest realistyczny dla 15 $\times$ 90 minut. Największą wartością kursu jest wspólna oś: pojęcie obserwowalnego zachowania i różne sposoby usuwania nieistotnej kolejności lub stanu.
+\end{reviewbox}
+
+\section{Uwagi o prawach do materiałów i sposobie użycia}
+
+\begin{itemize}
+\item Linki służą jako materiały do przygotowania własnego wykładu. Ćwiczenia w tym dokumencie są streszczeniami lub adaptacjami, nie kopiami arkuszy.
+\item Materiały W. van der Aalsta są udostępniane do użycia dydaktycznego z wymaganiem wyraźnego wskazania źródła; użycie oryginalnych plików PowerPoint wymaga osobnej prośby opisanej na stronie kursów.
+\item Przy przenoszeniu rysunków lub slajdów do własnych materiałów należy sprawdzić licencję konkretnego pliku i umieścić autora oraz link na slajdzie.
+\item Najbezpieczniejszy wariant to przerysowanie przykładów w jednolitej notacji i podanie „na podstawie” wraz z odsyłaczem.
+\end{itemize}
+
+\section{Szybka lista najważniejszych linków}
+
+\begin{enumerate}
+\item \href{https://www.cl.cam.ac.uk/teaching/1617/TopConc/TopicsConc-1617.pdf}{Winskel: Topics in Concurrency}
+\item \href{https://www.cl.cam.ac.uk/teaching/2425/HLog+ModC/part2-exercises.pdf}{Cambridge: Exercises for Model Checking}
+\item \href{https://www2.informatik.uni-stuttgart.de/fmi/ti/veroeffentlichungen/pdffiles/DiekertMuscholl2011.pdf}{Diekert--Muscholl: Trace Theory}
+\item \href{https://www.cmi.ac.in/~madhavan/presentations/arcachon/trace-logic-survey.pdf}{Mukund: A Quick Tour of Trace Logics}
+\item \href{https://www.cs.cit.tum.de/tcs/lehre/ss22/petri-nets/}{TUM: pełny kurs Petri Nets}
+\item \href{https://teaching.model.in.tum.de/2021ss/petri/material/unfoldings_for_petri_net_course.pdf}{Esparza: Unfolding Based Model Checking}
+\item \href{https://lmcs.episciences.org/1036/pdf}{Wimmel--Wolf: CEGAR and the State Equation}
+\item \href{https://www.omg.org/spec/BPMN/2.0.2/About-BPMN}{OMG BPMN 2.0.2}
+\item \href{https://www.vdaalst.com/courses/courses.html}{Van der Aalst: Process Mining Courses}
+\item \href{https://iris.unitn.it/retrieve/eb85cc74-b806-4963-862e-d25d3fdbeeac/978-3-031-08848-3-2.pdf}{Process Mining Handbook}
+\item \href{https://www.vdaalst.com/publications/p359.pdf}{Two-Step Region-Based Process Mining}
+\item \href{https://leemans.ch/publications/papers/bpi2013leemans.pdf}{Inductive Miner}
+\item \href{https://arxiv.org/abs/2411.01592}{Esparza--Nielsen: Decidability Issues for Petri Nets}
+\end{enumerate}
+
+\vfill
+\begin{center}
+\small Koniec dokumentu. Linki sprawdzono w trakcie opracowania 31 lipca 2026 r.
+\end{center}
+
+\end{document}
