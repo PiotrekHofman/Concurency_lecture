@@ -1,0 +1,270 @@
+\section{Serge}
+\begin{frame}
+ \tytul{Continuous reachability.}
+\end{frame}
+
+
+% \begin{frame}{Linear programming.}
+% \Margines{
+% \DefinicjaProblemu{ A $r\times c$- integer matrix $M$ and a vector $\vec{y}\in \Z^{r}$.}{ If there is a vector $\vec{x}\in \Qplus^{c}$ such that
+% $M \cdot \vec{x}= \vec{y}$?}
+% \begin{block}{Theorem }
+% The Linear programming problem is in \PTIME. 
+% \end{block}
+% }
+% \end{frame}
+
+\begin{frame}{Linear programming + If formula.}
+\Margines{
+\DefinicjaProblemu{ A $r\times c$- integer matrix $M$ and a vector $\vec{y}\in \Z^{r}$ and a set of predicates of a form
+$\vec{x}[\indexI]>0 \implies \vec{x}[\indexII]>0$.}{ If there is a vector $\vec{x}\in \Qplus^{c}$ such that
+$M \cdot \vec{x}= \vec{y}$ and all predicates are satisfied?}
+\begin{block}{Theorem }
+The Linear programming + If formula problem is in \PTIME. 
+\end{block}
+
+\visible<2->{
+\begin{block}{Proof}
+\begin{enumerate}
+ \item The set of solutions is convex.
+ \item If for every $\indexI$ there is a solution such that $\vec{x}[\indexI]>0$ then there is a solution
+ such that $\vec{x}[\indexII]>0$ for all $\indexII.$
+\end{enumerate}
+}
+\end{block}
+
+
+}\end{frame}
+
+\begin{frame}{Linear programming + If formula (the algorithm).}
+    \hspace{1cm}solve( Matrix $\Delta$, Vector $\vec{y}$, set\_of\_implications $\setS$, set\_of\_zeros $\setX$)\\
+    \hspace{1cm}\{ \\
+    \hspace{2cm} \red{If there is no solution $\Delta\cdot \vec{x}= \vec{y}$ in $\Qplus^\Dimension$,} \\
+    \hspace{4cm} where $x_\indexI=0$ for all $x_\indexI\in \setX$ \red{then return false;}\\
+    \hspace{2cm} \red{If there is a solution $\Delta\cdot \vec{x}= \vec{y}$ in $\Qplus^\Dimension$,} \\
+    \hspace{4cm} where $x_\indexI=0$ iff $x_\indexI\in \setX$ \red{then return true;}\\
+    \hspace{2cm} \red{Find a new coordinate $x_i$\\
+    \hspace{4cm} which has to be equal $0$ in every solution;}\\
+    \hspace{2cm} \red{Add $x_\indexI$ to $\setX$;} \\
+    \hspace{2cm} \red{Add to $\setX$ all $x_\indexII$ that has to be added due to implications;} \\
+    \hspace{2cm} \red{return solve($M$, $\vec{y}$, $\setS$, $\setX$);}\\
+      \hspace{1cm}\}
+\end{frame}
+
+
+
+\begin{frame}{Continuous Petri Nets.}
+\DwieKol{0.49}{0.49}
+{
+\begin{figure}\scalebox{.7}{
+ \begin{tikzpicture}[node distance=1.3cm,>=stealth',bend angle=45,auto]
+    \alt<5->{\node [place, label=center:$\frac{1}{3}$] (p1) {}}{\node [place,label=center:$ $] (p1) {}};
+    \node [transitionV,label=above:$T_1$] (t1) [right of=p1] {}
+        edge[pre]   (p1);
+    \alt<4->{\node [place, label=center:$\frac{2}{3}$] (p2) [right of=t1] {}}
+									   {\alt<2-4>{\node [place, label=center:$1$] (p2) [right of=t1] {}}{\node [place,label=center:$ $] (p2) [right of=t1] {}}}
+        edge[pre]   (t1);
+    \alt<4->{\node [place,label=center:$\frac{2}{3}$] (p3) [below of=p2] {}}
+									  {\alt<2-4>{\node [place,label=center:$1$] (p3) [below of=p2] {}}{\node [place,label=center:$ $] (p3) [below of=p2] {}}}
+        edge[pre]   (t1);
+    \alt<3->{\node [transitionV,color=red, label=above:$T_2$, label=below:$\frac{1}{3}$] (t2) [right of=p3] {}}
+	      {\node [transitionV,label=above:$T_2$] (t2) [right of=p3] {}}
+        edge[pre]   (p2)
+        edge[pre]   (p3)
+        edge[post, bend left]  (p1);
+    \alt<5->{\node [place, label=center:$\frac{10}{6}$] (p4) [right of=t2] {}}
+									    {\alt<2-4>{\node [place, label=center:$\frac{3}{2}$] (p4) [right of=t2] {}}{\node [place, label=center:$ $] (p4) [right of=t2] {}}}
+        edge[pre]   (t2);
+\end{tikzpicture}  
+ }\end{figure}
+}
+{
+  \footnotesize{
+  \begin{itemize}
+    \item Marking: $\Marking: \SetPlace \to \Q$
+    \item Transitions: $\SetTransition$
+    \item Firing a transition $\Transition{t}\in \SetTransition$ with a coefficient $a\in \Q$.
+  \end{itemize}
+  }
+}
+
+
+\end{frame}
+
+\begin{frame}{Continuous Petri Nets Reachability.}
+\Margines{
+\DefinicjaProblemu{ Two configurations $\Initial$ and $\Final$}{If there is a run form $\Initial$ to $\Final$ under continuous semantics.}
+\begin{block}{A simpler variant of the problem.}
+Suppose, that $$\forall_{\indexI}\ \left( \Initial[\indexI]>0 \text{ and } \Final[\indexI]>0\right).$$ 
+
+$\Final$ is reachable from $\Initial$ iff
+$$\Final-\Initial=\TransitionDelta \cdot \vec{x} \text{ where } \vec{x}\in \Qplus^\Dimension .$$
+\end{block}
+}
+\end{frame}
+
+
+\begin{frame}{Continuous Petri Nets Reachability.}
+\Margines{
+\begin{block}{Lemma}
+$\Final$ is reachable from $\Initial$ if
+\begin{enumerate}
+ \item $$\Final-\Initial=\TransitionDelta \cdot \vec{x} \text{ where } \vec{x}\in \Qplus^\Dimension $$
+ \item $$\vec{x}[\indexI]>0 \ \text{ and }\  \Pre[\indexII,\indexI]>0 \ \implies \ \Initial[\indexII]>0,$$
+ \item $$\vec{x}[\indexI]>0 \ \text{ and }\  \Post[\indexII,\indexI]>0 \ \implies \ \Final[\indexII]>0.$$
+\end{enumerate}
+
+\end{block}
+}
+\end{frame}
+
+\begin{frame}{Continuous Petri Nets Reachability.}
+\Margines{
+\begin{block}{Lemma}
+$\Final$ is reachable from $\Initial$ if
+\begin{enumerate}
+ \item $\Final-\Initial=\TransitionDelta \cdot \vec{x} \text{ where } \vec{x}\in \Qplus^\Dimension $
+ \item $\vec{x}[\indexI]>0 \ \text{ and }\  \Pre[\indexII,\indexI]>0 \ \implies \ \Initial[\indexII]>0,$
+ \item $\vec{x}[\indexI]>0 \ \text{ and }\  \Post[\indexII,\indexI]>0 \ \implies \ \Final[\indexII]>0.$
+\end{enumerate}
+\end{block}
+\begin{block}{Theorem}
+$\Final$ is reachable from $\Initial$ iff there are two configurations $\Initial'$ and $\Final'$ such that
+\begin{enumerate}
+ \item there is a run form $\Initial$ to $\Initial'$ that is using at most $\Dimension$ steps.
+ \item there is a run form $\Final'$ to $\Final$ that is using at most $\Dimension$ steps.
+ \item There is a run form $\Initial'$ to $\Final'$ due to Lemma. 
+\end{enumerate}
+\end{block}
+}
+\end{frame}
+
+
+
+
+\begin{frame}{Translation to a formula (linear + If).}
+\Margines{
+\begin{block}{Lemma}
+ For a given Petri net $\NetI$ and two configurations $\initial$ and $\final$
+ in \PTIME\ one can compute a formula (linear programming + if) such that it is satisfiable if and only if
+ $\final$ is continuously reachable from $\initial$ in the net $\NetI.$
+\end{block}
+
+We use:
+\begin{block}{Theorem}
+$\Final$ is reachable from $\Initial$ iff there are two configurations $\Initial'$ and $\Final'$ such that
+\begin{enumerate}
+ \item there is a run form $\Initial$ to $\Initial'$ that is using at most $\Dimension$ steps.
+ \item there is a run form $\Final'$ to $\Final$ that is using at most $\Dimension$ steps.
+ \item There is a run form $\Initial'$ to $\Final'$ due to Lemma. 
+\end{enumerate}
+\end{block}
+}
+\end{frame}
+
+\begin{frame}{Q-cover 2015.}
+\vspace{-0.5cm}
+\Margines{
+\begin{block}{}
+\textcolor{structure.fg}{IDEA:} Take a backward coverability algorithm, and speed it up.
+\end{block}
+\visible<2->{
+\alt<2>{\begin{block}{}
+What is the main obstacle?
+\end{block}}
+{
+\begin{block}{}
+ \textcolor{structure.fg}{CHALLENGE:} Size of the representation of the representation of the upward-closed set may get too big.
+\end{block}
+}
+\visible<4->{
+\alt<4>{\begin{block}{}
+How to cut the upward-closed set?
+\end{block}
+}{
+\begin{block}{}
+\textcolor{structure.fg}{IDEA:} Let $\vec{x}\in M\uparrow$, if there is no $\vec{y}\geqslant \vec{x}$ such that $\vec{y}\in RS(\NetI, \initial)$ then we can 
+throw $\vec{x}$ away. 
+\end{block}
+}
+\visible<6->{
+\begin{block}{M. Blondin, A. Finkel, Ch. Haase, S. Haddad, 2015}
+\textcolor{structure.fg}{SOLUTION:} Let $\vec{x}\in M\uparrow$, if there is no $\vec{y}\geq \vec{x}$ such that $\vec{y}\in CRS(\NetI, \initial)$ then we can 
+throw $\vec{x}$ away.
+\end{block}
+}
+\visible<7->{
+\begin{block}{Thomas Geffroy, Jérôme Leroux, Grégoire Sutre, 2017}
+Actually, any over-approximation will work: $LRS$ instead of $CRS$. 
+\end{block}
+}}
+}
+}
+\end{frame}
+
+\begin{frame}
+ \tytul{Advertisement.}
+\end{frame}
+
+
+
+\begin{frame}{Internships at the University of Warsaw.}
+% \podzialDwa{2 }{8 }{
+% \begin{center}   \end{center}
+% }                                   
+% {
+\vspace{-0.7cm}
+\DwieKol{0.47}{0.47}{
+\begin{minipage}[t][0.5cm][c]{0.9\textwidth}
+Possibilities:
+\end{minipage}
+
+\fbox{
+\begin{minipage}[t][\height][c]{0.9\textwidth}
+ \includegraphics[width=0.7\textwidth]{mikolaj}\\
+ Prof. Mikołaj Bojanczyk\\
+ {\scriptsize Logic, Automata, Formal Languages.\\
+ Email: bojan@mimuw.edu.pl
+ }
+ \end{minipage}
+ }
+ 
+ \fbox{
+\begin{minipage}[t][\height][c]{0.9\textwidth}
+ \includegraphics[width=0.7\textwidth]{sankowski}\\
+ Prof. Piotr Sankowski\\
+ {\scriptsize Algorithms.\\
+ Email: sank@mimuw.edu.pl
+ }
+ \end{minipage}
+ }
+ 
+ }
+ {
+ \begin{minipage}[t][0.5cm][c]{0.9\textwidth}
+$\ $
+\end{minipage}
+ 
+ \begin{minipage}[t][\height][c]{0.9\textwidth}
+ \includegraphics[width=\textwidth]{obraz}
+%  \includegraphics[width=0.47\textwidth]{stareM}\\
+%  \includegraphics[width=0.47\textwidth]{palac}\includegraphics[width=0.47\textwidth]{wydzial1}
+\end{minipage}
+ \vspace{0.32cm}
+ 
+ 
+  \fbox{
+\begin{minipage}[t][\height][c]{0.9\textwidth}
+ \includegraphics[width=0.7\textwidth]{stefan}\\
+ Prof. Stefan Dziembowski\\
+ {\scriptsize Cryptography.\\
+ Email: S.Dziembowski@crypto.edu.pl
+ }
+ \end{minipage}
+ }
+ }
+%}
+
+\end{frame}
+
+

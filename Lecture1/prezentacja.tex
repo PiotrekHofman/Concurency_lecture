@@ -1,0 +1,527 @@
+\documentclass{beamer}
+
+\usepackage{xcolor}
+\usepackage{color}
+
+\usepackage{graphicx}
+\def\xcolorversion{2.00}
+\def\xkeyvalversion{1.8}
+\setbeamersize{text margin left=0pt,text margin right=0pt} 
+
+\makeatletter
+\newcommand*\bigcdot{\mathpalette\bigcdot@{.9}}
+\newcommand*\bigcdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
+\makeatother
+
+
+\usepackage{TIKZ_Macra}
+\usepackage{xparse}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{default}
+
+\useinnertheme[shadow=true]{rounded}
+
+\setbeamercolor{block title}{use=structure,fg=structure.fg,bg=structure.fg!30!bg}
+%\setbeamercolor{block title}{fg=red}
+
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!50!bg}
+
+\setbeamercolor{block title example}{use=example text,fg=example text.fg,bg=example text.fg!30!bg}
+\setbeamercolor{block body example}{parent=normal text,use=block title example,bg=block title example.bg!50!bg}
+
+%\usepackage{transparent}
+\usepackage[most]{tcolorbox}
+\usepackage{lmodern}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{hyperref}
+
+
+\newtcbox{\mybox}{blank, on line, opacitytext=0.5}
+\usepackage{changepage}
+
+\usepackage{Moje_makra}
+
+\usepackage{Moje_Zmienne}
+
+\usepackage{Zbiory_i_konfiguracje}
+
+\usepackage{Complexity}
+
+\usepackage{Sieci}
+
+
+\begin{document}
+
+ 
+
+\begin{frame}[fragile]{}
+\begin{center}\begin{Large}
+		\huge{ Teoria współbieżności}
+              \end{Large}
+\end{center}
+
+\begin{center}\begin{small}
+Piotr Hofman
+
+{\tiny
+Theoretical aspects of concurrency\\
+}
+\end{small}
+\end{center}
+
+\begin{itemize}
+ \item My email: piotrek.hofman@gmail.com
+ \item My office: 4580
+\end{itemize}
+
+
+
+\end{frame}
+
+
+\begin{frame}{Outline}
+\Margines{\begin{enumerate}
+ \item How to specify properties of a system? 
+ \begin{itemize}
+  \item LTL.
+  \item CTL.
+  \item Bisimulation.  
+ \end{itemize}
+ \item How to model a system?
+ \begin{itemize}
+  \item Process algebra.
+  \item Petri nets.
+  \end{itemize}
+ \item Around map reduce.
+\end{enumerate}
+}
+\end{frame}
+
+\begin{frame}{Assessment methods and assessment criteria}
+\Margines{
+\vspace{-0.5cm}
+\begin{block}{Laboratory}
+ Two projects evaluated from 0 to 5:
+\begin{enumerate}
+ \item Modelling (Promela and Spin). 
+ \item Verification (Coverability in Petri Nets).
+\end{enumerate}
+\end{block}
+
+\begin{block}{Oral exam 0 up to 15 point}
+In the end of the semester I will provide a list of questions that may appear on the exam.  
+\end{block}
+\begin{itemize}
+ \item $0-13.5 \leftrightarrow2$
+ \item $13.5- 17.5 \leftrightarrow3$
+ \item $17.5 - 19.5 \leftrightarrow3+$
+ \item $15.5 - 21.5 \leftrightarrow4$
+ \item $21.5 - 23 \leftrightarrow4+$
+ \item $23 - 25 \leftrightarrow5$
+\end{itemize}
+}
+
+\end{frame}
+
+\begin{frame}
+\begin{center}
+ {\huge Let's start}
+\end{center}
+\end{frame}
+
+\begin{frame}{Three basic threats in parallel programming}
+\Margines{
+\begin{block}{Data corruption}
+Consider a bank, an ATM and a following protocol for withdrawing money:
+
+\begin{tikzpicture}[shorten >=1pt,->]
+  \tikzstyle{vertex}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+
+  \node[] (zero) at (-1,0) {$\ $};
+  \foreach \name in {1,2,3,4}
+      \node (A-\name) at (0,-\name) {ATM};
+  \foreach \name in {1,2,3,4}
+      \node (B-\name) at (6,-\name) {BANK};    
+  
+ % \node[] (ATM1) at (0,0) {ATM};   \node[] (BANK1) at (0,0) {ATM};
+  
+  %   \foreach \name/\p/\x in {1/p_1 /1, 2/p_2/2, 3/p_1 p_2/3, 4/p_2/4, 5/p_3/5, 6/p_2/6, 7/p_1 p_3/7}
+%     \node[vertex] (G-\name) at (\x,0) {$\p$};
+%     
+   % \node[] (G-kropki) at (8,0) {$\ldots$};
+% 
+   \draw (A-1) -> (B-1);
+   \node (L-1) at (3,-0.8) {send a password};
+    \draw (B-1) -> (B-2); \node (L-2) at (8,-1.4) {check the password};
+     \draw (B-2) -> (A-2);
+     \node (L-3) at (3,-1.8) {send an account balance};
+      \draw (A-2) -> (A-3);\node (L-4) at (1,-2.4) {How much?};
+      \draw (A-3) -> (A-4);\node (L-5) at (1,-3.4) {give money};
+      \draw (A-4) -> (B-4);\node (L-1) at (3,-3.8) {update the account balance};
+\end{tikzpicture}
+
+\end{block}
+
+}
+\end{frame}
+
+\begin{frame}{Three basic threats in parallel programming}
+\Margines{
+\begin{block}{Deadlock}
+Consider philosophers working according a following schema:
+
+\begin{tikzpicture}[shorten >=1pt,->, scale=0.5]
+  \tikzstyle{vertex}=[circle,fill=black!25,minimum size=10pt,inner sep=0pt]
+
+  \node[] (zero) at (-1,0) {$\ $};
+  
+  \node[vertex] (F1) at (3,0) {};
+  \node[vertex] (F2) at (0,2) {};
+  \node[vertex] (F3) at (1.5,4) {};
+  \node[vertex] (F4) at (4.5,4) {};
+  \node[vertex] (F5) at (6,2) {};
+  
+  \foreach \y/\x in {1/2,2/3,3/4,4/5,5/1}
+      \draw (F\y) -> (F\x);
+   \node (L-1) at (1.2,0.7) {\tiny think};
+   \node (L-2) at (6,1) {\tiny put forks back};
+   \node (L-3) at (-0.5,3) {\tiny take left fork};
+   \node (L-4) at (6,3) {\tiny eat}; 
+   \node (L-5) at (3,4.5) {\tiny take right fork};
+
+\end{tikzpicture}
+\hspace{2cm} \includegraphics[scale=0.07]{5philo}
+\end{block}
+
+\visible<2->{\begin{block}{Solution}
+ Priorities. 
+\end{block}}
+}
+\end{frame}
+
+\begin{frame}{Three basic threats in parallel programming}
+\Margines{
+\begin{block}{\red{Starvation}}
+Consider philosophers working according a following schema:
+
+\begin{tikzpicture}[shorten >=1pt,->, scale=0.5]
+  \tikzstyle{vertex}=[circle,fill=black!25,minimum size=10pt,inner sep=0pt]
+
+  \node[] (zero) at (-1,0) {$\ $};
+  
+  \node[vertex] (F1) at (3,0) {};
+  \node[vertex] (F2) at (0,2) {};
+  \node[vertex] (F3) at (1.5,4) {};
+  \node[vertex] (F4) at (4.5,4) {};
+  \node[vertex] (F5) at (6,2) {};
+  
+  \foreach \y/\x in {1/2,2/3,3/4,4/5,5/1}
+      \draw (F\y) -> (F\x);
+   \node (L-1) at (1.2,0.7) {\tiny think};
+   \node (L-2) at (6,1) {\tiny put forks back};
+   \node (L-3) at (-0.5,3) {\tiny take left fork};
+   \node (L-4) at (6,3) {\tiny eat}; 
+   \node (L-5) at (3,4.5) {\tiny take right fork};
+
+\end{tikzpicture}
+\hspace{2cm} \includegraphics[scale=0.07]{5philo}
+\end{block}
+
+\begin{block}{Solution}
+ Priorities. 
+\end{block}
+}
+\end{frame}
+
+\begin{frame}{Kripke structures}
+\Margines{
+Let $\AProp$ be a set of atomic propositions, i.e. boolean expressions over variables, 
+constants and predicate symbols.
+\visible<2->{\begin{block}{Definition}
+ A Kripke structure over $\AProp$ is a 4-tuple $M = (S, I, R, L)$ consisting of:
+\begin{enumerate}
+ \item a finite set of states $S,$
+ \item a set of initial states $I \subseteq S,$
+ \item a transition relation $R \subseteq S \times S$ such that $R$ is left-total, i.e., $\forall_{s \in S} \exists_{s'\in S}$ such that $(s,s')\in R$,
+ \item a labeling (or interpretation) function $L: S\rightarrow 2^{\AProp}$.
+ \end{enumerate}
+ \end{block}}
+\visible<3->{\begin{block}{Definition}
+  By a \emph{run} we mean a sequence of states interleaved with transitions, $s_1,t_1,s_2,t_2,s_3\ldots$ such that $(s_i,s_{i+1})=t_{i}$.
+ \end{block}
+ }}
+\end{frame}
+
+
+\begin{frame}{Runs}
+\Margines{
+\begin{definition}
+For a given run we define a \emph{trace} as follows:
+$$\trace{s_1,t_1,s_2,t_2,s_3\ldots}= L(s_1),L(s_2),L(s_3)\ldots.$$
+  A set of traces of all possible infinite runs of a given Kripke structure $S$ is called \emph{Traces} of $S$ and denoted $\trace{S}.$
+\end{definition}
+
+% \begin{lemma}
+%  For a given Kripke structure $S$ there is a finite nondeterministic automaton $A$ such that it recognises a language $\traces{S}$.
+% \end{lemma}
+
+}
+\end{frame}
+
+\begin{frame}{Runs}
+\Margines{
+\alt<1-5>{\visible<2->{\begin{block}{}
+The first concept is to analyse a system by investigating the set of its traces. 
+\end{block}
+\begin{itemize}
+\item<3-> Suppose that $S$ is a Kripke structure that is a model of a given system.
+\item<3-> Let $\setX$ be a set of infinite words that are witnesses of an error, say some possible memory corruption.
+
+\item<4-> If $\setX\cap \trace{S}=\emptyset $ then we know that the system does not allow for data corruption.
+\item<5-> Almost, it is under the assumption that model is correct and precise enough.
+\end{itemize}
+}}{
+\begin{block}{}
+We may also partially specify a system by defining a set of correct behaviours. 
+\end{block}
+
+\begin{itemize}
+\item<7-> Suppose that $S$ is a Kripke structure that is a model of a given system.
+\item<7-> Let $\setX$ be a set of infinite words that are correct behaviours.
+
+\item<8-> If $\setX\supseteq \trace{S} $ then we know that the system does not allow data corruption.
+\end{itemize}
+}
+}
+\visible<8>{aa}
+\end{frame}
+
+\begin{frame}{Exercises}
+ \Margines{
+\begin{block}{5 philosophers}
+\begin{itemize}
+ \item What are the predicates?
+ \item How the Kripke structure looks like?
+ \item What are the properties that Traces should satisfy for 5 philosophers?
+\end{itemize}
+\end{block}
+\visible<2->{
+\begin{itemize}
+ \item Philosopher may eat only if he has two forks.
+ \item Every philosopher eat infinite number of times.
+ \item Rene Descartes eat and think infinite number of times. 
+\end{itemize}
+} 
+\visible<3->{\begin{block}{}
+  How to specify the above properties?
+\end{block}}
+ }
+\end{frame}
+
+\begin{frame}{Automaton}
+\Margines{
+Traces are like a language, so we can try with automata.
+
+Let $\Sigma$ be a set of letters (a finite alphabet).
+
+\begin{block}{Definition}
+Automaton is an ordered 5-tuple $A=(S,I,F, R, L)$ where:
+\begin{enumerate}
+ \item $S$ is a finite set of states,
+ \item $I$ is a set of initial states, $I \subseteq S,$
+ \item $F$ is a set of accepting states, $F \subseteq S,$
+ \item $R$ is a transition relation $R \subseteq S \times S$,
+ \item $L$ is a labeling (or interpretation) function $L: R\rightarrow \Sigma$.
+ \end{enumerate}
+\end{block}
+
+\alt<3>{
+\begin{block}{\red{Problem}}
+ Traces are infinite words and words accepted by a nondeterministic automaton are finite.
+\end{block}}
+{\visible<2->{\begin{block}{Definition}
+A language of an automaton $A$ is a set of words $\subseteq \Sigma^*$ such that they can be read along 
+a path from an initial state to a final state.
+\end{block}
+}}
+}
+\end{frame}
+
+\begin{frame}{Characterisations of languages of infinite words}
+ \Margines{
+ Let's try to define automata on infinite words.
+ \begin{itemize}
+  \item<2-> Attempt 1: concatenate word with $\Sigma^\omega$.
+  \item<3-> Attempt 2: an infinite word is accepted if from some moment a run stays only in accepting states.
+  \item<4-> Attempt 3: Buchi\ automaton, word is accepted if it visits accepting states infinitely often.
+  \item<5-> Attempt 4: A generalised Buchi\ automaton.
+ \end{itemize} 
+\visible<5->{\vspace{-0.3cm}\begin{block}{Definition}
+A generalised \Buchi\ automaton is an ordered 5-tuple $A=(S,I,F, R, L)$ where:
+\begin{enumerate}
+ \only<5>{\item $S$ is a finite set of states,
+ \item $I$ is a set of initial states, $I \subseteq S,$}
+ \item $F$ is a finite set of sets $\{F_1\ldots F_k\}$ of accepting states, $F_i \subseteq S,$
+ \only<5>{\item $R$ is a transition relation $R \subseteq S \times S$,
+ \item $L$ is a labelling (or interpretation) function $L: R\rightarrow \Sigma$.}
+ \end{enumerate}
+\end{block}
+} 
+\visible<7>{\begin{block}{Definition}
+A word is accepted if it visits infinitely often states in $F_i$ for every $0<i\leq k.$ 
+\end{block}}
+}
+\end{frame}
+
+\begin{frame}{An exercise}
+\Margines{
+$\Sigma= \{a,b\}.$
+  \begin{enumerate}
+    \item<2-> Infinite number of $a$.
+    \item<3-> Finite number of $a$
+    \item<4-> Number of $b$ is infinite and number of $a$ between every two $b$ is divisible by $3.$
+    \item<5-> Number of $a$ between every two $b$ is divisible by $3.$ 
+    \item<6-> Number of $b$ is infinite and only finitely many times the number of $a$ between every two consecutive $b$ is divisible by $3.$
+    \item<7-> Number of $b$ is finite and number of $a$ between every two consecutive $b$ is divisible by $3.$
+    \item<8-> Number of $b$ is finite and number of $a$ between any two $b$ is not divisible by $3$.
+   \end{enumerate}
+}
+\end{frame}
+
+
+\begin{frame}{\Buchi\ languages}
+\Margines{
+\begin{lemma}
+ For a given Kripke structure $S$ there is a \Buchi\ automaton $A$ such that:
+ $$\lang{A}=\trace{S}.$$
+\end{lemma}
+
+\visible<2->{
+\begin{block}{Lemma}
+ Sets of languages accepted by \Buchi\ automata and generalised \Buchi\ automata are the same.
+\end{block}}
+
+\visible<3->{\begin{block}{Lemma}
+ \Buchi\ languages are closed under:
+ \begin{enumerate}
+  \item Union,
+  \item Intersection.
+  \item Complement. (We will not do this)
+  \item Determinisation does not work. (We need to extend the model)
+ \end{enumerate}
+\end{block}}
+}
+\end{frame}
+
+
+
+\begin{frame}{LTL}
+\Margines{
+\begin{block}{}
+Automata are not very convenient to write, it would be better to have some query language (logic).  
+\end{block}
+
+\begin{block}{Definition}
+ An $LTL$ formula $\phi$ is generated according a following rules:
+ $$\phi \rightarrow true | p_i\in \AProp | \phi_1\land \phi_2 | \neg \phi_1 | X \phi_{1} | \phi_1 U \phi_2 $$
+\end{block}
+}
+\end{frame}
+
+
+\begin{frame}{Semantics of LTL}
+\Margines{
+\begin{tikzpicture}[shorten >=1pt,->]
+  \tikzstyle{vertex}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+
+  \node[] (zero) at (-1,0) {$\ $};
+  \foreach \name/\p/\x in {1/p_1 /1, 2/p_2/2, 3/p_1 p_2/3, 4/p_2/4, 5/p_3/5, 6/p_2/6, 7/p_1 p_3/7}
+    \node[vertex] (G-\name) at (\x,0) {$\p$};
+    
+    \node[] (G-kropki) at (8,0) {$\ldots$};
+
+  \foreach \from/\to in {1/2,2/3,3/4,3/4,4/5, 5/6, 6/7, 7/kropki}
+    \draw (G-\from) -> (G-\to);
+\end{tikzpicture}
+
+\begin{itemize}
+ \item $true \iff true$.
+ \item $p_1 \iff p_1\text{ holds at position 0}.$ 
+ \item $p_2 \iff p_2\text{ holds at position 0}.$ 
+ \item $p_1 \land p_2 \iff p_1\text{ and }p_2\text{ holds at position 0} .$ 
+ \item $\neg p_2$ $\iff p_2\text{ does not hold at position 0} .$ 
+ \item $X p_2 \iff p_2\text{ holds at position 1} .$ 
+ \item $XX (p_1\land p_2) \iff p_2\text{ and } p_1\text{ holds at position 2}.$ 
+ \item $\neg (\neg p_1 \land \neg p_2) U p_3$ $\iff \text{ there is } 0\leq j \text{ such that }
+ p_3\text{ holds at position j and }\neg (\neg p_1 \land \neg p_2) \text{ holds for all } 0\leq i<j.$ 
+\end{itemize}
+
+}
+\end{frame}
+
+\begin{frame}{Exercise}
+\Margines{
+ How to express:
+ \begin{enumerate}
+ \item Finally there will be a state in which $p_2$ holds.\par
+ \visible<2->{$F p_2$}
+ \item<3-> Every state along the path satisfy $p_2$.\par
+ \visible<4->{$G p_2$}
+ \item<5-> If $p_2$ holds at the state with index $2$ then $p_3 \lor p_1$ holds in the state with index $4$.
+ 
+ \item<6-> If in some state $p_1$ is satisfied then in the future $p_2$ has to be satisfied. 
+ \end{enumerate}
+
+} 
+\end{frame}
+
+
+\begin{frame}{How to verify LTL formula?} 
+\Margines{
+\begin{block}{Lemma}
+Let $\words{\phi}$ denotes a set of words that satisfy the LTL formula $\phi$.
+For a given LTL formula $\phi$ one can construct an exponential size \Buchi\ automaton $B$ recognising exactly the same set of words, i.e.
+$$\lang{B}= \words{\phi}$$
+\end{block}
+\begin{enumerate}
+ \item Build an automaton $A$ for the Kripke structure.
+ \item Build an automaton $B$ for $\phi$ an LTL formula,\par
+ or build an automaton $B$ for $\neg \phi$.
+ \item Check nonemptiness of $\lang{A}\cap\lang{B}.$
+ \end{enumerate}
+
+} 
+\end{frame}
+
+
+\begin{frame}{How to verify LTL formula?} 
+\Margines{
+\begin{block}{Lemma}
+Let $\words{\phi}$ denotes a set of words that satisfy the LTL formula $\phi$.
+For a given LTL formula $\phi$ one can construct an exponential size \Buchi\ automaton $B$ recognising exactly the same set of words, i.e.
+$$\lang{B}= \words{\phi}$$
+\end{block}
+
+} 
+\end{frame}
+
+
+\begin{frame}{Bibliography}
+ \Margines{
+ Units from 3 to 8 from 
+ 
+	\url{https://www.youtube.com/channel/UCUXDMaaobCO1He1HBiFZnPQ/videos}%{https://www.youtube.com/channel/UCUXDMaaobCO1He1HBiFZnPQ}
+ 
+There are a lot of videos first one is "A problem in concurrency".
+
+ }
+\end{frame}
+
+
+
+\end{document}
