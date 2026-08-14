@@ -19,7 +19,6 @@
 
 
 \usepackage[utf8]{inputenc}
-\usepackage{default}
 
 \useinnertheme[shadow=true]{rounded}
 
@@ -75,8 +74,9 @@ Theoretical aspects of concurrency\\
 \end{center}
 
 \begin{itemize}
- \item My email: piotrek.hofman@gmail.com
- \item My office: 4580
+ \item My email: piotr.hofman@uw.edu.pl
+ \item My office: CENT 3.109
+ \item Tutorials by: Vaios Michalakis
 \end{itemize}
 
 
@@ -85,13 +85,18 @@ Theoretical aspects of concurrency\\
 
 
 \begin{frame}{Outline}
+
+XXX
 \Margines{\begin{enumerate}
- \item How to specify properties of a system? 
+
+
+ \item How to specify properties of a system?
  \begin{itemize}
   \item LTL.
   \item CTL.
   \item Bisimulation.  
  \end{itemize}
+
  \item How to model a system?
  \begin{itemize}
   \item Process algebra.
@@ -104,25 +109,23 @@ Theoretical aspects of concurrency\\
 
 \begin{frame}{Assessment methods and assessment criteria}
 \Margines{
-\vspace{-0.5cm}
-\begin{block}{Laboratory}
- Two projects evaluated from 0 to 5:
-\begin{enumerate}
- \item Modelling (Promela and Spin). 
- \item Verification (Coverability in Petri Nets).
-\end{enumerate}
-\end{block}
 
-\begin{block}{Oral exam 0 up to 15 point}
-In the end of the semester I will provide a list of questions that may appear on the exam.  
+
+\begin{block}{Oral exam}
+\begin{itemize}
+\item  in the end of the semester I will provide a list of questions that may appear on the exam.
+\item Oral exam, $3$ random questions from the list, each evaluated form 0 to 5.
+\end{itemize}
+
+
 \end{block}
 \begin{itemize}
- \item $0-13.5 \leftrightarrow2$
- \item $13.5- 17.5 \leftrightarrow3$
- \item $17.5 - 19.5 \leftrightarrow3+$
- \item $15.5 - 21.5 \leftrightarrow4$
- \item $21.5 - 23 \leftrightarrow4+$
- \item $23 - 25 \leftrightarrow5$
+ \item $[0-8] \leftrightarrow2$
+ \item $(8- 10] \leftrightarrow3$
+ \item $(10 - 11.5] \leftrightarrow3+$
+ \item $(11.5 - 13] \leftrightarrow4$
+ \item $(13 - 14] \leftrightarrow4+$
+ \item $(14 - 15] \leftrightarrow5$
 \end{itemize}
 }
 
@@ -238,9 +241,145 @@ Consider philosophers working according a following schema:
 }
 \end{frame}
 
+\begin{frame}{How do we observe the system / interact with the system}
+\Margines{
+For now only the symplest view.
+
+\begin{block}{Logs}
+A system while it is running record its acctions in the form of logs.
+\end{block}
+
+\begin{block}{Debuger}
+Step by step inspect its configuration (variables).
+\end{block}
+
+Problems:
+\begin{itemize}
+\item We can not record every action, and inspect every variable as this is too many informations.
+\item Every measurment may affect the system. For example time of execution.
+\end{itemize}
+
+
+}
+\end{frame}
+
+
+\begin{frame}{Model}
+ \Margines{
+ \begin{block}{Model (Oxford dictionary I.8.a.)}
+A simplified or idealized description or conception of a particular system, situation, or process, often in mathematical terms, that is put forward as a basis for theoretical or empirical understanding, or for calculations, predictions, etc.; a conceptual or mental representation of something.
+ \end{block}
+
+
+\begin{block}{Log}
+ We do not record every action. Some actions are silent.
+\end{block}
+
+\begin{block}{Debuger perespective}
+ We can not observe all variables with all granularity.
+\end{block}
+}
+\end{frame}
+
+
+
+
+\begin{frame}{Kripke structures and labelled transition systems}
+\Margines{
+\begin{block}{General concept:}
+\begin{itemize}
+ \item System is always in some configuration and configuration may evolve.
+ \item Configurations are vertices.
+ \item Possible ways of evolution are arrows.
+\end{itemize}
+
+\end{block}
+
+\DwieKol{0.47}{0.47}{
+\mojBlock{0.9}{block}{
+Kripke}{
+Configurations are labbeled.
+}}{
+\mojBlock{0.99}{block}{
+LTS}{
+Arrows i.e. actions are named.
+}}
+
+
+}
+\end{frame}
+
+
+
+\begin{frame}{Labelled Transition Systems (LTS)}
+\Margines{
+
+
+\visible<1->{\begin{block}{Definition}\begin{scriptsize}
+ A Labelled Transition System (LTS) is a 3-tuple $T = (S, A, \rightarrow)$ consisting of:
+\begin{enumerate}
+ \item a set of states $S$ (possibly infinite),
+ \item a set of actions (or labels) $A$,
+ \item a transition relation $\rightarrow \subseteq S \times A \times S$.
+ \end{enumerate}
+ We write $s \xrightarrow{a} s'$ to denote $(s, a, s') \in \rightarrow$.
+\end{scriptsize}
+\end{block}}
+
+\visible<2->{\begin{block}{Definition}\begin{scriptsize}
+A \emph{run} in an LTS is a sequence of states and actions:
+$$s_1 \xrightarrow{a_1} s_2 \xrightarrow{a_2} s_3 \xrightarrow{a_3} \ldots$$
+such that $(s_i, a_i, s_{i+1}) \in \rightarrow$ for all $i \geq 1$.
+
+A \emph{trace} is the sequence of actions observable in a run:
+$$a_1, a_2, a_3, \ldots$$
+The set of all traces of all possible infinite runs of an LTS $T$ is called \emph{Traces} of $T$ and denoted $\trace{T}$.
+\end{scriptsize}
+
+\end{block}}
+
+}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Example: Simple Communication Protocol}
+\Margines{
+  \vspace{1cm}
+
+  \begin{tikzpicture}[shorten >=1pt,->]
+  \tikzstyle{vertex}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+
+  \node (zero) at (-3,0) {$\ $};
+  \node[vertex] (s0) at (0,0) {$s_0$};
+  \node[vertex] (s1) at (2.5,1.5) {$s_1$};
+  \node[vertex] (s2) at (0,-2) {$s_2$};
+  \node[vertex] (s3) at (5,0) {$s_3$};
+
+  \draw (s0) -> (s1)  node[midway, left] {$send$};
+  \draw (s0) to[bend left] (s2)  node[ right ] {$abort$};
+  \draw (s1) -> (s3) node[midway, above] {$ack$};
+  \draw (s2) to[bend left] (s0) node[ left] {$reset$};
+  \draw (s3) -> (s0) node[midway, below] {$done$};
+\end{tikzpicture}
+
+\visible<2->{\begin{itemize}
+ \item States: $\{s_0, s_1, s_2, s_3\}$
+ \item Actions: $A = \{send, ack, abort, reset, done\}$
+ \item Traces: $send, ack, done$ or $abort, reset, send, ack, done$ or \ldots
+\end{itemize}}
+}
+\end{frame}
+
+
+
+
+
 \begin{frame}{Kripke structures}
 \Margines{
-Let $\AProp$ be a set of atomic propositions, i.e. boolean expressions over variables, 
+Let $\AProp$ be a set of atomic propositions, i.e. boolean expressions over variables,
 constants and predicate symbols.
 \visible<2->{\begin{block}{Definition}
  A Kripke structure over $\AProp$ is a 4-tuple $M = (S, I, R, L)$ consisting of:
@@ -258,7 +397,7 @@ constants and predicate symbols.
 \end{frame}
 
 
-\begin{frame}{Runs}
+\begin{frame}{Traces}
 \Margines{
 \begin{definition}
 For a given run we define a \emph{trace} as follows:
@@ -273,33 +412,95 @@ $$\trace{s_1,t_1,s_2,t_2,s_3\ldots}= L(s_1),L(s_2),L(s_3)\ldots.$$
 }
 \end{frame}
 
-\begin{frame}{Runs}
-\Margines{
-\alt<1-5>{\visible<2->{\begin{block}{}
-The first concept is to analyse a system by investigating the set of its traces. 
-\end{block}
-\begin{itemize}
-\item<3-> Suppose that $S$ is a Kripke structure that is a model of a given system.
-\item<3-> Let $\setX$ be a set of infinite words that are witnesses of an error, say some possible memory corruption.
 
-\item<4-> If $\setX\cap \trace{S}=\emptyset $ then we know that the system does not allow for data corruption.
-\item<5-> Almost, it is under the assumption that model is correct and precise enough.
+\begin{frame}{Pros and cons of LTS and Kripke structures}
+\Margines{
+\begin{block}{Pros}
+\begin{itemize}
+ \item<1-> Are very simple and intuitive.
+ \item<1-> Can be used to model a system.
+ \item <1-> Useful for defining semantics of other modelling formalisms.
 \end{itemize}
-}}{
+\end{block}
+\begin{block}{Cons}
+\begin{itemize}
+ \item<2-> Are not very convenient to write.
+ \item<2-> Are not very convenient to read.
+ \item<2-> Models are very big.
+ \item<3-> They do not explicitly show imperfect information.
+ \end{itemize}
+\end{block}
+}
+\visible<4->{
+But for a few first lectures we will use them as a model of systems.
+}
+\end{frame}
+
+
+\begin{frame}{The language perspective}
+\Margines{
+\alt<6-8>
+{
 \begin{block}{}
-We may also partially specify a system by defining a set of correct behaviours. 
+We may also partially specify a system by defining a set of correct behaviours.
 \end{block}
 
 \begin{itemize}
 \item<7-> Suppose that $S$ is a Kripke structure that is a model of a given system.
 \item<7-> Let $\setX$ be a set of infinite words that are correct behaviours.
 
-\item<8-> If $\setX\supseteq \trace{S} $ then we know that the system does not allow data corruption.
+\item<8> If $\setX\supseteq \trace{S} $ then we know that the system does not allow data corruption.
 \end{itemize}
 }
+{\visible<1->{\begin{block}{}
+The first concept is to analyse a system by investigating the set of its traces.
+\end{block}
+\begin{itemize}
+\item<2-> Suppose that $S$ is a Kripke structure that is a model of a given system.
+\item<3-> Let $\setX$ be a set of infinite words that are witnesses of an error, say some possible memory corruption.
+
+\item<4-> If $\setX\cap \trace{S}=\emptyset $ then we know that the system does not allow for data corruption.
+\item<5-> Almost, it is under the assumption that model is correct and precise enough.
+\end{itemize}
+}}
 }
-\visible<8>{aa}
 \end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \begin{frame}{Exercises}
  \Margines{
@@ -314,13 +515,13 @@ We may also partially specify a system by defining a set of correct behaviours.
 \begin{itemize}
  \item Philosopher may eat only if he has two forks.
  \item Every philosopher eat infinite number of times.
- \item Rene Descartes eat and think infinite number of times. 
+ \item Rene Descartes eat and think infinite number of times.
 \end{itemize}
-} 
+}
 \visible<3->{\begin{block}{}
   How to specify the above properties?
 \end{block}}
- }
+}
 \end{frame}
 
 \begin{frame}{Automaton}
@@ -345,7 +546,7 @@ Automaton is an ordered 5-tuple $A=(S,I,F, R, L)$ where:
  Traces are infinite words and words accepted by a nondeterministic automaton are finite.
 \end{block}}
 {\visible<2->{\begin{block}{Definition}
-A language of an automaton $A$ is a set of words $\subseteq \Sigma^*$ such that they can be read along 
+A language of an automaton $A$ is a set of words $\subseteq \Sigma^*$ such that they can be read along
 a path from an initial state to a final state.
 \end{block}
 }}
@@ -360,7 +561,7 @@ a path from an initial state to a final state.
   \item<3-> Attempt 2: an infinite word is accepted if from some moment a run stays only in accepting states.
   \item<4-> Attempt 3: Buchi\ automaton, word is accepted if it visits accepting states infinitely often.
   \item<5-> Attempt 4: A generalised Buchi\ automaton.
- \end{itemize} 
+ \end{itemize}
 \visible<5->{\vspace{-0.3cm}\begin{block}{Definition}
 A generalised \Buchi\ automaton is an ordered 5-tuple $A=(S,I,F, R, L)$ where:
 \begin{enumerate}
@@ -371,12 +572,13 @@ A generalised \Buchi\ automaton is an ordered 5-tuple $A=(S,I,F, R, L)$ where:
  \item $L$ is a labelling (or interpretation) function $L: R\rightarrow \Sigma$.}
  \end{enumerate}
 \end{block}
-} 
+}
 \visible<7>{\begin{block}{Definition}
-A word is accepted if it visits infinitely often states in $F_i$ for every $0<i\leq k.$ 
+A word is accepted if it visits infinitely often states in $F_i$ for every $0<i\leq k.$
 \end{block}}
 }
 \end{frame}
+
 
 \begin{frame}{An exercise}
 \Margines{
@@ -385,7 +587,7 @@ $\Sigma= \{a,b\}.$
     \item<2-> Infinite number of $a$.
     \item<3-> Finite number of $a$
     \item<4-> Number of $b$ is infinite and number of $a$ between every two $b$ is divisible by $3.$
-    \item<5-> Number of $a$ between every two $b$ is divisible by $3.$ 
+    \item<5-> Number of $a$ between every two $b$ is divisible by $3.$
     \item<6-> Number of $b$ is infinite and only finitely many times the number of $a$ between every two consecutive $b$ is divisible by $3.$
     \item<7-> Number of $b$ is finite and number of $a$ between every two consecutive $b$ is divisible by $3.$
     \item<8-> Number of $b$ is finite and number of $a$ between any two $b$ is not divisible by $3$.
@@ -423,7 +625,7 @@ $\Sigma= \{a,b\}.$
 \begin{frame}{LTL}
 \Margines{
 \begin{block}{}
-Automata are not very convenient to write, it would be better to have some query language (logic).  
+Automata are not very convenient to write, it would be better to have some query language (logic).
 \end{block}
 
 \begin{block}{Definition}
@@ -442,7 +644,7 @@ Automata are not very convenient to write, it would be better to have some query
   \node[] (zero) at (-1,0) {$\ $};
   \foreach \name/\p/\x in {1/p_1 /1, 2/p_2/2, 3/p_1 p_2/3, 4/p_2/4, 5/p_3/5, 6/p_2/6, 7/p_1 p_3/7}
     \node[vertex] (G-\name) at (\x,0) {$\p$};
-    
+
     \node[] (G-kropki) at (8,0) {$\ldots$};
 
   \foreach \from/\to in {1/2,2/3,3/4,3/4,4/5, 5/6, 6/7, 7/kropki}
@@ -451,14 +653,14 @@ Automata are not very convenient to write, it would be better to have some query
 
 \begin{itemize}
  \item $true \iff true$.
- \item $p_1 \iff p_1\text{ holds at position 0}.$ 
- \item $p_2 \iff p_2\text{ holds at position 0}.$ 
- \item $p_1 \land p_2 \iff p_1\text{ and }p_2\text{ holds at position 0} .$ 
- \item $\neg p_2$ $\iff p_2\text{ does not hold at position 0} .$ 
- \item $X p_2 \iff p_2\text{ holds at position 1} .$ 
- \item $XX (p_1\land p_2) \iff p_2\text{ and } p_1\text{ holds at position 2}.$ 
+ \item $p_1 \iff p_1\text{ holds at position 0}.$
+ \item $p_2 \iff p_2\text{ holds at position 0}.$
+ \item $p_1 \land p_2 \iff p_1\text{ and }p_2\text{ holds at position 0} .$
+ \item $\neg p_2$ $\iff p_2\text{ does not hold at position 0} .$
+ \item $X p_2 \iff p_2\text{ holds at position 1} .$
+ \item $XX (p_1\land p_2) \iff p_2\text{ and } p_1\text{ holds at position 2}.$
  \item $\neg (\neg p_1 \land \neg p_2) U p_3$ $\iff \text{ there is } 0\leq j \text{ such that }
- p_3\text{ holds at position j and }\neg (\neg p_1 \land \neg p_2) \text{ holds for all } 0\leq i<j.$ 
+ p_3\text{ holds at position j and }\neg (\neg p_1 \land \neg p_2) \text{ holds for all } 0\leq i<j.$
 \end{itemize}
 
 }
@@ -473,15 +675,15 @@ Automata are not very convenient to write, it would be better to have some query
  \item<3-> Every state along the path satisfy $p_2$.\par
  \visible<4->{$G p_2$}
  \item<5-> If $p_2$ holds at the state with index $2$ then $p_3 \lor p_1$ holds in the state with index $4$.
- 
- \item<6-> If in some state $p_1$ is satisfied then in the future $p_2$ has to be satisfied. 
+
+ \item<6-> If in some state $p_1$ is satisfied then in the future $p_2$ has to be satisfied.
  \end{enumerate}
 
-} 
+}
 \end{frame}
 
 
-\begin{frame}{How to verify LTL formula?} 
+\begin{frame}{How to verify LTL formula?}
 \Margines{
 \begin{block}{Lemma}
 Let $\words{\phi}$ denotes a set of words that satisfy the LTL formula $\phi$.
@@ -495,11 +697,11 @@ $$\lang{B}= \words{\phi}$$
  \item Check nonemptiness of $\lang{A}\cap\lang{B}.$
  \end{enumerate}
 
-} 
+}
 \end{frame}
 
 
-\begin{frame}{How to verify LTL formula?} 
+\begin{frame}{How to verify LTL formula?}
 \Margines{
 \begin{block}{Lemma}
 Let $\words{\phi}$ denotes a set of words that satisfy the LTL formula $\phi$.
@@ -507,16 +709,16 @@ For a given LTL formula $\phi$ one can construct an exponential size \Buchi\ aut
 $$\lang{B}= \words{\phi}$$
 \end{block}
 
-} 
+}
 \end{frame}
 
 
 \begin{frame}{Bibliography}
  \Margines{
- Units from 3 to 8 from 
- 
+ Units from 3 to 8 from
+
 	\url{https://www.youtube.com/channel/UCUXDMaaobCO1He1HBiFZnPQ/videos}%{https://www.youtube.com/channel/UCUXDMaaobCO1He1HBiFZnPQ}
- 
+
 There are a lot of videos first one is "A problem in concurrency".
 
  }

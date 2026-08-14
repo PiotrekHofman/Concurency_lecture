@@ -1,0 +1,115 @@
+\usepackage{mathrsfs}
+
+
+
+
+
+% Definitions
+\newcommand{\eqby}[1]{\stackrel{\text{{\tiny{#1}}}}{=}}
+\newcommand{\eqdef}{\eqby{def}}
+\newcommand{\project}[1]{\upharpoonright_{#1}}
+\renewcommand{\vec}[1]{\text{\boldmath$\displaystyle{#1}$}}
+%\newcommand{\fun}[1]{\mathbf{#1}}
+%\newcommand{\step}[1]{\xrightarrow{#1}}      % step
+
+\newcommand{\dom}[1]{\mathit{Dom}(#1)}
+\newcommand{\pwle}[1][]{\le_{#1}}
+\newcommand{\pwge}[1][]{\ge_{#1}}
+\newcommand{\embedsin}[1][]{\sqsubseteq_{#1}}
+\newcommand{\eqembeds}[1][]{\equiv_{#1}}
+\newcommand{\embeds}[1][]{\sqsupseteq_{#1}}
+\newcommand{\net}[1]{\mathcal{#1}}
+\newcommand{\reachset}[1]{\mathit{Reach}(#1)}
+\newcommand{\cover}[1]{\mathit{Cover}(#1)}
+\newcommand{\denotation}[1]{{\downarrow}#1}%\llbracket#1\rrbracket}
+\newcommand{\proj}[1]{[#1]}
+\newcommand{\DAcc}[1]{{\operatorname{depth-acc}(#1)}}
+\newcommand{\WAcc}[2][]{{\operatorname{width-acc}_{#1}(#2)}}
+\newcommand{\Confs}{\mathit{Confs}}
+\newcommand{\acc}[1]{\color{red} acc(#1)}
+\newcommand{\clover}[1][f]{\mathit{Clover}(#1)}
+
+% Natbib
+\usepackage[numbers]{natbib}\renewcommand{\cite}{\citep}
+\bibliographystyle{natsplncs}
+\def\bibfont{\small}
+\setlength\bibsep{0pt}
+\makeatletter\def\NAT@spacechar{~}%
+\renewenvironment{thebibliography}[1]
+     {\section*{\refname}
+      \def\@biblabel##1{##1.}
+      \small
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \if@openbib
+              \advance\leftmargin\bibindent
+              \itemindent -\bibindent
+              \listparindent \itemindent
+              \parsep \z@
+            \fi
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \if@openbib
+        \renewcommand\newblock{\par}%
+      \else
+        \renewcommand\newblock{\hskip .11em \@plus.33em \@minus.07em}%
+      \fi
+      \sloppy\clubpenalty4000\widowpenalty4000%
+      \sfcode`\.=\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+%\bibliographystyle{plain}
+
+% proofs
+\makeatletter
+\let\proof\@undefined
+\let\endproof\@undefined
+\let\claim\@undefined
+\let\endclaim\@undefined
+\makeatother
+
+% DATA
+\newcommand{\hvector}[2]{\begin{matrix}
+  #1 \\
+  #2 \\
+ \end{matrix}}
+ 
+
+ 
+\newcommand{\tran}[4]{\tiny{\big[\textcolor{red}{\hvector{#1}{#2}}\hvector{#3}{#4}\big]}} 
+\newcommand{\AccD}{\footnotesize D}
+\newcommand{\AccW}{\footnotesize W}
+
+\newcommand{\accel}[2]{\text{acc}(#1, #2)}
+
+\newcommand{\configl}[6]{\scriptsize{\big[\textcolor{red}{\hvector{#1}{#2}}\hvector{#3}{#4}\big|\hvector{#5}{#6}\big]}}
+
+%\newcommand{\hof}[2]{\textcolor{blue}{#1} \textcolor{red}{#2}}
+
+
+
+
+\newcommand{\UDPN}{UDPN}
+\newcommand{\textUDPN}{unordered data Petri net}
+\newcommand{\TextUDPN}{Unordered data Petri net}
+\newcommand{\RestSup}[2]{{\cal M}_{#1,#2}}
+\newcommand{\simpleideal}[1][f,\vec I]{\langle #1\rangle}
+
+
+% for examples
+%\slnote{I've defined macros for vectors and ideals in dimension 2, to be used in examples}
+\newcommand{\vect}[2]{{\scriptsize\big[\begin{matrix}#1\\#2\end{matrix}\big]}}
+%\newcommand{\ideal}[4]{{\scriptsize\big[\begin{matrix}#1\\#2\end{matrix}\big|\begin{matrix}#3\\#4\end{matrix}\big]}}
+\newcommand{\ideal}[4]{{\big[\begin{smallmatrix}#1\\#2\end{smallmatrix}\big|\begin{smallmatrix}#3\\#4\end{smallmatrix}\big]}}
+\newcommand{\trans}[2]{{\big[\begin{smallmatrix}#1\\#2\end{smallmatrix}\big]}}
+%
+
+%% decision problems
+
+
+
