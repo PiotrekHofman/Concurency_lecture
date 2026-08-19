@@ -2,35 +2,27 @@
 
 \usepackage{xcolor}
 \usepackage{color}
-
 \usepackage{graphicx}
 \def\xcolorversion{2.00}
 \def\xkeyvalversion{1.8}
-\setbeamersize{text margin left=0pt,text margin right=0pt} 
+
+\setbeamersize{text margin left=0pt,text margin right=0pt}
 
 \makeatletter
 \newcommand*\bigcdot{\mathpalette\bigcdot@{.9}}
 \newcommand*\bigcdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
 \makeatother
 
-
 \usepackage{TIKZ_Macra}
 \usepackage{xparse}
-
-
 \usepackage[utf8]{inputenc}
 
 \useinnertheme[shadow=true]{rounded}
-
 \setbeamercolor{block title}{use=structure,fg=structure.fg,bg=structure.fg!30!bg}
-%\setbeamercolor{block title}{fg=red}
-
 \setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!50!bg}
-
 \setbeamercolor{block title example}{use=example text,fg=example text.fg,bg=example text.fg!30!bg}
 \setbeamercolor{block body example}{parent=normal text,use=block title example,bg=block title example.bg!50!bg}
 
-%\usepackage{transparent}
 \usepackage[most]{tcolorbox}
 \usepackage{lmodern}
 \usepackage{mathtools}
@@ -39,175 +31,693 @@
 \usepackage{latexsym}
 \usepackage{hyperref}
 
+% Needed by the figures below.
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
 
 \newtcbox{\mybox}{blank, on line, opacitytext=0.5}
+
 \usepackage{changepage}
-
 \usepackage{Moje_makra}
-
 \usepackage{Moje_Zmienne}
-
 \usepackage{Zbiory_i_konfiguracje}
-
 \usepackage{Complexity}
-
 \usepackage{Sieci}
 
+\tikzset{
+  every state/.style={minimum size=7mm},
+  >=Stealth
+}
 
 \begin{document}
 
- 
-
-
-\begin{frame}{An Buchy automaton}
+%----------------------------------------------------------------------
+\begin{frame}{Basic definitions: labelled transition systems}
 \Margines{
-$\Sigma= \{a,b\}.$
-  \begin{enumerate}
-    \item<2-> Infinite number of $a$.
-    \item<3-> Finite number of $a$
-    \item<4-> Number of $b$ is infinite and number of $a$ between every two $b$ is divisible by $3.$
-    \item<5-> Number of $a$ between every two $b$ is divisible by $3.$
-    \item<6-> Number of $b$ is infinite and only finitely many times the number of $a$ between every two consecutive $b$ is divisible by $3.$
-    \item<7-> Number of $b$ is finite and number of $a$ between every two consecutive $b$ is divisible by $3.$
-    \item<8-> Number of $b$ is finite and number of $a$ between any two $b$ is not divisible by $3$.
-   \end{enumerate}
+\tiny
+\begin{definition}
+A \emph{labelled transition system} (LTS) is a tuple
+\[
+  \mathcal T=(C,\Sigma,\longrightarrow,c_0),
+\]
+where $C$ is a set of configurations, $\Sigma$ is a finite alphabet,
+$c_0\in C$, and
+\[
+  \longrightarrow\ \subseteq C\times\Sigma\times C.
+\]
+We write $c\xrightarrow{a}c'$ for $(c,a,c')\in\longrightarrow$.
+\end{definition}
+
+An \emph{infinite run} is a sequence
+\[
+ c_0\xrightarrow{a_0}c_1\xrightarrow{a_1}c_2\xrightarrow{a_2}\cdots,
+\]
+and its \emph{trace} is the word $a_0a_1a_2\cdots\in\Sigma^\omega$.
+
+\medskip
+For an operational model $M$, its \emph{induced LTS} is obtained by taking
+the configurations of $M$ as vertices and the one-step operational
+semantics as labelled edges.
 }
 \end{frame}
 
-
-\begin{frame}{\Buchi\ languages}
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 1: one-counter systems}
 \Margines{
-\begin{lemma}
- For a given Kripke structure $S$ there is a \Buchi\ automaton $A$ such that:
- $$\lang{A}=\trace{S}.$$
+\tiny
+A \emph{one-counter VASS} consists of a finite set $Q$ of control states
+and transitions
+\[
+  p\xrightarrow{a,d}q,\qquad d\in\mathbb Z.
+\]
+Its configurations are $(q,n)\in Q\times\mathbb N$, and
+\[
+  (p,n)\xrightarrow{a}(q,n+d)
+\]
+is enabled iff $n+d\geq 0$.
+
+\begin{enumerate}
+\item Consider the one-state system
+\[
+q\xrightarrow{\mathsf{inc},+1}q,
+\qquad
+q\xrightarrow{\mathsf{dec},-1}q.
+\]
+Draw the reachable part of the induced LTS from $(q,0)$ up to counter
+value $4$.
+
+\item Give the same system the $\mathbb Z$-semantics, i.e.\ let the counter
+range over $\mathbb Z$ and remove the non-negativity test. Draw the part
+between counter values $-3$ and $3$.
+
+\item Compare the two trace sets. Which traces are removed by the
+$\mathbb N$-semantics?
+\end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}[->,node distance=22mm,semithick]
+  \node[state,initial] (q) {$q$};
+  \path
+    (q) edge[loop above] node {$\mathsf{inc},+1$} (q)
+    (q) edge[loop below] node {$\mathsf{dec},-1$} (q);
+\end{tikzpicture}
+\end{center}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 2: zero tests}
+\Margines{
+\tiny
+A \emph{one-counter automaton} extends a one-counter VASS by allowing
+transitions guarded by a test such as $n=0$ or $n>0$.
+
+Consider:
+\[
+\begin{array}{lll}
+q\xrightarrow{\mathsf{inc},+1}q, &&
+q\xrightarrow{\mathsf{dec},-1}q \quad [n>0],\\[1mm]
+q\xrightarrow{\mathsf{zero},0}r \quad [n=0], &&
+r\xrightarrow{\mathsf{reset},0}q.
+\end{array}
+\]
+
+\begin{enumerate}
+\item Draw the part of the induced LTS reachable from $(q,0)$ with
+counter values at most $3$.
+\item Mark all configurations from which action $\mathsf{zero}$ is enabled.
+\item Explain why the zero-test transition cannot be simulated by a
+one-counter VASS transition with the same control graph.
+\end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}[->,node distance=35mm,semithick]
+  \node[state,initial] (q) {$q$};
+  \node[state,right=of q] (r) {$r$};
+  \path
+    (q) edge[loop above] node {$\mathsf{inc},+1$} (q)
+    (q) edge[loop below] node {$\mathsf{dec},-1\ [n>0]$} (q)
+    (q) edge[bend left] node {$\mathsf{zero}\ [n=0]$} (r)
+    (r) edge[bend left] node {$\mathsf{reset}$} (q);
+\end{tikzpicture}
+\end{center}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 3: a pushdown automaton}
+\Margines{
+\tiny
+\begin{definition}
+A \emph{labelled pushdown automaton} (PDA) is a tuple
+\[
+  \mathcal P=(Q,\Sigma,\Gamma,\Delta,q_0,\bot),
+\]
+where $Q$ is a finite set of control states, $\Sigma$ is a finite alphabet,
+$\Gamma$ is a finite stack alphabet, $\bot\in\Gamma$ is the bottom symbol,
+and
+\[
+  \Delta\subseteq Q\times\Gamma\times\Sigma\times Q\times\Gamma^{\leq 2}.
+\]
+A configuration is $(q,w)\in Q\times\Gamma^*$, with the top of the stack
+at the right end. A transition $(p,A,a,q,\beta)\in\Delta$ induces
+\[
+  (p,wA)\xrightarrow{a}(q,w\beta).
+\]
+Thus $\beta=\varepsilon$ pops $A$, $|\beta|=1$ replaces it, and
+$|\beta|=2$ can push one additional symbol. We never pop $\bot$.
+\end{definition}
+
+Let $Q=\{q\}$ and $\Gamma=\{0,1,\bot\}$. From every stack content allow
+$\mathsf{push}_0$ and $\mathsf{push}_1$; allow $\mathsf{pop}$ whenever
+the top symbol is not $\bot$.
+
+\begin{enumerate}
+\item Starting from $(q,\bot)$, draw the induced LTS up to stack height $3$.
+\item Ignore edge directions and identify the underlying graph.
+\item Add a second control state $r$ and transitions that change
+$q\leftrightarrow r$ without changing the stack. Redraw the first two levels.
+\end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}[->,semithick,node distance=14mm and 18mm]
+\node[state] (e) {$\bot$};
+\node[state,below left=of e] (z) {$\bot0$};
+\node[state,below right=of e] (o) {$\bot1$};
+\node[state,below left=of z] (zz) {$\bot00$};
+\node[state,below right=of z] (zo) {$\bot01$};
+\node[state,below left=of o] (oz) {$\bot10$};
+\node[state,below right=of o] (oo) {$\bot11$};
+
+\path
+(e) edge[bend right=8] node[left] {\scriptsize $0$} (z)
+(z) edge[bend right=8] node[right] {\scriptsize pop} (e)
+(e) edge[bend left=8] node[right] {\scriptsize $1$} (o)
+(o) edge[bend left=8] node[left] {\scriptsize pop} (e)
+(z) edge (zz)
+(z) edge (zo)
+(o) edge (oz)
+(o) edge (oo);
+\end{tikzpicture}
+\end{center}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 4: treewidth of a PDA configuration graph}
+\Margines{
+\tiny
+\begin{definition}
+A \emph{tree decomposition} of an undirected graph $G=(V,E)$ is a tree
+$T$ whose nodes are labelled by bags $B_t\subseteq V$ such that:
+\begin{enumerate}
+\item every vertex of $G$ belongs to some bag;
+\item for every edge $\{u,v\}\in E$, some bag contains both $u$ and $v$;
+\item for every $v\in V$, the bags containing $v$ form a connected
+subtree of $T$.
+\end{enumerate}
+Its width is $\max_t |B_t|-1$, and $\operatorname{tw}(G)$ is the minimum
+possible width.
+\end{definition}
+
+\medskip
+Assume the pushdown system is in the normal form from Exercise~3.
+
+\begin{enumerate}
+\item Use the tree $\Gamma^*$ of stack words as the decomposition tree.
+\item For every $w\in\Gamma^*$ define
+\[
+B_w=
+   \bigl(Q\times\{w\}\bigr)
+   \cup
+   \bigcup_{A\in\Gamma} \bigl(Q\times\{wA\}\bigr).
+\]
+Prove that $(B_w)_{w\in\Gamma^*}$ is a tree decomposition of the
+underlying configuration graph.
+\item Deduce the bound
+\[
+ \operatorname{tw}(G)\leq |Q|(|\Gamma|+1)-1.
+\]
+\end{enumerate}
+
+\begin{block}{Courcelle's theorem --- version sufficient here}
+For every fixed $k$ and every fixed MSO sentence $\varphi$, model checking
+$\varphi$ on finite graphs of treewidth at most $k$ is linear in the size
+of the graph (given a suitable tree decomposition).
+\end{block}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 5: an S-system}
+\Margines{
+\tiny
+An \emph{S-system} (or \emph{state machine}) is a Petri net in which every
+transition has exactly one input place and exactly one output place.
+The marking shown below contains two tokens.
+
+\begin{center}
+\begin{tikzpicture}[node distance=18mm and 22mm,semithick]
+\tikzset{
+  pplace/.style={circle,draw,minimum size=7mm,inner sep=0pt},
+  ptrans/.style={rectangle,draw,fill=black,minimum width=2mm,minimum height=7mm,inner sep=0pt}
+}
+\node[pplace] (p1) {$p_1$};
+\node[ptrans,right=of p1] (t1) {};
+\node[pplace,right=of t1] (p2) {$p_2$};
+\node[ptrans,below right=10mm and 10mm of p2] (t2) {};
+\node[pplace,below left=10mm and 10mm of t2] (p3) {$p_3$};
+\node[ptrans,left=of p3] (t3) {};
+\draw[->] (p1)--node[above]{$t_1$}(t1)--(p2);
+\draw[->] (p2)--node[right]{$t_2$}(t2)--(p3);
+\draw[->] (p3)--node[below]{$t_3$}(t3)--(p1);
+\fill ($(p1.center)+(-1.3pt,0)$) circle (1.1pt);
+\fill ($(p2.center)+(-1.3pt,0)$) circle (1.1pt);
+\end{tikzpicture}
+\end{center}
+
+Let a marking be written as $(m(p_1),m(p_2),m(p_3))$.
+
+\begin{enumerate}
+\item List all markings reachable from the initial marking $(1,1,0)$.
+\item Draw the induced LTS. Label every edge by the transition that fires.
+\item Find an invariant of the net that explains why the reachability set is finite.
+\item How would the reachable LTS change if the initial marking contained three
+      tokens in $p_1$ and no tokens elsewhere?
+\end{enumerate}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 6: a T-system}
+\Margines{
+\tiny
+A \emph{T-system} (or \emph{marked graph}) is a Petri net in which every
+place has exactly one input transition and exactly one output transition.
+Consider the following marked T-system.
+
+\begin{center}
+\begin{tikzpicture}[node distance=9mm and 14mm,semithick]
+\tikzset{
+  pplace/.style={circle,draw,minimum size=6mm,inner sep=0pt},
+  ptrans/.style={rectangle,draw,fill=black,minimum width=2mm,minimum height=7mm,inner sep=0pt}
+}
+\node[pplace] (p0) {$p_0$};
+\node[ptrans,right=of p0] (s) {};
+\node[pplace,above right=of s] (p1) {$p_1$};
+\node[pplace,below right=of s] (p2) {$p_2$};
+\node[ptrans,right=of p1] (t1) {};
+\node[ptrans,right=of p2] (t2) {};
+\node[pplace,right=of t1] (q1) {$q_1$};
+\node[pplace,right=of t2] (q2) {$q_2$};
+\node[ptrans,below right=of q1] (j) {};
+\draw[->] (p0)--node[above]{$s$}(s);
+\draw[->] (s)--(p1);
+\draw[->] (s)--(p2);
+\draw[->] (p1)--node[above]{$t_1$}(t1)--(q1);
+\draw[->] (p2)--node[below]{$t_2$}(t2)--(q2);
+\draw[->] (q1)--(j);
+\draw[->] (q2)--(j);
+\draw[->] (j.south) -- ++(0,-7mm) -| node[below,pos=0.55]{$j$} (p0.south);
+\fill ($(p0.center)+(-1.2pt,0)$) circle (1.1pt);
+\end{tikzpicture}
+\end{center}
+
+Initially $p_0$ contains one token and all other places are empty.
+
+\begin{enumerate}
+\item Verify directly from the definition that this net is a T-system.
+\item List all reachable markings and draw the induced LTS.
+\item At which marking are $t_1$ and $t_2$ concurrently enabled?
+      Show the corresponding diamond in the LTS.
+\item Is the net bounded? Is it live? Justify both answers from the LTS.
+\end{enumerate}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 7: a workflow net}
+\Margines{
+\tiny
+A \emph{workflow net} has a unique input place $i$ with no incoming arcs,
+a unique output place $o$ with no outgoing arcs, and every node lies on a
+directed path from $i$ to $o$.
+
+\begin{center}
+\begin{tikzpicture}[node distance=9mm and 14mm,semithick]
+\tikzset{
+  pplace/.style={circle,draw,minimum size=6mm,inner sep=0pt},
+  ptrans/.style={rectangle,draw,fill=black,minimum width=2mm,minimum height=7mm,inner sep=0pt}
+}
+\node[pplace] (i) {$i$};
+\node[ptrans,right=of i] (s) {};
+\node[pplace,above right=of s] (p1) {$p_1$};
+\node[pplace,below right=of s] (p2) {$p_2$};
+\node[ptrans,right=of p1] (t1) {};
+\node[ptrans,right=of p2] (t2) {};
+\node[pplace,right=of t1] (q1) {$q_1$};
+\node[pplace,right=of t2] (q2) {$q_2$};
+\node[ptrans,below right=of q1] (j) {};
+\node[pplace,right=of j] (o) {$o$};
+\draw[->] (i)--node[above]{$s$}(s);
+\draw[->] (s)--(p1);
+\draw[->] (s)--(p2);
+\draw[->] (p1)--node[above]{$t_1$}(t1)--(q1);
+\draw[->] (p2)--node[below]{$t_2$}(t2)--(q2);
+\draw[->] (q1)--(j);
+\draw[->] (q2)--(j);
+\draw[->] (j)--node[above]{$j$}(o);
+\fill ($(i.center)+(-1.2pt,0)$) circle (1.1pt);
+\end{tikzpicture}
+\end{center}
+
+The initial marking contains one token in $i$.
+
+\begin{enumerate}
+\item Verify that the net is a workflow net.
+\item Draw its complete reachability LTS.
+\item Show that from every reachable marking it is possible to reach the
+      final marking with one token in $o$ and no token elsewhere.
+\item Can a token remain anywhere else when $o$ is marked?  Is every transition
+      executable in some run?  Conclude that this workflow net is sound.
+\item Add a ``short-circuit'' transition $o\to i$. Is the resulting net a
+      T-system?
+\end{enumerate}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Büchi automata: definition and warm-up}
+\Margines{
+\tiny
+\begin{definition}
+A nondeterministic Büchi automaton is
+\[
+  A=(Q,\Sigma,\delta,Q_0,F),
+\]
+where $\delta\subseteq Q\times\Sigma\times Q$.
+A run
+\[
+q_0\xrightarrow{a_0}q_1\xrightarrow{a_1}q_2\xrightarrow{a_2}\cdots
+\]
+is accepting if it visits $F$ infinitely often.
+The language $L(A)\subseteq\Sigma^\omega$ consists of words having
+an accepting run.
+\end{definition}
+
+\begin{exampleblock}{Warm-up}
+Let $\Sigma=\{a,b\}$. Prove that the automaton below accepts exactly the
+words containing infinitely many occurrences of $a$.
+\end{exampleblock}
+
+\begin{center}
+\begin{tikzpicture}[->,node distance=32mm,semithick]
+\node[state,initial] (q0) {$q_0$};
+\node[state,accepting,right=of q0] (q1) {$q_1$};
+\path
+(q0) edge[loop above] node {$b$} (q0)
+(q0) edge[bend left] node {$a$} (q1)
+(q1) edge[loop above] node {$a$} (q1)
+(q1) edge[bend left] node {$b$} (q0);
+\end{tikzpicture}
+\end{center}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 8: construct Büchi automata I}
+\Margines{
+\tiny
+Let $\Sigma=\{a,b\}$. Construct a Büchi automaton for each language.
+
+\begin{enumerate}
+\item Words containing infinitely many occurrences of $a$.
+\item Words containing only finitely many occurrences of $a$.
+\item Words containing infinitely many $b$ such that, between every two
+\emph{consecutive} $b$'s, the number of $a$'s is divisible by $3$.
+\item Words such that, between every two consecutive $b$'s, the number
+of $a$'s is divisible by $3$. There is no requirement that $b$ occurs
+infinitely often.
+\end{enumerate}
+
+\medskip
+The following finite-state ``modulo $3$'' component is useful in
+parts 3--4.
+
+\begin{center}
+\begin{tikzpicture}[->,node distance=24mm,semithick]
+\node[state,initial] (r0) {$0$};
+\node[state,right=of r0] (r1) {$1$};
+\node[state,right=of r1] (r2) {$2$};
+\path
+(r0) edge[bend left=15] node {$a$} (r1)
+(r1) edge[bend left=15] node {$a$} (r2)
+(r2) edge[bend left=35] node[below] {$a$} (r0)
+(r0) edge[loop above] node {$b$} (r0);
+\end{tikzpicture}
+\end{center}
+
+For every construction, state explicitly which states are accepting and
+explain why the Büchi condition enforces the required infinitary property.
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 9: construct Büchi automata II}
+\Margines{
+\tiny
+Again let $\Sigma=\{a,b\}$.
+
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item The number of $b$'s is infinite, and only finitely many gaps
+between consecutive $b$'s contain a number of $a$'s divisible by $3$.
+
+Equivalently: from some point on, every gap between consecutive $b$'s
+has length non-zero modulo $3$.
+
+\item The number of $b$'s is finite, and every gap between consecutive
+$b$'s contains a number of $a$'s divisible by $3$.
+
+\item The number of $b$'s is finite, and for every two \emph{distinct}
+occurrences of $b$, the number of $a$'s between them is not divisible
+by $3$.
+\end{enumerate}
+
+\begin{block}{Hint for part 7}
+Associate with each occurrence of $b$ the number of $a$'s seen so far,
+modulo $3$. What does the condition say about these residues?
+In particular, how many occurrences of $b$ can there be?
+\end{block}
+
+\begin{block}{General design principle}
+Separate a finite-state \emph{safety condition} (forbidden local patterns)
+from the Büchi/co-Büchi style requirement saying that something happens
+infinitely often or only finitely often.
+\end{block}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 10: proving that a language is not Büchi-recognisable}
+\Margines{
+\tiny
+Call $L\subseteq\Sigma^\omega$ \emph{$\omega$-regular} if it is recognised
+by a Büchi automaton.
+
+Prove the following two lemmas.
+
+\begin{lemma}[ultimately periodic witness]
+If $L\neq\emptyset$ is $\omega$-regular, then there exist
+$u\in\Sigma^*$ and $v\in\Sigma^+$ such that $uv^\omega\in L$.
 \end{lemma}
 
-\visible<2->{
-\begin{block}{Lemma}
- Sets of languages accepted by \Buchi\ automata and generalised \Buchi\ automata are the same.
-\end{block}}
+\begin{lemma}[fixed-tail section]
+If $L$ is $\omega$-regular and $x\in\Sigma^\omega$ is fixed, then
+\[
+ K_x=\{u\in\Sigma^*:ux\in L\}
+\]
+is a regular language of finite words.
+\end{lemma}
 
-\visible<3->{\begin{block}{Lemma}
- \Buchi\ languages are closed under:
- \begin{enumerate}
-  \item Union,
-  \item Intersection.
-  \item Complement. (We will not do this)
-  \item Determinisation does not work. (We need to extend the model)
- \end{enumerate}
-\end{block}}
-}
-\end{frame}
-
-
-
-
-
-
-
-
-\begin{frame}{LTL}
-\Margines{
-\begin{block}{}
-Automata are not very convenient to write, it would be better to have some query language (logic).
-\end{block}
-
-\begin{block}{Definition}
- An $LTL$ formula $\phi$ is generated according a following rules:
- $$\phi \rightarrow true | p_i\in \AProp | \phi_1\land \phi_2 | \neg \phi_1 | X \phi_{1} | \phi_1 U \phi_2 $$
-\end{block}
-}
-\end{frame}
-
-
-\begin{frame}{Semantics of LTL}
-\Margines{
-\begin{tikzpicture}[shorten >=1pt,->]
-  \tikzstyle{vertex}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
-
-  \node[] (zero) at (-1,0) {$\ $};
-  \foreach \name/\p/\x in {1/p_1 /1, 2/p_2/2, 3/p_1 p_2/3, 4/p_2/4, 5/p_3/5, 6/p_2/6, 7/p_1 p_3/7}
-    \node[vertex] (G-\name) at (\x,0) {$\p$};
-
-    \node[] (G-kropki) at (8,0) {$\ldots$};
-
-  \foreach \from/\to in {1/2,2/3,3/4,3/4,4/5, 5/6, 6/7, 7/kropki}
-    \draw (G-\from) -> (G-\to);
-\end{tikzpicture}
-
-\begin{itemize}
- \item $true \iff true$.
- \item $p_1 \iff p_1\text{ holds at position 0}.$
- \item $p_2 \iff p_2\text{ holds at position 0}.$
- \item $p_1 \land p_2 \iff p_1\text{ and }p_2\text{ holds at position 0} .$
- \item $\neg p_2$ $\iff p_2\text{ does not hold at position 0} .$
- \item $X p_2 \iff p_2\text{ holds at position 1} .$
- \item $XX (p_1\land p_2) \iff p_2\text{ and } p_1\text{ holds at position 2}.$
- \item $\neg (\neg p_1 \land \neg p_2) U p_3$ $\iff \text{ there is } 0\leq j \text{ such that }
- p_3\text{ holds at position j and }\neg (\neg p_1 \land \neg p_2) \text{ holds for all } 0\leq i<j.$
-\end{itemize}
-
-}
-\end{frame}
-
-\begin{frame}{Exercise}
-\Margines{
- How to express:
- \begin{enumerate}
- \item Finally there will be a state in which $p_2$ holds.\par
- \visible<2->{$F p_2$}
- \item<3-> Every state along the path satisfy $p_2$.\par
- \visible<4->{$G p_2$}
- \item<5-> If $p_2$ holds at the state with index $2$ then $p_3 \lor p_1$ holds in the state with index $4$.
-
- \item<6-> If in some state $p_1$ is satisfied then in the future $p_2$ has to be satisfied.
- \end{enumerate}
-
-}
-\end{frame}
-
-
-\begin{frame}{How to verify LTL formula?}
-\Margines{
-\begin{block}{Lemma}
-Let $\words{\phi}$ denotes a set of words that satisfy the LTL formula $\phi$.
-For a given LTL formula $\phi$ one can construct an exponential size \Buchi\ automaton $B$ recognising exactly the same set of words, i.e.
-$$\lang{B}= \words{\phi}$$
-\end{block}
+\medskip
+Use the lemmas to prove that the following languages are not
+$\omega$-regular:
 \begin{enumerate}
- \item Build an automaton $A$ for the Kripke structure.
- \item Build an automaton $B$ for $\phi$ an LTL formula,\par
- or build an automaton $B$ for $\neg \phi$.
- \item Check nonemptiness of $\lang{A}\cap\lang{B}.$
- \end{enumerate}
-
+\item
+\[
+L_1=\left\{a\,b\,a^2b\,a^3b\,a^4b\cdots\right\}.
+\]
+\item
+\[
+L_2=
+\left\{
+a^{n_1}ba^{n_2}ba^{n_3}b\cdots:
+n_1<n_2<n_3<\cdots
+\right\}.
+\]
+\item Over $\{a,b,c\}$,
+\[
+L_3=\{a^n b^n c^\omega:n\geq 1\}.
+\]
+For part 3 use the section with tail $c^\omega$ and intersect it with
+$a^+b^+$.
+\end{enumerate}
 }
 \end{frame}
 
-
-\begin{frame}{How to verify LTL formula?}
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 11: Kripke structures as Büchi automata}
 \Margines{
-\begin{block}{Lemma}
-Let $\words{\phi}$ denotes a set of words that satisfy the LTL formula $\phi$.
-For a given LTL formula $\phi$ one can construct an exponential size \Buchi\ automaton $B$ recognising exactly the same set of words, i.e.
-$$\lang{B}= \words{\phi}$$
+\tiny
+\begin{definition}
+A Kripke structure is
+\[
+K=(S,s_0,R,AP,\ell),
+\]
+where $S$ is a finite set of states, $R\subseteq S\times S$ is total,
+$AP$ is a finite set of atomic propositions, and
+$\ell:S\to 2^{AP}$ labels states.
+
+Its traces are
+\[
+\operatorname{Tr}(K)=
+\left\{
+\ell(s_0)\ell(s_1)\ell(s_2)\cdots:
+s_0Rs_1Rs_2R\cdots
+\right\}
+\subseteq (2^{AP})^\omega.
+\]
+\end{definition}
+
+\begin{enumerate}
+\item Construct a Büchi automaton $A_K$ such that
+\[
+L(A_K)=\operatorname{Tr}(K).
+\]
+\item Your construction may use one fresh initial state and make all
+states corresponding to $S$ accepting.
+\item Prove both inclusions.
+\end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}[->,node distance=18mm,semithick,scale=0.72,transform shape]
+\node[state,initial] (s0) {$s_0:\{p\}$};
+\node[state,right=of s0] (s1) {$s_1:\emptyset$};
+\node[state,below=of s1] (s2) {$s_2:\{p\}$};
+\path
+(s0) edge[loop above] (s0)
+(s0) edge (s1)
+(s1) edge[bend left] (s2)
+(s2) edge[bend left] (s1)
+(s2) edge[bend left=35] (s0);
+\end{tikzpicture}
+\end{center}
+
+Apply your construction explicitly to the example above.
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 12: intersection with traces --- finite case}
+\Margines{
+\tiny
+Let
+\[
+A=(Q_A,\Sigma,\delta,Q_A^0,F)
+\]
+be a Büchi automaton and
+\[
+B=(C,\Sigma,\longrightarrow,c_0)
+\]
+an LTS.
+
+Define their synchronous product. Its configurations are pairs $(q,c)$ and
+\[
+(q,c)\xrightarrow{a}(q',c')
+\]
+iff
+\[
+q\xrightarrow{a}_A q'
+\qquad\text{and}\qquad
+c\xrightarrow{a}_B c'.
+\]
+A product configuration is Büchi-accepting iff $q\in F$.
+
+\begin{enumerate}
+\item Prove:
+\[
+L(A)\cap\operatorname{Tr}(B)\neq\emptyset
+\]
+iff the product has an infinite run visiting $F\times C$ infinitely often.
+\item Assume $B$ is finite. Show that non-emptiness is equivalent to
+reachability of a strongly connected component that contains an accepting
+product state and contains a directed cycle.
+\item Give a graph algorithm for the problem.
+\end{enumerate}
+
+\begin{block}{Convention}
+If $B$ is presented as an NFA, use its transition graph as the LTS.
+The final states of the NFA are irrelevant unless an additional condition
+explicitly refers to them.
+\end{block}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Exercise 13: intersection with traces --- infinite-state systems}
+\Margines{
+\tiny
+Let $A$ be a finite Büchi automaton. For each representation of $B$ below,
+form the synchronous product of $A$ with the induced LTS of $B$:
+\begin{enumerate}
+\item one-counter VASS;
+\item one-counter automaton;
+\item $d$-dimensional VASS;
+\item pushdown automaton.
+\end{enumerate}
+
+For each model:
+
+\begin{enumerate}
+\item[(a)] Describe a configuration of the product.
+\item[(b)] Show that the product remains in the same model class:
+only the finite control is multiplied by $Q_A$.
+\item[(c)] Reformulate
+\[
+L(A)\cap\operatorname{Tr}(B)=\emptyset
+\]
+as a repeated-reachability/Büchi problem in the product.
+\item[(d)] Identify which part of the original infinite-state semantics
+(counter non-negativity, zero tests, stack operations) is unchanged by
+the product.
+\end{enumerate}
+
+\begin{block}{Main observation}
+A finite specification automaton does not add a new unbounded data
+structure. It only refines the finite control of the system.
+\end{block}
+}
+\end{frame}
+
+%----------------------------------------------------------------------
+\begin{frame}{Suggested division into core and optional exercises}
+\Margines{
+\tiny
+\begin{block}{Core for a 90-minute tutorial}
+Exercises 1--2, the drawing part of Exercise 3, Exercises 8--9,
+Exercise 11, and Exercise 12.
 \end{block}
 
+\begin{block}{If time permits}
+Petri-net Exercises 5--7 and the model-class discussion in Exercise 13.
+\end{block}
+
+\begin{block}{Challenge / homework}
+The treewidth proof in Exercise 4 and the non-$\omega$-regularity
+arguments in Exercise 10.
+\end{block}
 }
 \end{frame}
-
-
-\begin{frame}{Bibliography}
- \Margines{
- Units from 3 to 8 from
-
-	\url{https://www.youtube.com/channel/UCUXDMaaobCO1He1HBiFZnPQ/videos}%{https://www.youtube.com/channel/UCUXDMaaobCO1He1HBiFZnPQ}
-
-There are a lot of videos first one is "A problem in concurrency".
-
- }
-\end{frame}
-
-
 
 \end{document}
