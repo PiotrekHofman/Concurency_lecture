@@ -1,0 +1,73 @@
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata,backgrounds,decorations}
+\usetikzlibrary{shapes.multipart}
+\usepgflibrary{decorations.pathreplacing} 
+\usetikzlibrary{arrows,calc,topaths}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{tikz-3dplot}
+\tikzstyle{small}=[font=\footnotesize]
+\tikzset{
+    every picture/.style={>=stealth,auto,node distance=2cm},}
+% end TIKZ
+\usepackage[normalem]{ulem}
+\usepackage{ifthen}
+\usetikzlibrary{arrows, automata,calc,shapes.arrows, petri, backgrounds, fadings,intersections,  decorations.markings, positioning, snakes}
+\usetikzlibrary{shadows}
+\tikzfading[name=fade out, inner color=transparent!0,
+  outer color=transparent!100]
+\tikzset{
+    every picture/.style={>=stealth,auto,node distance=2cm,}%double equal sign distance},
+    %every edge/.style={font=\small,double equal sign distance},
+    %every state/.style={fill=red,draw=none,text=white}
+}
+\tikzstyle{every state}=[
+    inner sep=0pt,
+    minimum size=0.7cm,
+    fill= blue,
+    fill opacity=0.1,
+    draw= blue,
+    %thick,
+    text= blue,
+    text opacity=1,
+    ]
+
+\tikzset{
+    place/.style={
+        circle,
+        thick,
+        draw=blue!75,
+        fill=blue!20,
+        minimum size=6mm,
+    },
+    transitionH/.style={
+        rectangle,
+        thick,
+        fill=black,
+        minimum width=8mm,
+        inner ysep=2pt
+    },
+    transitionV/.style={
+        rectangle,
+        thick,
+        fill=black,
+        minimum height=8mm,
+        inner xsep=2pt
+    }
+}    
+
+% Keys to support piece-wise uncovering of elements in TikZ pictures: 
+% \node[visible on=<2->](foo){Foo} % \node[visible on=<{2,4}>](bar){Bar} 
+% put braces around comma expressions % 
+% Internally works by setting opacity=0 when invisible, which has the 
+% adavantage (compared to \node<2->(foo){Foo} that the node is always there, hence 
+% always consumes space plus that coordinate (foo) is always available. % 
+% The actual command that implements the invisibility can be overriden 
+% by altering the style invisible. For instance \tikzsset{invisible/.style={opacity=0.2}} 
+% would dim the "invisible" parts. Alternatively, the color might be set to white, if the 
+% output driver does not support transparencies (e.g., PS) % 
+\tikzset{ invisible/.style={opacity=0}, visible on/.style={alt={#1{}{invisible}}}, alt/.code args={<#1>#2#3}{% 
+\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path 
+}, 
+}
+
+    
