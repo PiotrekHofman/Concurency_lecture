@@ -117,6 +117,35 @@ $(14,15]$ & $5$
 }
 \end{frame}
 
+
+\begin{frame}[fragile]{One execution: an ATM withdrawal}
+\Margines{
+\begin{block}{Message exchange}
+The ATM sends a withdrawal request to the bank. The bank processes it and sends a reply.
+\end{block}
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=0.8cm,>=stealth]
+  \node at (0,0) {ATM};
+  \node at (5,0) {Bank};
+  \draw[dashed] (0,-0.35) -- (0,-4.5);
+  \draw[dashed] (5,-0.35) -- (5,-4.5);
+
+  \draw[->] (0,-1) -- (5,-1)
+    node[midway,above,fill=white,inner sep=2pt] {withdraw \$80};
+  \node[align=left,anchor=west] at (5.25,-2)
+    {check balance\\debit account};
+  \draw[->] (5,-3) -- (0,-3)
+    node[midway,above,fill=white,inner sep=2pt] {approved, balance \$20};
+  \node[align=right,anchor=east] at (-0.25,-4)
+    {dispense \$80\\cash};
+\end{tikzpicture}
+\end{center}
+\begin{block}{One possible execution}
+Request $\to$ bank processing $\to$ reply $\to$ cash dispensed.
+\end{block}
+}
+\end{frame}
+
 \begin{frame}[fragile]{Three basic threats in parallel programming}
 \Margines{
 \begin{block}{Race condition / inconsistent shared state}
@@ -144,6 +173,8 @@ Correctness may depend on all possible interleavings of concurrent actions.
 }
 \end{frame}
 
+
+
 \begin{frame}[fragile]{Three basic threats in parallel programming}
 \Margines{
 \begin{block}{Deadlock}
@@ -151,12 +182,12 @@ Consider philosophers following the protocol below.
 \end{block}
 \vspace{-0.15cm}
 \DwieKol{0.46}{0.46}{
-\begin{tikzpicture}[scale=0.32]
-  \node[tinyState] (F1) at (3,0) {};
-  \node[tinyState] (F2) at (0,2) {};
-  \node[tinyState] (F3) at (1.5,4) {};
-  \node[tinyState] (F4) at (4.5,4) {};
-  \node[tinyState] (F5) at (6,2) {};
+\begin{tikzpicture}[scale=0.48]
+  \node[tinyState,minimum size=6mm] (F1) at (3,0) {};
+  \node[tinyState,minimum size=6mm] (F2) at (0,2) {};
+  \node[tinyState,minimum size=6mm] (F3) at (1,4) {};
+  \node[tinyState,minimum size=6mm] (F4) at (5,4) {};
+  \node[tinyState,minimum size=6mm] (F5) at (6,2) {};
   \foreach \y/\x in {1/2,2/3,3/4,4/5,5/1}
       \draw[->] (F\y) -- (F\x);
    \node at (1.2,0.7) {\tiny think};
@@ -188,12 +219,12 @@ Break circular waiting, e.g. acquire forks according to a fixed global order.
 A system may keep making progress while one process is repeatedly prevented from making progress.
 \end{block}
 \DwieKol{0.46}{0.46}{
-\begin{tikzpicture}[scale=0.32]
-  \node[tinyState] (F1) at (3,0) {};
-  \node[tinyState] (F2) at (0,2) {};
-  \node[tinyState] (F3) at (1.5,4) {};
-  \node[tinyState] (F4) at (4.5,4) {};
-  \node[tinyState] (F5) at (6,2) {};
+\begin{tikzpicture}[scale=0.48]
+  \node[tinyState,minimum size=6mm] (F1) at (3,0) {};
+  \node[tinyState,minimum size=6mm] (F2) at (0,2) {};
+  \node[tinyState,minimum size=6mm] (F3) at (1,4) {};
+  \node[tinyState,minimum size=6mm] (F4) at (5,4) {};
+  \node[tinyState,minimum size=6mm] (F5) at (6,2) {};
   \foreach \y/\x in {1/2,2/3,3/4,4/5,5/1}
       \draw[->] (F\y) -- (F\x);
    \node at (1.2,0.7) {\tiny think};
