@@ -631,11 +631,28 @@ For every finite Kripke structure $M$ there is a \Buchi\ automaton $A$ such that
 \begin{block}{\texorpdfstring{$\omega$}{omega}-regular languages}
 Languages recognized by \Buchi\ automata are called \(\omega\)-regular languages. They are closed under union, intersection, and complement.
 \end{block}}
-\visible<4->{
+
+}
+\end{frame}
+
+
+
+\begin{frame}{\Buchi\ languages}
+\Margines{
+\begin{block}{Nonemptiness of a \Buchi\ automaton}
+A \Buchi\ automaton is nonempty iff it has a reachable accepting cycle.
+
+a finite prefix reaches the cycle, and then the cycle is repeated forever.
+\end{block}
+
+\visible<2->{
 \begin{block}{Determinisation warning}
 Not every nondeterministic \Buchi\ automaton has an equivalent deterministic \Buchi\ automaton. Determinisation requires stronger acceptance conditions, e.g. parity acceptance.
 \end{block}}
 }
 \end{frame}
+
+
+
 
 \end{document}

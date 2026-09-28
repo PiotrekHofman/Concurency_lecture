@@ -71,7 +71,7 @@
 \begin{frame}{Plan}
 \Margines{
 \begin{enumerate}
-  \item Why automata are useful, but inconvenient as specifications.
+  \item Introduction to temporal logics: LTL and CTL.
   \item Linear temporal logic (LTL): syntax and semantics.
   \item LTL model checking via \Buchi\ automata.
   \item Branching-time logics: CTL and CTL*.
@@ -181,6 +181,7 @@ Let \(w=w_0w_1w_2\ldots\in(2^{\AProp})^\omega\). We write \(w,i\models\varphi\) 
 We write \(w\models\varphi\) for \(w,0\models\varphi\).
 }
 \end{frame}
+
 
 \begin{frame}{LTL: semantics on a path}
 \Margines{
@@ -292,11 +293,13 @@ The automaton has size exponential in \(\abs{\varphi}\) in the worst case.
 LTL formulas define \(\omega\)-regular languages. Therefore, LTL verification can be reduced to emptiness of \Buchi\ automata.
 \end{block}
 
-\begin{block}{Warning}
-The translation is not the main topic of this lecture. We use it as a black box.
-\end{block}
+
 }
 \end{frame}
+
+
+todo:add slide about LTL-> to buchy automaton algorithm ide of the construction
+
 
 \begin{frame}{LTL model checking}
 \Margines{
@@ -344,13 +347,26 @@ A nonempty intersection gives a counterexample trace:
 \]
 \end{block}
 
-\begin{block}{Nonemptiness of a \Buchi\ automaton}
-A \Buchi\ automaton is nonempty iff it has a reachable accepting cycle.
 
-a finite prefix reaches the cycle, and then the cycle is repeated forever.
-\end{block}
 }
 \end{frame}
+
+
+\begin{frame}{LTL $\rightarrow$ \Buchi\ automaton: construction idea}
+\Margines{
+\begin{itemize}
+  \item For a formula $\varphi$, build an automaton $\mathcal A_\varphi$ that accepts exactly the infinite words satisfying $\varphi$.
+  \item Think about labelling word with states of the automaton: 
+  each state corresponds to a set of subformulas of $\varphi$ that are currently satisfied.
+  \item Initial state labels first position of the word with the formula.
+  \item Transitions and accepting state are resposible for verifing that labelling is correct.
+  \item On reading a letter $a\in 2^{\AProp}$, we check whether the current atomic propositions match the formula's Boolean requirements.
+  \item Temporal obligations are propagated to the next state: $X\psi$ becomes a requirement for the successor, and $\psi_1 U \psi_2$ is either satisfied now or carried forward.
+  \item Acceptance is defined by a \Buchi\ condition: runs are accepted only if every pending eventuality is eventually fulfilled, never postponed forever.
+\end{itemize}
+}
+\end{frame}
+
 
 \begin{frame}{Product construction for LTL model checking}
 \Margines{
