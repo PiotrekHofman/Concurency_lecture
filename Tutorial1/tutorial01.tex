@@ -65,6 +65,26 @@ determine the available next steps. The \emph{induced LTS} has:
 The reachable part of the induced LTS contains just the configurations
 reachable from the initial one. It can be finite or infinite.
 
+\paragraph{Timed automata.}
+A timed automaton has finitely many locations and finitely many clocks,
+whose values are nonnegative real numbers. A configuration consists of a
+location and a clock valuation. A delay transition lets time pass by some
+$d\geq 0$, provided all location invariants remain true throughout the
+delay. A discrete transition has a guard and may reset clocks. The induced
+LTS therefore has both delay edges, written $c\xrightarrow{d}c'$, and
+discrete action edges, written $c\xrightarrow{a}c'$. An infinite run is
+\emph{Zeno} if it has infinitely many discrete transitions but the sum of
+its delays is finite.
+
+\paragraph{Finite branching and K\H{o}nig's lemma.}
+An LTS is finitely branching if every configuration has only finitely many
+outgoing transitions. Unfolding all finite runs from the initial state
+gives a rooted tree. K\H{o}nig's lemma says that every infinite, finitely
+branching rooted tree has an infinite branch. Consequently, if a finitely
+branching LTS has infinitely many reachable configurations, it has an
+infinite run. This conclusion is about the number of steps; by itself, it
+says nothing about the elapsed time of a run in a timed system.
+
 \paragraph{A useful graph convention.}
 When discussing treewidth, we forget edge directions and labels: two
 configurations are adjacent in the underlying undirected graph if there is
@@ -151,7 +171,43 @@ Take $Q=\{q\}$, initial configuration $(q,0)$, and rules
   \item Is the reachable LTS finite in either version? Explain briefly.
 \end{enumerate}
 
-\subsection*{3. A pushdown system}
+\subsection*{3. Lossy and gainy counter systems}
+Start with a one-counter system as in Exercise~2, with rules
+$p\xrightarrow{a,d}q$ for $d\in\mathbb{Z}$. Configurations are
+$(p,n)\in Q\times\mathbb{N}$. Define the following two variants.
+\begin{itemize}
+  \item In a \emph{lossy} system, before a rule is applied the counter may
+        lose any number of units, and after the rule it may lose any number
+        of units. Thus $(p,n)\xrightarrow{a}(q,m)$ is allowed if there is
+        some $k\leq n$ such that $k+d\geq 0$ and $m\leq k+d$.
+  \item In a \emph{gainy} system, before and after a rule the counter may
+        gain any number of units. Thus $(p,n)\xrightarrow{a}(q,m)$ is
+        allowed if there is some $k\geq n$ such that $k+d\geq 0$ and
+        $m\geq k+d$.
+\end{itemize}
+In both cases, $k$ is the counter value when the ordinary rule is applied.
+For a set $X$ of configurations, write $\operatorname{Post}^+(X)$ and
+$\operatorname{Pre}^+(X)$ for the configurations reachable by one or more
+steps, and retain $\operatorname{Post}^*$ and $\operatorname{Pre}^*$ for
+reachability by zero or more steps.
+
+\begin{enumerate}
+  \item For each variant, prove the appropriate closure properties of
+        $\operatorname{Post}^+(X)$ and $\operatorname{Pre}^+(X)$, separately
+        for each control state. Which sets are downward-closed, and which
+        are upward-closed?
+  \item Prove that every upward-closed or downward-closed subset of
+        $\mathbb{N}$ is semilinear. Use this and the fact that a finite union
+        of semilinear sets is semilinear to show that if $X$ is semilinear,
+        then both $\operatorname{Post}^*(X)$ and $\operatorname{Pre}^*(X)$
+        are semilinear for lossy and gainy counter systems.
+    \item Apply both semantics to the one-state system with the single rule
+        $q\xrightarrow{\mathsf{dec},-1}q$, starting from $(q,0)$. Describe
+        the reachable counter values after zero or more steps in each
+        system and explain why the two answers differ.
+\end{enumerate}
+
+\subsection*{4. A pushdown system}
 A pushdown system has a finite set of control states and a stack over a
 finite alphabet. The rightmost symbol is the top of the stack. For this
 exercise, let the stack alphabet be $\{\bot,0,1\}$, where $\bot$ is a
@@ -180,7 +236,7 @@ $(q,\bot 0)\xrightarrow{\mathsf{push}_1}(q,\bot 01)$.
         information about future behaviour?
 \end{enumerate}
 
-\subsection*{4. Independent steps and interleaving}
+\subsection*{5. Independent steps and interleaving}
 Consider a system with configuration $(x,y)\in\{0,1\}^2$, initially
 $(0,0)$. Action $a$ changes $x$ from $0$ to $1$ and leaves $y$ unchanged;
 action $b$ changes $y$ from $0$ to $1$ and leaves $x$ unchanged. Each
@@ -196,19 +252,17 @@ action can be performed only once.
         the two traces remains possible?
 \end{enumerate}
 
-\subsection*{5. From rules to an induced LTS}
+\subsection*{6. From rules to an induced LTS}
 For each model in Exercises 2--4, explicitly identify its configuration
 space, initial configuration, action labels, and one-step transition
 relation. Then compare the resulting reachable LTSs:
 \begin{enumerate}
   \item Which have finitely many reachable configurations?
   \item Which have a branching structure, and which have cycles?
-  \item Give an example of two different configurations with the same
-        enabled action labels. Does that imply that their future behaviours
-        are identical? Justify your answer with a path or counterexample.
+  
 \end{enumerate}
 
-\subsection*{6. Reachability sets: semilinear or regular?}
+\subsection*{7. Reachability sets: semilinear or regular?}
 In this exercise, a one-counter net has finite control and counter updates
 by fixed integers, enabled when the resulting counter remains
 nonnegative. A one-counter automaton additionally has guards testing
@@ -242,7 +296,7 @@ configuration $(q,n)$ with its control state and counter value.
         the pairs of DFA states connected by some word generated from $A$.
 \end{enumerate}
 
-\subsection*{7. Same language, different transition systems: BPA and PDA}
+\subsection*{8. Same language, different transition systems: BPA and PDA}
 Language equivalence compares only which finite words are accepted; it
 does not require the induced LTSs to have the same structure. Consider
 the BPA process given by the recursive equation
@@ -267,16 +321,12 @@ word and ends in an accepting state.
   \item Draw the two induced LTSs, including the successful-termination
         or accepting-state information. Are their transition graphs
         isomorphic?
-  \item Prove that the initial states are not strongly bisimilar. In
-        particular, consider the PDA's $a$-transition from $q$ to $r$:
-        which BPA state could match it, and why can the match not be
-        continued?
   \item Explain why this example does not contradict the equivalence
         between context-free grammars and PDAs: what information does
         language equivalence forget?
 \end{enumerate}
 
-\subsection*{8. Challenge: a nonsemilinear Turing-machine reachability set}
+\subsection*{9. Challenge: a nonsemilinear Turing-machine reachability set}
 For this exercise, use the following explicit convention. A Turing-machine
 configuration has a finite-control state and a tape encoding. At selected
 checkpoint configurations, the tape has the form
@@ -303,7 +353,7 @@ coordinate projection of such a set must be semilinear.
         sets of Turing-machine configurations.
 \end{enumerate}
 
-\subsection*{9. Optional challenge: treewidth of a pushdown graph}
+\subsection*{10. Optional challenge: treewidth of a pushdown graph}
 This challenge uses the following normal form. Let $Q$ be a finite set of
 control states and $\Gamma$ a finite stack alphabet containing $\bot$.
 Every transition replaces the top stack symbol $A$ by a word $\beta$ of
@@ -337,6 +387,29 @@ minus one.
         \[
           \operatorname{tw}(G)\leq |Q|(|\Gamma|+1)-1.
         \]
+\end{enumerate}
+
+\subsection*{11. Timed automata, infinite branching, and Zeno runs}
+Consider a timed automaton with one location $\ell$, one clock $x$, and
+initial configuration $(\ell,x=0)$. The invariant at $\ell$ is $x\leq 1$.
+There is one discrete transition, labelled $a$, from $\ell$ to itself,
+with guard $x>0$ and reset $x:=0$.
+\begin{enumerate}
+  \item Describe its induced LTS. Specify the configurations and the
+        delay and discrete transitions. Give a schematic picture of the
+        reachable part rather than trying to draw every valuation.
+  \item Determine the set of reachable clock valuations. Is the induced
+        LTS finitely branching? Justify your answer.
+  \item Give an infinite run that performs $a$ infinitely often but has
+        finite total elapsed time. Verify that every delay respects the
+        invariant and that the guard for $a$ is satisfied each time.
+  \item State K\H{o}nig's lemma and use the run tree to explain why, in a
+        finitely branching LTS, infinitely many reachable configurations
+        imply an infinite run. Why does this not imply that every infinite
+        run of a timed automaton has unbounded elapsed time?
+  \item Identify the hypothesis of this result that fails for the induced
+        LTS above. Distinguish an infinite run (infinitely many transitions)
+        from a run with unbounded accumulated duration.
 \end{enumerate}
 
 \paragraph{Further questions for discussion.}
