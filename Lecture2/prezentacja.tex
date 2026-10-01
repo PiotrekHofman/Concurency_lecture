@@ -265,16 +265,16 @@ Express the following properties in LTL.
 
 \begin{enumerate}
   \item Eventually there is a state in which \(p_2\) holds.\par
-  \visible<2->{\[Fp_2\]}
+  %\visible<2->{\[Fp_2\]}
 
   \item Every state along the path satisfies \(p_2\).\par
-  \visible<3->{\[Gp_2\]}
+  %\visible<3->{\[Gp_2\]}
 
   \item If \(p_2\) holds at position \(2\), then \(p_1\lor p_3\) holds at position \(4\).\par
-  \visible<4->{\[XXp_2\rightarrow XXXX(p_1\lor p_3)\]}
+  %\visible<4->{\[XXp_2\rightarrow XXXX(p_1\lor p_3)\]}
 
   \item If \(p_1\) holds in some state, then \(p_2\) holds later.\par
-  \visible<5->{\[G(p_1\rightarrow Fp_2)\]}
+  %\visible<5->{\[G(p_1\rightarrow Fp_2)\]}
 \end{enumerate}
 }
 \end{frame}
@@ -298,7 +298,6 @@ LTL formulas define \(\omega\)-regular languages. Therefore, LTL verification ca
 \end{frame}
 
 
-todo:add slide about LTL-> to buchy automaton algorithm ide of the construction
 
 
 \begin{frame}{LTL model checking}
@@ -368,36 +367,7 @@ A nonempty intersection gives a counterexample trace:
 \end{frame}
 
 
-\begin{frame}{Product construction for LTL model checking}
-\Margines{
 
-\vspace{-5mm}
-
-\begin{block}{Product automaton}
-Construct the synchronous product
-\[
-  A_M \times B_{\neg\varphi}.
-\]
-A state of the product remembers both a state of the system and a state of the automaton for \(\neg\varphi\).
-\end{block}
-
-\begin{block}{Acceptance}
-The product accepts exactly the traces that are both possible behaviours of \(M\) and violations of \(\varphi\):
-\[
-  \lang{A_M\times B_{\neg\varphi}}
-  = \trace{M}\cap\words{\neg\varphi}.
-\]
-\end{block}
-
-\begin{block}{Decision procedure}
-\[
-  M\models\varphi
-  \quad\Longleftrightarrow\quad
-  A_M\times B_{\neg\varphi}\text{ is empty.}
-\]
-\end{block}
-}
-\end{frame}
 
 \begin{frame}{Limitations of LTL}
 \Margines{
