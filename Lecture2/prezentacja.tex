@@ -31,6 +31,8 @@
 \usepackage{latexsym}
 \usepackage{hyperref}
 \usepackage{changepage}
+\usetikzlibrary{arrows.meta,positioning,decorations.pathreplacing}
+
 
 \newtcbox{\mybox}{blank, on line, opacitytext=0.5}
 
@@ -664,74 +666,174 @@ We consider all traces starting in a given state.
 \begin{lemma}
 There are properties which can be expressed in LTL and can not in CTL and vice versa. 
 \end{lemma}
-
+}
 
 \visible<3-8>{
 \alt<3-5>{
-\DwieKol{0.45}{0.40}
-{\visible<5->{\includegraphics[width=40mm]{Kripke.png}
-%{CTL not in LTL.jpg}}
-}}
-{\vspace{-0cm}
-\visible<3->{
-\begin{example}[CTL not in LTL]
- A G E F (brake == true)
-\end{example}}
-\visible<4->{
-Two systems have the same sets of traces but only one satisfies the formula in CTL.}
-}}
-{
-\begin{example}[LTL not in CTL]
-A F G (black = true)\\
-For all runs there will be a moment from which onward holds
-(black = true).
-\visible<7->{The idea is to construct two sequences of systems $T_i$ and $T_i'$
-such that:} 
+  \begin{center}
+  \begin{minipage}[t]{0.45\textwidth}
+    \visible<5->{\includegraphics[width=40mm]{CTLnoLTL.pdf}}
+  \end{minipage}
+  \begin{minipage}[t]{0.40\textwidth}
+    \vspace{-0cm}
+    \visible<3->{
+      \begin{example}[CTL not in LTL]
+        A G E F (brake == true)
+      \end{example}
+    }
+    \visible<4->{
+      Two systems have the same sets of traces but only one satisfies the formula in CTL.
+    }
+  \end{minipage}
+  \end{center}
+}{
+  \begin{example}[LTL not in CTL]
+    A F G (black = true)\\
+    For all runs there will be a moment from which onward holds
+    (black = true).
+    \visible<7->{The idea is to construct two sequences of systems $T_i$ and $T_i'$
+    such that:}
 
-\begin{enumerate}
-\item<7-> $(T_i,s_0)\models A F G (black = true)$ but
-    $(T_i',s_0)\not\models AF G (black = true).$ 
-\item<7-> $(T_i,s_0)$ and $(T_i',s_0')$ are not distinguished by any CTL formula of the modal depth $i$.
-\end{enumerate}
-\end{example}
+    \begin{enumerate}
+      \item<7-> $(T_i,s_0)\models A F G (black = true)$ but
+      $(T_i',s_0)\not\models AF G (black = true).$
+      \item<7-> $(T_i,s_0)$ and $(T_i',s_0')$ are not distinguished by any CTL formula of the modal depth $i$.
+    \end{enumerate}
+  \end{example}
 
-\visible<8>{Look: \url{https://www.youtube.com/watch?v=OAf7q3X71-o}
-(min 58)}
+  \visible<8>{Look: \url{https://www.youtube.com/watch?v=OAf7q3X71-o}
+  (min 58)}
 }
-}}}
+}
+}
 \end{frame}
 
 \begin{frame}{Proof.}
 \Margines{
-\DwieKol{0.45}{0.40}{\  
+\DwieKol{0.45}{0.40}{
+\begin{tikzpicture}[
+  scale=0.7, transform shape,
+    >=Latex,
+    thick,
+    state/.style={circle, fill=black, inner sep=2pt},
+    midstate/.style={circle, draw=black, fill=white, inner sep=0pt, minimum size=5pt},
+    place/.style={draw, rectangle, minimum width=7mm, minimum height=13mm},
+    every node/.style={font=\small}
+]
 
-\includegraphics[width=50mm]{UKripke.png}
-}{\alt<2>
-{Let $\sim_i$ not distinguishable by CTL formulas of depth $i$.
-\begin{proof}[$T_i\sim_i T_i'$]
-Via induction on $i$, ( the size of the formula).
+% =========================================================
+% Top chain
+% =========================================================
 
-   Induction hypothesis: 
-    $T_k\sim_i T_j'$ 
-    for $i\leq k\leq j$.
+\node at (-4.4,2.8) {$\cdots$};
 
-\end{proof}
+\node[state]    (p3) at (-3.4,2.8) {};
+\node[midstate] (r3) at (-2.4,2.8) {};
+\node[state]    (p2) at (-1.4,2.8) {};
+\node[midstate] (r2) at (-0.4,2.8) {};
+\node[state]    (p1) at ( 0.6,2.8) {};
+\node[midstate] (r1) at ( 1.6,2.8) {};
+\node[state]    (p0) at ( 2.6,2.8) {};
+
+\draw[->] (-4.1,2.8) -- (p3);
+
+\draw[->] (p3) -- (r3);
+\draw[->] (r3) -- (p2);
+
+\draw[->] (p2) -- (r2);
+\draw[->] (r2) -- (p1);
+
+\draw[->] (p1) -- (r1);
+\draw[->] (r1) -- (p0);
+
+\draw[->] (p3) edge[loop above] ();
+\draw[->] (p2) edge[loop above] ();
+\draw[->] (p1) edge[loop above] ();
+\draw[->] (p0) edge[loop above] ();
+
+\node[below=7pt of p3] {$p_3$};
+\node[below=7pt of r3] {$R_3$};
+
+\node[below=7pt of p2] {$p_2$};
+\node[below=7pt of r2] {$R_2$};
+
+\node[below=7pt of p1] {$p_1$};
+\node[below=7pt of r1] {$R_1$};
+
+\node[below=7pt of p0] {$p_0$};
+
+% =========================================================
+% Bottom left: T_i'
+% =========================================================
+
+\node[state] (s0p) at (-1.5,0.2) {};
+\node[above=2pt of s0p] {$s'_0$};
+
+\node[place] (pip) at (-1.5,-1.3) {};
+\node[left=1pt of pip] {$p_i$};
+
+\node[state] at (-1.5,-0.95) {};
+
+\draw[->] (pip.north west) to[bend left=35] (s0p.west);
+\draw[->] (s0p.east) to[bend left=35] (pip.north east);
+
+\draw[
+    decorate,
+    decoration={brace,amplitude=5pt,mirror}
+]
+(-2.25,0.5) -- (-2.25,-1.9)
+node[midway,left=8pt] {$T'_i$};
+
+% =========================================================
+% Bottom right: T_i
+% =========================================================
+
+\node[state] (s0) at (1.0,0.2) {};
+\node[above=2pt of s0] {$s_0$};
+
+\node[place] (pi) at (1.0,-1.3) {};
+\node[right=1pt of pi] {$p_i$};
+
+\node[state] at (1.0,-0.95) {};
+
+\draw[->] (s0) -- (pi.north);
+
+\draw[
+    decorate,
+    decoration={brace,amplitude=5pt,mirror}
+]
+(1.75,-1.9) -- (1.75,0.5)
+node[midway,right=8pt] {$T_i$};
+\end{tikzpicture}
+}{
+  \alt<2>{
+    \vspace{-3cm}
+    Let $\sim_i$ not distinguishable by CTL formulas of depth $i$.
+    \begin{proof}[$T_i\sim_i T_i'$]
+      Via induction on $i$, ( the size of the formula).
+
+      Induction hypothesis: 
+      $T_k\sim_i T_j'$ 
+      for $i\leq k\leq j$.
+    \end{proof}
+  }{
+        \vspace{-3cm}
+    Let $\sim_i$ not distinguishable by CTL formulas of depth $i$.
+    \begin{lemma}[Auxiliary]
+      $P_i\sim_i P_j$ for $i\leq j$.
+      $R_i\sim_i R_j$ for $i\leq j$.
+    \end{lemma}
+    \begin{proof}
+      Via induction on $i$, ( the size of the formula).
+
+      Induction hypothesis: 
+      $P_k\sim_i P_j,$ 
+      $R_k\sim_i R_j$ 
+      for $i\leq k\leq j$.
+    \end{proof}
+  }
 }
-{Let $\sim_i$ not distinguishable by CTL formulas of depth $i$.
-   \begin{lemma}[Auxiliary]
-    $P_i\sim_i P_j$ for $i\leq j$.
-    $R_i\sim_i R_j$ for $i\leq j$.
-   \end{lemma}
-   \begin{proof}
-   Via induction on $i$, ( the size of the formula).
-   
-   Induction hypothesis: 
-    $P_k\sim_i P_j,$ 
-    $R_k\sim_i R_j$ 
-    for $i\leq k\leq j$.
-   \end{proof}
-   }
-}}   
+}
 \end{frame}
 
 
