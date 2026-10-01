@@ -1,0 +1,30 @@
+\frametitle{Example: simple communication protocol}
+\Margines{
+\begin{center}
+\begin{tikzpicture}
+  \node[stateNode] (s0) at (0,0) {$s_0$};
+  \node[stateNode] (s1) at (2.5,1.5) {$s_1$};
+  \node[stateNode] (s2) at (0,-2) {$s_2$};
+  \node[stateNode] (s3) at (5,0) {$s_3$};
+  \draw[->] (-1,0) -- (s0);
+  \draw[->] (s0) -- (s1) node[msg,left] {$send$};
+  \draw[->] (s0) to[bend left] (s2) node[right] {$abort$};
+  \draw[->] (s1) -- (s3) node[msg,above] {$ack$};
+  \draw[->] (s2) to[bend left] (s0) node[left] {$reset$};
+  \draw[->] (s3) -- (s0) node[msg,below] {$done$};
+\end{tikzpicture}
+\end{center}
+\visible<2->{
+\begin{itemize}
+  \item Initial state: $s_0$.
+  \item Actions: $\Sigma=\{send,ack,abort,reset,done\}$.
+  \item Example infinite traces:
+  \[
+  (send\ ack\ done)^\omega
+  \]
+  and
+  \[
+  abort\ reset\ (send\ ack\ done)^\omega.
+  \]
+\end{itemize}}
+}
