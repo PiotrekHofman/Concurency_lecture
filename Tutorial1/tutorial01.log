@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (Web2C 2025) (preloaded format=xelatex 2026.2.17)  2 OCT 2026 23:04
+This is XeTeX, Version 3.141592653-2.6-0.999997 (Web2C 2025) (preloaded format=xelatex 2026.2.17)  2 OCT 2026 23:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -476,13 +476,13 @@ t;+smcp;"
 
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
 (Font)                  OT1/cmr/m/n --> TU/OldStandard-Regular.otf(1)/m/n on in
-put line 37.
+put line 39.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
 (Font)                  OT1/cmr/m/it --> TU/OldStandard-Regular.otf(1)/m/it on 
-input line 37.
+input line 39.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
 (Font)                  OT1/cmr/bx/n --> TU/OldStandard-Regular.otf(1)/b/n on i
-nput line 37.
+nput line 39.
 
 Package fontspec Info: 
 (fontspec)             Font family 'OldStandard-Math.otf(0)' created for font
@@ -515,15 +515,15 @@ ipt}}].
 y=0;"<-7.1175>"[OldStandard-Math.otf]/OT:script=math;language=dflt;+ssty=1;"
 
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 39.
+(Font)              `operators' in the math version `normal' on input line 41.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/cmr/m/n --> TU/OldStandard-Math.otf(1)/m/n on input
- line 39.
+ line 41.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 39.
+(Font)              `operators' in the math version `bold' on input line 41.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  OT1/cmr/bx/n --> TU/OldStandard-Math.otf(1)/b/n on inpu
-t line 39.
+t line 41.
 
 Package fontspec Info: 
 (fontspec)             OldStandard-Math scale = 1.0001.
@@ -569,15 +569,15 @@ h;language=dflt;+ssty=0;"<-7.1175>s*[1.0001]"[OldStandard-Math.otf]/OT:script=m
 ath;language=dflt;+ssty=1;"
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 39.
+(Font)              `symbols' in the math version `normal' on input line 41.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
 (Font)                  OMS/cmsy/m/n --> TU/OldStandard-Math.otf(2)/m/n on inpu
-t line 39.
+t line 41.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 39.
+(Font)              `symbols' in the math version `bold' on input line 41.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
 (Font)                  OMS/cmsy/b/n --> TU/OldStandard-Math.otf(2)/b/n on inpu
-t line 39.
+t line 41.
 
 Package fontspec Info: 
 (fontspec)             OldStandard-Math scale = 0.9999.
@@ -617,22 +617,25 @@ h;language=dflt;+ssty=0;"<-7.1175>s*[0.9999]"[OldStandard-Math.otf]/OT:script=m
 ath;language=dflt;+ssty=1;"
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `normal' on input line 3
-9.
+(Font)              `largesymbols' in the math version `normal' on input line 4
+1.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
 (Font)                  OMX/cmex/m/n --> TU/OldStandard-Math.otf(3)/m/n on inpu
-t line 39.
+t line 41.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 39.
+(Font)              `largesymbols' in the math version `bold' on input line 41.
 
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 (Font)                  OMX/cmex/m/n --> TU/OldStandard-Math.otf(3)/b/n on inpu
-t line 39.
+t line 41.
 
 (/usr/local/share/texmf-dist/tex/latex/mathalpha/mathalpha.sty
 Package: mathalpha 2025/01/17 - 1.145mathalpha (License LPPL) Michael Sharpe
 
 `mathalpha' v1.145, 2025/01/17, a renaming of mathalfa (msharpe)
+LaTeX Font Info:    Overwriting math alphabet `\mathbb' in version `bold'
+(Font)                  U/px-math-ds/m/n --> U/px-math-ds/b/n on input line 221
+.
 LaTeX Font Info:    Overwriting math alphabet `\mathcal' in version `bold'
 (Font)                  U/eus/m/n --> U/eus/b/n on input line 479.
 )
@@ -777,6 +780,13 @@ LaTeX Font Info:    Font shape `U/eus/m/n' will be
 [1
 
 ]
+LaTeX Font Info:    Font shape `U/px-math-ds/m/n' will be
+(Font)              scaled to size 10.95pt on input line 109.
+LaTeX Font Info:    Font shape `U/px-math-ds/m/n' will be
+(Font)              scaled to size 7.665pt on input line 109.
+LaTeX Font Info:    Font shape `U/px-math-ds/m/n' will be
+(Font)              scaled to size 6.57pt on input line 109.
+
 
 [2]
 
@@ -795,11 +805,11 @@ Package rerunfilecheck Info: File `tutorial01.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 17375 strings out of 473839
- 320398 string characters out of 5733090
+ 17389 strings out of 473839
+ 320584 string characters out of 5733090
  932900 words of memory out of 5000000
- 40219 multiletter control sequences out of 15000+600000
- 563796 words of font info for 100 fonts, out of 8000000 for 9000
+ 40232 multiletter control sequences out of 15000+600000
+ 564414 words of font info for 103 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  94i,12n,121p,993b,460s stack positions out of 10000i,2500n,20000p,300000b,200000s
 
