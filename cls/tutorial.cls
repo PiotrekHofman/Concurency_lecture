@@ -14,7 +14,7 @@
 
 \RequirePackage[a4paper,margin=25mm]{geometry}
 \RequirePackage{enumitem}
-\RequirePackage{hyperref}
+\RequirePackage[hidelinks]{hyperref}
 \RequirePackage{datetime}
 
 % 3. Font Engine & Math Alphabets Configuration
@@ -76,7 +76,7 @@
 \newcommand{\documenttitle}[1]{\def\@documenttitle{#1}}
 \newcommand{\coursetitle}[1]{\def\@coursetitle{#1}}
 \newcommand{\lecturer}[1]{\def\@lecturer{#1}}
-
+\renewcommand{\abstract}[1]{\def\@abstract{#1}}
 % 8. Redefine \maketitle Header
 \renewcommand{\maketitle}{%
   \noindent
@@ -87,6 +87,14 @@
   \parbox[b]{0.25\textwidth}{\raggedleft \Large \@lecturer}%
   \vspace{1.5em}
   \centerline{\large\bfseries \@documenttitle}%
-  \vspace{1.5em}%
+  \vspace{1.5em}
+  \centerline{\normalsize Today: \slshape \@abstract}%
+  \vspace{1.5em}
 }
 \makeatother
+
+\RequirePackage{xcolor}
+\renewcommand{\thefootnote}{\color{red}(\arabic{footnote})}
+
+\DeclareMathOperator{\Pre}{Pre}
+\DeclareMathOperator{\Post}{Post}
