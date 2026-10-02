@@ -24,7 +24,9 @@
   % Reset \mathcal before loading Euler calligraphic
   \let\mathcal\undefined
   \let\mathbfcal\undefined
-  \RequirePackage[cal=euler]{mathalpha}
+  \let\mathbb\undefined
+  \let\mathbfbb\undefined
+  \RequirePackage[bb=boondox,cal=euler]{mathalpha}
 \else
   \RequirePackage{fontspec}
   \RequirePackage{unicode-math}
@@ -40,7 +42,9 @@
   % Reset \mathcal before loading Euler calligraphic alongside OldStandard
   \let\mathcal\undefined
   \let\mathbfcal\undefined
-  \RequirePackage[cal=euler]{mathalpha}
+  \let\mathbb\undefined
+  \let\mathbfbb\undefined
+  \RequirePackage[bb=px,cal=euler]{mathalpha}
 \fi
 
 % 4. List Spacing Setup
@@ -98,3 +102,6 @@
 
 \DeclareMathOperator{\Pre}{Pre}
 \DeclareMathOperator{\Post}{Post}
+
+\RequirePackage{titlesec}
+\renewcommand{\thesubsection}{\arabic{subsection}.\hskip -7pt}

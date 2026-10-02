@@ -126,7 +126,7 @@ semilinear.
 
 \section*{Exercises}
 
-\subsection*{1. Reading a finite LTS}
+\subsection{Reading a finite LTS}
 Consider the LTS with states $C=\{r,g\}$, initial state $r$, and transitions
 \[
   r\xrightarrow{\mathsf{go}}g,
@@ -143,7 +143,7 @@ Consider the LTS with states $C=\{r,g\}$, initial state $r$, and transitions
         different choices and explain the difference between them.
 \end{enumerate}
 
-\subsection*{2. A one-counter system}
+\subsection{A one-counter system}
 A one-counter system has a finite set of control states $Q$ and a counter
 in $\mathbb{N}=\{0,1,2,\ldots\}$. A rule
 \[
@@ -173,7 +173,7 @@ Take $Q=\{q\}$, initial configuration $(q,0)$, and rules
   \item Is the reachable LTS finite in either version? Explain briefly.
 \end{enumerate}
 
-\subsection*{3. Lossy and gainy counter systems}
+\subsection{Lossy and gainy counter systems}
 Start with a one-counter system as in Exercise~2, with rules
 $p\xrightarrow{a,d}q$ for $d\in\mathbb{Z}$. Configurations are
 $(p,n)\in Q\times\mathbb{N}$. Define the following two variants.
@@ -210,7 +210,7 @@ reachability by zero or more steps.
         system and explain why the two answers differ.
 \end{enumerate}
 
-\subsection*{4. A pushdown system}
+\subsection{A pushdown system}
 A pushdown system has a finite set of control states and a stack over a
 finite alphabet. The rightmost symbol is the top of the stack. For this
 exercise, let the stack alphabet be $\{\bot,0,1\}$, where $\bot$ is a
@@ -239,7 +239,7 @@ $(q,\bot 0)\xrightarrow{\mathsf{push}_1}(q,\bot 01)$.
         information about future behaviour?
 \end{enumerate}
 
-\subsection*{5. Independent steps and interleaving}
+\subsection{Independent steps and interleaving}
 Consider a system with configuration $(x,y)\in\{0,1\}^2$, initially
 $(0,0)$. Action $a$ changes $x$ from $0$ to $1$ and leaves $y$ unchanged;
 action $b$ changes $y$ from $0$ to $1$ and leaves $x$ unchanged. Each
@@ -255,7 +255,7 @@ action can be performed only once.
         the two traces remains possible?
 \end{enumerate}
 
-\subsection*{6. From rules to an induced LTS}
+\subsection{From rules to an induced LTS}
 For each model in Exercises 2--4, explicitly identify its configuration
 space, initial configuration, action labels, and one-step transition
 relation. Then compare the resulting reachable LTSs:
@@ -265,7 +265,7 @@ relation. Then compare the resulting reachable LTSs:
   
 \end{enumerate}
 
-\subsection*{7. Reachability sets: semilinear or regular?}
+\subsection{Reachability sets: semilinear or regular?}
 In this exercise, a one-counter net has finite control and counter updates
 by fixed integers, enabled when the resulting counter remains
 nonnegative. A one-counter automaton additionally has guards testing
@@ -299,7 +299,7 @@ configuration $(q,n)$ with its control state and counter value.
         the pairs of DFA states connected by some word generated from $A$.
 \end{enumerate}
 
-\subsection*{8. Same language, different transition systems: BPA and PDA}
+\subsection{Same language, different transition systems: BPA and PDA}
 Language equivalence compares only which finite words are accepted; it
 does not require the induced LTSs to have the same structure. Consider
 the BPA process given by the recursive equation
@@ -329,7 +329,7 @@ word and ends in an accepting state.
         language equivalence forget?
 \end{enumerate}
 
-\subsection*{9. Challenge: a nonsemilinear Turing-machine reachability set}
+\subsection{Challenge: a nonsemilinear Turing-machine reachability set}
 For this exercise, use the following explicit convention. A Turing-machine
 configuration has a finite-control state and a tape encoding. At selected
 checkpoint configurations, the tape has the form
@@ -356,7 +356,7 @@ coordinate projection of such a set must be semilinear.
         sets of Turing-machine configurations.
 \end{enumerate}
 
-\subsection*{10. Optional challenge: treewidth of a pushdown graph}
+\subsection{Optional challenge: treewidth of a pushdown graph}
 This challenge uses the following normal form. Let $Q$ be a finite set of
 control states and $\Gamma$ a finite stack alphabet containing $\bot$.
 Every transition replaces the top stack symbol $A$ by a word $\beta$ of
@@ -392,7 +392,7 @@ minus one.
         \]
 \end{enumerate}
 
-\subsection*{11. Timed automata, infinite branching, and Zeno runs}
+\subsection{Timed automata, infinite branching, and Zeno runs}
 Consider a timed automaton with one location $\ell$, one clock $x$, and
 initial configuration $(\ell,x=0)$. The invariant at $\ell$ is $x\leq 1$.
 There is one discrete transition, labelled $a$, from $\ell$ to itself,
