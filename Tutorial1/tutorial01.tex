@@ -1,41 +1,18 @@
 %!TeX program=xelatex
-\documentclass[11pt]{article}
-\newif\iflmodern
+\documentclass{tutorial} 
+% ^^ Use \documentclass[lmodern]{courseworks} if needed
 
-\lmoderntrue
+% Document Details
+\semester{Z. 2026}
+\coursetitle{Concurrency Theory}
+\lecturer{P. Hofman}
 
+% Set hardcoded date (Day, Month, Year)
+\tutorial{2}{10}{2026}
 
-\usepackage[a4paper,margin=25mm]{geometry}
-\usepackage[T1]{fontenc}
+% Document Title using the formatted date
+\documenttitle{Tutorial 1, \formatdate, by \textsc{vrm}}
 
-\iflmodern
-\usepackage{amssymb,amsfonts,amsmath,amsthm}
-\else
-\usepackage{fontspec}
-\usepackage{unicode-math}
-\usepackage{amsmath,amsthm}
-\setmainfont{OldStandard-Regular.otf}[
-  BoldFont       = OldStandard-Bold.otf,
-  ItalicFont     = OldStandard-Italic.otf,
-  BoldItalicFont = OldStandard-BoldItalic.otf
-]
-\setmathfont{OldStandard-Math.otf}
-\fi
-
-\usepackage{enumitem}
-\usepackage{hyperref}
-
-
-\setlist[enumerate]{itemsep=0.35em,topsep=0.4em}
-\setlist[itemize]{itemsep=0.25em,topsep=0.4em}
-\newcommand{\Conf}{\mathsf{Conf}}
-\newcommand{\Act}{\mathsf{Act}}
-\newcommand{\eps}{\varepsilon}
-
-\title{Concurrency Theory --- Tutorial 1\\[2mm]
-\large Transition Systems and Operational Models}
-\author{}
-\date{}
 
 \begin{document}
 \maketitle
