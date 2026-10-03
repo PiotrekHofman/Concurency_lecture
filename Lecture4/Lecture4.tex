@@ -297,6 +297,20 @@ For finite systems the sequence stabilizes, and the limit is bisimilarity.
 }
 \end{frame}
 
+\begin{frame}{Algorithm one}
+\Margines{
+\begin{enumerate}
+  \item Initialize $B_0=S\times S$.
+  \item For $i=0,1,2,\ldots$: compute $B_{i+1}$ from $B_i$.
+  \item Stop when $B_{i+1}=B_i$.
+\end{enumerate}
+
+\begin{block}{Complexity}
+The naive implementation takes $O(n^4)$ time, where $n=|S|$ and $|\Sigma|$ is the constant size of the alphabet.
+\end{block}
+}
+\end{frame}
+
 \begin{frame}{From relations to partitions}
 \Margines{
 \begin{block}{Equivalence relation as a partition}
@@ -462,23 +476,108 @@ The block $C=\{s_3,s_4\}$ and action $a$ split $\{s_1,s_2\}$, because only $s_1$
 }
 \end{frame}
 
+\begin{frame}{Complexity of naive partition refinement}
+\Margines{
+\small
+Let $n=|S|$, $m=|\to|$, and $k=|\Sigma|$.
+
+\begin{block}{Cost of a full pass}
+There are at most $kn$ splitters $(a,C)$. For each, scan all $m$ transitions to compute $\PreA_a(C)$ and all $n$ states to split blocks: $O(kn(m+n))$.
+\end{block}
+
+\begin{block}{Total cost}
+Each changing pass adds a block, so there are at most $n-1$ changing passes, then one stable scan. Recomputing from scratch gives $O(kn^2(m+n))$ time and $O(n+m)$ space.
+\end{block}
+}
+\end{frame}
+
+
+
 \begin{frame}{Paige--Tarjan idea}
 \Margines{
-\begin{block}{Naive implementation}
-The basic refinement algorithm is polynomial and sufficient for understanding the construction.
+\begin{block}{The naive algorithm repeats work}
+It repeatedly searches for every pair $(a,C)$ that splits a block. A straightforward implementation scans all $m$ transitions for each candidate, even if almost none lead into $C$.
 \end{block}
 
-\begin{block}{Efficient implementation}
-With suitable data structures, Paige--Tarjan partition refinement computes bisimulation in time
+\begin{block}{What an efficient algorithm must do}
+\begin{enumerate}
+  \item Remember which splitter obligations have already been handled.
+  \item Find predecessors by following incoming transitions to the splitter, rather than scanning the whole transition relation.
+  \item Arrange the work so that transitions are revisited only logarithmically often.
+\end{enumerate}
+\end{block}
+
+For one transition relation, the data structures give $O((n+m)\log n)$ time (usually written $O(m\log n)$). For a labelled LTS, keep the relations and splitter obligations separate by label; the same edge-charging argument applies to labelled edges.
+}
+\end{frame}
+
+\begin{frame}{Why processed splitters stay processed}
+\Margines{
+\small
+Fix an action $a$ and a target set $C$. A partition is stable with respect to $(a,C)$ when every source block is either wholly inside $\PreA_a(C)$ or disjoint from it.
+
+\begin{block}{Stability survives refinement}
+If a block has this all-or-none property, splitting that block into smaller blocks preserves it: each new block is still wholly inside, or wholly outside, $\PreA_a(C)$.
+\end{block}
+
+\begin{block}{Benefit over the naive algorithm}
+After processing $(a,C)$, later splits of the \emph{source} blocks cannot make this same test unstable again. An implementation can mark that obligation as done instead of rechecking it on every pass.
+\end{block}
+
+\begin{alertblock}{A changed target is a new obligation}
+If target block $C$ itself is split, stability with respect to $C$ does not imply stability with respect to its new pieces. The algorithm must account for the new target blocks; it does not simply forget them.
+\end{alertblock}
+}
+\end{frame}
+
+\begin{frame}{Why scan only incoming transitions?}
+\Margines{
+\small
+To split source blocks using $(a,C)$, we need exactly the states in $\PreA_a(C)$.
+
+\begin{block}{Naive work}
+Scan all $m$ transitions and test whether each $a$-transition ends in $C$.
+\end{block}
+
+\begin{block}{Indexed work}
+Store incoming transitions at their destination states. Visit only the $a$-transitions whose destination is a state in $C$, mark their source states, and split only the source blocks touched by those marks.
+\end{block}
+
+Every transition has one destination, and that destination belongs to exactly one current partition block. Thus a transition is relevant only when its destination's block is the current target splitter. With block membership and incoming-edge lists, the scan costs work proportional to the incoming edges of $C$, not all of $m$.
+}
+\end{frame}
+
+\begin{frame}{Why use the smaller half?}
+\Margines{
+\small
+When a block $C$ splits into $C_1,C_2$, schedule the smaller child as a new refining set (while preserving any obligations already on the worklist). Its size is at most $|C|/2$.
+
+\begin{block}{Count selected blocks containing one state}
+Fix a state $v$. The selected refining blocks that contain $v$ form a nested sequence. Each new one is at most half the size of the preceding one, so there are at most $\lfloor\log_2 n\rfloor+1$ such blocks.
+\end{block}
+
+This is the counting argument in Paige--Tarjan, Section 3, p.~980.
+}
+\end{frame}
+
+\begin{frame}{From the count to the time bound REDO!!!!}
+\Margines{
+\small
+\begin{block}{Charge edge scans to destinations}
+To process a selected refining block $B$, inspect edges entering $B$. An edge $(u,v)$ is inspected only when its destination $v$ belongs to the selected block.
+\end{block}
+
+If $c(v)$ is the number of selected refining blocks containing $v$, then
 \[
-  O(m\log n),
+  \text{edge inspections}
+  =\sum_{(u,v)\in E}c(v)
+  \le m\bigl(\lfloor\log_2 n\rfloor+1\bigr).
 \]
-where $n=|S|$ and $m=|\to|$.
-\end{block}
+Thus the edge work is $O(m\log n)$; initialization and bookkeeping add $O(n)$, giving $O((n+m)\log n)$ overall.
 
-\begin{block}{Main idea}
-After a split, process the smaller part as a splitter. A state can belong to such a smaller splitter only $O(\log n)$ times.
-\end{block}
+\begin{alertblock}{Not “the larger half is irrelevant”}
+The bound concerns how often selected blocks are scanned. It does not say that stability with respect to one child implies stability with respect to the other. The refinement algorithm still updates its pending obligations when a block splits.
+\end{alertblock}
 }
 \end{frame}
 
@@ -546,35 +645,138 @@ Adding only one unbounded counter already destroys the robust decidability pictu
 }
 \end{frame}
 
-\begin{frame}{A rare positive result: simulation for OCN}
+\begin{frame}{Simulation and bisimulation for one-counter systems}
 \Margines{
-\begin{block}{Positive result}
-Simulation preorder is decidable for one-counter nets.
+\begin{block}{Complexity snapshot}
+\begin{tabular}{
+|>{\centering\arraybackslash}m{0.30\textwidth}
+|>{\centering\arraybackslash}m{0.28\textwidth}
+|>{\centering\arraybackslash}m{0.27\textwidth}|}
+\hline
+model & relation/problem & complexity/status \\
+\hline
+one-counter nets
+& simulation preorder
+& PSPACE-complete [Hofman et al.\ 2016] \\
+\hline
+one-counter automata
+& strong bisimulation equivalence
+& PSPACE-complete [Böhm et al.\ 2010] \\
+\hline
+deterministic one-counter automata
+& language equivalence
+& NL-complete [Böhm et al.\ 2013] \\
+\hline
+\end{tabular}
+\end{block}
+}
+\end{frame}
+
+\begin{frame}{Equivalence problems for pushdown automata}
+\Margines{
+
+\vspace{-0.7cm}
+
+\begin{block}{Decidability and complexity}
+\begin{tabular}{
+|>{\centering\arraybackslash}m{0.22\textwidth}
+|>{\centering\arraybackslash}m{0.28\textwidth}
+|>{\centering\arraybackslash}m{0.34\textwidth}|}
+\hline
+model & problem & complexity/status \\
+\hline
+
+PDA
+& language equivalence and inclusion
+& undecidable \\
+\hline
+
+
+DPDA
+& language equivalence
+& P-hard, in TOWER
+  [Sénizergues; Stirling; Jan\v{c}ar] \\
+\hline
+
+DPDA
+& language inclusion
+& undecidable \\
+\hline
+
+PDA
+& strong bisimulation
+& Ackermann-complete
+  [Jan\v{c}ar--Schmitz; Zhang et al.] \\
+\hline
+
+
+\end{tabular}
 \end{block}
 
-\begin{block}{Complexity landscape}
-Known results place the problem at PSPACE-complete complexity.
-\end{block}
 
-\begin{block}{How to read this result}
-This is an exception rather than the rule. It shows that some branching preorders can survive one unbounded counter, but it does not restore a general algorithmic theory for infinite-state equivalence checking.
-\end{block}
+\begin{itemize}
+\item Determinism makes \emph{language equivalence} decidable,
+      but not language inclusion.
+\item Bisimilarity is decidable even for nondeterministic PDA,
+      but has extremely high complexity.
+\end{itemize}
 }
 \end{frame}
 
 \begin{frame}{Petri nets and bisimulation}
 \Margines{
-\begin{block}{Petri net processes}
-A labelled Petri net induces an infinite labelled transition system whose states are markings and whose transitions are firings.
-\end{block}
 
 \begin{block}{Jan\v{c}ar's theorem}
-Bisimilarity is undecidable for labelled place/transition Petri nets.
+Strong bisimilarity is undecidable for labelled place/transition Petri nets,
+already for nets with only two unbounded places.
 \end{block}
 
-\begin{block}{Interpretation}
-The finite partition-refinement algorithm relies on a finite set of states. For Petri nets the reachability graph is infinite, and there is in general no computable finite quotient representing bisimilarity.
+\begin{block}{Source problem}
+The proof reduces from the halting problem for a two-counter Minsky machine.
+
+\begin{itemize}
+    \item Two unbounded places represent the two counters.
+    \item Increment instructions are simulated directly.
+    \item Decrement instructions are simulated by consuming a token.
+    \item The main obstacle is the zero test:
+          ordinary Petri nets cannot test whether a place is empty.
+\end{itemize}
 \end{block}
+
+}
+\end{frame}
+
+
+\begin{frame}{How the reduction enforces zero tests}
+\Margines{
+
+\vspace{-0.5 cm}
+
+\begin{block}{Bisimulation game as a zero-test gadget}
+The construction allows a transition corresponding to the zero branch
+even when the simulated counter is nonzero.
+
+\begin{itemize}
+    \item Such a move is a potential ``cheat''.
+    \item The second net contains matching transitions arranged so that
+          an incorrect zero test can be exposed in the bisimulation game.
+    \item Hence a player can maintain bisimilarity only by simulating
+          valid counter-machine steps.
+\end{itemize}
+\end{block}
+
+\begin{block}{Key property}
+From a machine \(M\), construct two marked nets \(N_1,N_2\) such that
+\[
+        N_1 \sim N_2
+        \qquad\Longleftrightarrow\qquad
+        M \text{ does not halt}.
+\]
+
+Thus bisimilarity is used to enforce the behaviour of a machine
+with zero tests, even though Petri nets themselves cannot perform them.
+\end{block}
+
 }
 \end{frame}
 
@@ -694,9 +896,12 @@ Examples:
 \begin{itemize}
   \item R. Paige and R. E. Tarjan. Three partition refinement algorithms. SIAM J. Comput. 16(6), 1987.
   \item P. Jan\v{c}ar. Decidability questions for bisimilarity of Petri nets and some related problems. STACS 1994 / TCS 1995.
+  \item P. Jan\v{c}ar. Bisimulation equivalence is decidable for one-counter processes. CONCUR 1997.
+  \item P. Jan\v{c}ar. Simulation and bisimulation over one-counter processes. CONCUR 2000.
   \item G. S\'{e}nizergues. $L(A)=L(B)$? Decidability results from complete formal systems. TCS 2001.
   \item C. Stirling. Decidability of DPDA equivalence. LFCS report, 1999.
-  \item P. A. Abdulla and B. Jonsson. Simulation is decidable for one-counter nets. CONCUR 1998.
+  \item P. A. Abdulla and A. \v{C}er\={a}ns. Simulation is decidable for one-counter nets. CONCUR 1998.
+  \item P. Hofman, S. Lasota, R. Mayr, and P. Totzke. Simulation problems over one-counter nets. LMCS 2016.
   \item P. Hofman and P. Totzke. Trace inclusion for one-counter nets revisited. TCS 2018.
   \item W. Czerwi\'{n}ski and P. Hofman. Language inclusion for boundedly-ambiguous VASS is decidable. CONCUR 2022.
 \end{itemize}
