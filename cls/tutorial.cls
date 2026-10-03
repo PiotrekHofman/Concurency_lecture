@@ -40,6 +40,24 @@
   \let\mathbb\undefined
   \let\mathbfbb\undefined
   \RequirePackage[bb=px,cal=euler]{mathalpha}
+  
+	% \newVdash: Double vertical bar, single horizontal extension
+	%\rule[lift]{width}{height}
+	% #1: Length of the horizontal dash (default 1.2em)
+	\makeatletter
+	\newcommand{\oldstdmodels@}[2]{%
+	%  #1\vert\mkern-8mu=%
+	  \mathord{#1\vert}%
+	  \mkern-3mu%
+	  \mathord{#1=}%
+	}
+	\newcommand{\oldstmodels}{\mathrel{\mathpalette\oldstdmodels@{}}}
+	\makeatother
+	
+	\AtBeginDocument{%
+	  \let\models\oldstmodels
+	  \let\mmodels\oldstmodels
+	}
 \fi
 
 %% 4.5 Loading other packages

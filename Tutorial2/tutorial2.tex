@@ -6,6 +6,15 @@
 \newcommand{\Sat}{\mathsf{Sat}}
 \renewcommand{\Pre}{\mathsf{Pre}}
 \newcommand{\true}{\mathsf{true}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\Lang}{\mathcal{L}}
+
+\newcommand{\EX}{\mathrm{EX}}
+\newcommand{\AX}{\mathrm{AX}}
+\newcommand{\EF}{\mathrm{EF}}
+\newcommand{\AF}{\mathrm{AF}}
+\newcommand{\EG}{\mathrm{EG}}
+\newcommand{\AG}{\mathrm{AG}}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,automata,calc}
@@ -28,25 +37,6 @@
 \abstract{LTL, CTL, and CTL$^\ast$}
 
 \renewcommand{\thesection}{\Alph{section}.}
-
-
-% \newVdash: Double vertical bar, single horizontal extension
-%\rule[lift]{width}{height}
-% #1: Length of the horizontal dash (default 1.2em)
-\makeatletter
-\newcommand{\oldstdmodels@}[2]{%
-%  #1\vert\mkern-8mu=%
-  \mathord{#1\vert}%
-  \mkern-3mu%
-  \mathord{#1=}%
-}
-\newcommand{\oldstmodels}{\mathrel{\mathpalette\oldstdmodels@{}}}
-\makeatother
-
-\AtBeginDocument{%
-  \let\models\oldstmodels
-  \let\mmodels\oldstmodels
-}
 
 
 \begin{document}
@@ -90,7 +80,7 @@ Consider the following Kripke structure.
 \begin{center}
 \begin{tikzpicture}[node distance=18mm and 23mm]
   \node[state,label=above:$s_0$,label=left:{$\{p\}$}] (s0) {};
-  \node[state,right=of s0,label=above:$s_1$,label=below:{$\{p,q\}$}] (s1) {};
+  \node[state,right=of s0,label=above:$s_1$,label=below right:{$\{p,q\}$}] (s1) {};
   \node[state,below=of s0,label=below:{$s_2:\{q\}$}] (s2) {};
   \node[state,right=of s2,label=below:{$s_3:\emptyset$}] (s3) {};
 
@@ -111,15 +101,15 @@ For each formula below, determine the set of states satisfying it:
 
 \begin{multicols}{3}
 \begin{enumerate}[label=(\alph*)]
-  \item $EX\,q$
-  \item $AX\,q$
-  \item $EF\,q$
-  \item $AF\,q$
-  \item $EG\,p$
-  \item $AG\,p$
+  \item $\EX\,q$
+  \item $\AX\,q$
+  \item $\EF\,q$
+  \item $\AF\,q$
+  \item $\EG\,p$
+  \item $\AG\,p$
   \item $E(p\,U\,q)$
   \item $A(p\,U\,q)$
-  \item $AG\,EF\,q$
+  \item $\AG\,\EF\,q$
 \end{enumerate}
 \end{multicols}
 
@@ -263,33 +253,33 @@ If it is valid, prove it.  Otherwise draw a counterexample.
   \hfil
 
   \item \hfil
-  \(EF(\varphi\lor\psi)
+  \(\EF(\varphi\lor\psi)
     \stackrel{?}{\equiv}
-    EF\varphi\lor EF\psi\)
+    \EF\varphi\lor \EF\psi\)
   \hfil
 
   \item \hfil
-  \(EF(\varphi\land\psi)
+  \(\EF(\varphi\land\psi)
     \stackrel{?}{\equiv}
-    EF\varphi\land EF\psi\)
+    \EF\varphi\land \EF\psi\)
   \hfil
 
   \item \hfil
-  \(AF(\varphi\land\psi)
+  \(\AF(\varphi\land\psi)
     \stackrel{?}{\equiv}
-    AF\varphi\land AF\psi\)
+    \AF\varphi\land \AF\psi\)
   \hfil
 
   \item \hfil
-  \(EG(\varphi\land\psi)
+  \(\EG(\varphi\land\psi)
     \stackrel{?}{\equiv}
-    EG\varphi\land EG\psi\)
+    \EG\varphi\land \EG\psi\)
   \hfil
 
   \item \hfil
-  \(AG(\varphi\land\psi)
+  \(\AG(\varphi\land\psi)
     \stackrel{?}{\equiv}
-    AG\varphi\land AG\psi\)
+    \AG\varphi\land \AG\psi\)
   \hfil
 \end{enumerate}
 \end{exercise}
@@ -298,20 +288,20 @@ If it is valid, prove it.  Otherwise draw a counterexample.
 \begin{exercise}
 Prove the following CTL dualities:
 \[
-\neg EX\,\varphi \equiv AX\,\neg\varphi,
+\neg \EX\,\varphi \equiv \AX\,\neg\varphi,
 \]
 \[
-\neg EF\,\varphi \equiv AG\,\neg\varphi,
+\neg \EF\,\varphi \equiv \AG\,\neg\varphi,
 \]
 \[
-\neg AF\,\varphi \equiv EG\,\neg\varphi.
+\neg \AF\,\varphi \equiv \EG\,\neg\varphi.
 \]
 
 Which of the following are valid?
 \[
-EX\,EF\,p \stackrel{?}{\equiv} EF\,EX\,p,
+\EX\,\EF\,p \stackrel{?}{\equiv} \EF\,\EX\,p,
 \qquad
-AX\,AF\,p \stackrel{?}{\equiv} AF\,AX\,p.
+\AX\,\AF\,p \stackrel{?}{\equiv} \AF\,\AX\,p.
 \]
 Give a proof or a counterexample.
 \end{exercise}
@@ -397,9 +387,9 @@ is an LTL property under the usual universal interpretation of LTL.
 Using the family from \Cref{ex:11}, construct two families of transition systems
 $T_i$ and $T_i'$ such that
 \[
-T_i \mmodels AFG\,black,
+T_i \mmodels \AF G\,black,
 \qquad
-T_i' \mmodels AFG\,black,
+T_i' \mmodels \AF G\,black,
 \]
 but their initial states cannot be distinguished by CTL formulas of temporal
 depth at most $i$.
@@ -419,10 +409,10 @@ Classify each of the following formulas as: % LTL, CTL, or CTL* but not
 \begin{multicols}{2}
 \begin{enumerate}[label=(\alph*)]
   \item $A\,GFp$
-  \item $AG\,EFp$
+  \item $\AG\,\EF p$
   \item $E(Fp\land Fq)$
-  \item $A(p\,U\,(q\land EXr))$
-  \item $EF\,AGp$
+  \item $A(p\,U\,(q\land \EX r))$
+  \item $\EF\,\AG p$
   \item $E\,G(Fp\lor Fq)$
 \end{enumerate}
 \end{multicols}
@@ -439,10 +429,10 @@ For finite Kripke structures, describe the form of a witness or counterexample
 for each of the following.
 \begin{multicols}{2}
 \begin{enumerate}[label=(\alph*)]
-  \item $EF\,p$
-  \item $EG\,p$
-  \item $AG\,p$
-  \item $AF\,p$
+  \item $\EF\,p$
+  \item $\EG\,p$
+  \item $\AG\,p$
+  \item $\AF\,p$
   \item $E(p\,U\,q)$
 \end{enumerate}
 \end{multicols}
