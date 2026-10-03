@@ -197,13 +197,16 @@ reachability by zero or more steps.
   \item For each variant, prove the appropriate closure properties of
         $\Post^+(X)$ and $\Pre^+(X)$, separately
         for each control state. Which sets are downward-closed, and which
-        are upward-closed?
+        upward-closed?
   \item Prove that every upward-closed or downward-closed subset of
         $\mathbb{N}$ is semilinear. Use this and the fact that a finite union
         of semilinear sets is semilinear to show that if $X$ is semilinear,
         then both $\Post^*(X)$ and $\Pre^*(X)$
         are semilinear for lossy and gainy counter systems.
-        [Hint: prove first that 
+        [\emph{Hint}: prove first that \(\Pre^\ast(\{c\})\) and \(\Post^\ast(\{c\})\)
+        are semilinear, and then use the fact that
+          \[ \Pre^\ast(X) = \bigcup_{c \in X} \Pre^\ast(\{c\}), \]
+        and similarly for $\Post$, to deduce the result.]
     \item Apply both semantics to the one-state system with the single rule
         $q\xrightarrow{\mathsf{dec},-1}q$, starting from $(q,0)$. Describe
         the reachable counter values after zero or more steps in each
@@ -295,8 +298,8 @@ configuration $(q,n)$ with its control state and counter value.
   \item For the same grammar, let $K\subseteq T^*$ be a regular language
         of terminal target words. Show that the sentential forms in
         $\Pre^*(K)$ form a regular language over $T\cup V$.
-        Hint: take a DFA for $K$ and, for each grammar variable $A$, record
-        the pairs of DFA states connected by some word generated from $A$.
+        [\emph{Hint}: take a DFA for $K$ and, for each grammar variable $A$, record
+        the pairs of DFA states connected by some word generated from $A$.]
 \end{enumerate}
 
 \subsection{Same language, different transition systems: BPA and PDA}

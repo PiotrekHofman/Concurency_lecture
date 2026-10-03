@@ -1,20 +1,14 @@
-\documentclass[11pt,a4paper]{article}
-
-\usepackage[margin=2.2cm]{geometry}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{enumitem}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,automata,calc}
-\usepackage{hyperref}
+%!TeX program=xelatex
+\documentclass[11pt,a4paper]{tutorial}
+\usepackage{multicol}
 
 \newcommand{\AP}{\mathsf{AP}}
 \newcommand{\Sat}{\mathsf{Sat}}
-\newcommand{\Pre}{\mathsf{Pre}}
+\renewcommand{\Pre}{\mathsf{Pre}}
 \newcommand{\true}{\mathsf{true}}
 
-\newenvironment{exercise}[1]
-{\par\medskip\noindent\textbf{Exercise #1.}\ }
-{\par\medskip}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,automata,calc}
 
 \tikzset{
   state/.style={circle,draw,minimum size=7mm,inner sep=1pt},
@@ -23,23 +17,50 @@
   every edge/.style={draw,->,>=Latex}
 }
 
+
+\semester{Z. 2026}
+\coursetitle{Concurrency Theory}
+\lecturer{P. Hofman}
+
+\tutorial{9}{10}{2026}
+
+\documenttitle{Tutorial 2, \formatdate, by \textsc{vrm}}
+\abstract{LTL, CTL, and CTL$^\ast$}
+
+\renewcommand{\thesection}{\Alph{section}.}
+
+
+% \newVdash: Double vertical bar, single horizontal extension
+%\rule[lift]{width}{height}
+% #1: Length of the horizontal dash (default 1.2em)
+\makeatletter
+\newcommand{\oldstdmodels@}[2]{%
+%  #1\vert\mkern-8mu=%
+  \mathord{#1\vert}%
+  \mkern-3mu%
+  \mathord{#1=}%
+}
+\newcommand{\oldstmodels}{\mathrel{\mathpalette\oldstdmodels@{}}}
+\makeatother
+
+\AtBeginDocument{%
+  \let\models\oldstmodels
+  \let\mmodels\oldstmodels
+}
+
+
 \begin{document}
+\maketitle
 
-\begin{center}
-{\Large\bfseries Theory of Concurrency --- Exercises on LTL, CTL and CTL*}
-\end{center}
-
-\bigskip
-
-Unless stated otherwise, transition systems are finite Kripke structures and every
+\paragraph{Note.} Unless stated otherwise, transition systems are finite Kripke structures and every
 state has at least one successor.  LTL formulas are interpreted universally over
 all paths starting in the initial state.
 
 % ============================================================
-\section*{1. Reading and writing temporal formulas}
+\section{Reading and writing temporal formulas}
 % ============================================================
 
-\begin{exercise}{1}
+\begin{exercise}
 Let $req$, $ack$, $error$, $reset$, $crit$ and $ready$ be atomic propositions.
 Write formulas expressing the following properties.  For each property, state
 whether your formula is in LTL, CTL, or requires CTL*.
@@ -60,10 +81,10 @@ whether your formula is in LTL, CTL, or requires CTL*.
 
 
 % ============================================================
-\section*{2. Evaluate formulas on a transition system}
+\section{Evaluate formulas on a transition system}
 % ============================================================
 
-\begin{exercise}{2}
+\begin{exercise}
 Consider the following Kripke structure.
 
 \begin{center}
@@ -88,6 +109,7 @@ For each formula below, determine the set of states satisfying it:
 \Sat(\varphi)=\{s\mid s\models\varphi\}.
 \]
 
+\begin{multicols}{3}
 \begin{enumerate}[label=(\alph*)]
   \item $EX\,q$
   \item $AX\,q$
@@ -99,6 +121,7 @@ For each formula below, determine the set of states satisfying it:
   \item $A(p\,U\,q)$
   \item $AG\,EF\,q$
 \end{enumerate}
+\end{multicols}
 
 For at least two formulas, compute $\Sat(\varphi)$ explicitly using the
 bottom-up CTL model-checking algorithm.
@@ -106,21 +129,17 @@ bottom-up CTL model-checking algorithm.
 
 
 % ============================================================
-\section*{3. Find a distinguishing formula}
+\section{Find a distinguishing formula}
 % ============================================================
 
-\begin{exercise}{3}
-For each pair of initial states below, find a CTL formula of the smallest
-temporal depth you can that distinguishes them.
+\begin{exercise}
+Consider the following two Kripke structures.
+All unlabeled states satisfy no atomic propositions.
 
-\begin{center}
-\begin{exercise}{3}
-Consider the following two Kripke structures. All unlabeled states satisfy
-no atomic propositions.
 
 \begin{center}
 \begin{tikzpicture}[
-    node distance=13mm and 18mm,
+%    node distance=13mm and 18mm,
     state/.style={circle,draw,minimum size=7mm,inner sep=1pt},
     >=Latex
 ]
@@ -186,17 +205,13 @@ no atomic propositions.
   \item Find such a formula of the smallest temporal depth you can.
   \item Show that the two systems do not have the same set of traces.
   \item Find an LTL formula distinguishing the two systems.
+  \item Can an LTL formula distinguish the two systems when interpreted from $s$ and $t$?
+        Justify your answer in terms of traces.
 \end{enumerate}
-
-\end{exercise}
-\end{center}
-
-Can an LTL formula distinguish the two systems when interpreted from $s$ and $t$?
-Justify your answer in terms of traces.
 \end{exercise}
 
 
-\begin{exercise}{4}
+\begin{exercise}
 Construct two finite Kripke structures with the same set of traces from their
 initial states, but which are distinguished by some CTL formula.
 
@@ -210,86 +225,77 @@ Your answer should contain:
 
 
 % ============================================================
-\section*{4. Equivalences and counterexamples}
+\section{Equivalences and counterexamples}
 % ============================================================
 
-\begin{exercise}{5}
-Prove the following LTL equivalences or give a counterexample if they are not valid.:
-\[
-FF\varphi \equiv F\varphi,
-\qquad
-GG\varphi \equiv G\varphi,
-\]
-\[
-FGF\varphi \equiv GF\varphi,
-\qquad
-GFG\varphi \equiv FG\varphi,
-\]
-\[
-X(\varphi\land\psi)\equiv X\varphi\land X\psi,
-\]
-\[
-F(\varphi\lor\psi)\equiv F\varphi\lor F\psi,
-\]
-\[
-G(\varphi\land\psi)\equiv G\varphi\land G\psi.
-\]
+\begin{exercise}
+Prove the following LTL equivalences or give a counterexample if they are not valid.
+\begin{multicols}{2}
+\begin{enumerate}[label=(\alph*)]
+\item $FF\varphi \equiv F\varphi$
+\item $GG\varphi \equiv G\varphi$,
+\item $FGF\varphi \equiv GF\varphi$,
+\item $GFG\varphi \equiv FG\varphi$,
+\item $X(\varphi\land\psi)\equiv X\varphi\land X\psi$,
+\item $F(\varphi\lor\psi)\equiv F\varphi\lor F\psi$,
+\item $G(\varphi\land\psi)\equiv G\varphi\land G\psi$.
+\end{enumerate}
+\end{multicols}
 For every proof, work directly from the semantics.
 \end{exercise}
 
 
-\begin{exercise}{6}
+\begin{exercise}
 For each proposed equivalence below, decide whether it is valid.
 If it is valid, prove it.  Otherwise draw a counterexample.
 
-\begin{enumerate}[label=(\alph*)]
-  \item
-  \[
-  F(\varphi\land\psi)
-  \stackrel{?}{\equiv}
-  F\varphi\land F\psi
-  \]
-  \item
-  \[
-  G(\varphi\lor\psi)
-  \stackrel{?}{\equiv}
-  G\varphi\lor G\psi
-  \]
-  \item
-  \[
-  EF(\varphi\lor\psi)
-  \stackrel{?}{\equiv}
-  EF\varphi\lor EF\psi
-  \]
-  \item
-  \[
-  EF(\varphi\land\psi)
-  \stackrel{?}{\equiv}
-  EF\varphi\land EF\psi
-  \]
-  \item
-  \[
-  AF(\varphi\land\psi)
-  \stackrel{?}{\equiv}
-  AF\varphi\land AF\psi
-  \]
-  \item
-  \[
-  EG(\varphi\land\psi)
-  \stackrel{?}{\equiv}
-  EG\varphi\land EG\psi
-  \]
-  \item
-  \[
-  AG(\varphi\land\psi)
-  \stackrel{?}{\equiv}
-  AG\varphi\land AG\psi.
-  \]
+\begin{enumerate}[label=(\alph*),itemsep=0.75\baselineskip]
+  \item \hfil
+  \(F(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    F\varphi\land F\psi\)
+  \hfil
+
+  \item \hfil
+  \(G(\varphi\lor\psi)
+    \stackrel{?}{\equiv}
+    G\varphi\lor G\psi\)
+  \hfil
+
+  \item \hfil
+  \(EF(\varphi\lor\psi)
+    \stackrel{?}{\equiv}
+    EF\varphi\lor EF\psi\)
+  \hfil
+
+  \item \hfil
+  \(EF(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    EF\varphi\land EF\psi\)
+  \hfil
+
+  \item \hfil
+  \(AF(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    AF\varphi\land AF\psi\)
+  \hfil
+
+  \item \hfil
+  \(EG(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    EG\varphi\land EG\psi\)
+  \hfil
+
+  \item \hfil
+  \(AG(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    AG\varphi\land AG\psi\)
+  \hfil
 \end{enumerate}
 \end{exercise}
 
 
-\begin{exercise}{7}
+\begin{exercise}
 Prove the following CTL dualities:
 \[
 \neg EX\,\varphi \equiv AX\,\neg\varphi,
@@ -314,10 +320,10 @@ Give a proof or a counterexample.
 
 
 % ============================================================
-\section*{5. Bounded CTL depth}
+\section{Bounded CTL depth}
 % ============================================================
 
-\begin{exercise}{8}
+\begin{exercise}
 For $n\geq 0$, let $s\equiv_n t$ mean that $s$ and $t$ satisfy the same
 CTL formulas of temporal depth at most $n$.
 
@@ -378,23 +384,22 @@ Formulate the argument as an $n$-round game between two players.
 
 
 % ============================================================
-\section*{8. LTL versus CTL}
+\section{LTL versus CTL}
 % ============================================================
 
-\begin{exercise}{9}
+\begin{exercise}
 The CTL* formula
 \[
 A\,FG\,black
 \]
 is an LTL property under the usual universal interpretation of LTL.
 
-Using the family from Exercise 11, construct two families of transition systems
+Using the family from \Cref{ex:11}, construct two families of transition systems
 $T_i$ and $T_i'$ such that
-
 \[
-T_i\models AFG\,black,
+T_i \mmodels AFG\,black,
 \qquad
-T_i'\not\models AFG\,black,
+T_i' \mmodels AFG\,black,
 \]
 but their initial states cannot be distinguished by CTL formulas of temporal
 depth at most $i$.
@@ -403,39 +408,36 @@ Conclude that the LTL property $FG\,black$ is not expressible in CTL.
 \end{exercise}
 
 
-\begin{exercise}{10}
-Classify each expression below as:
-\[
-\text{LTL},\qquad \text{CTL},\qquad \text{CTL* but not syntactically CTL}.
-\]
-
-\[
-A\,GFp,
-\qquad
-AG\,EFp,
-\qquad
-E(Fp\land Fq),
-\qquad
-A(p\,U\,(q\land EXr)),
-\]
-\[
-EF\,AGp,
-\qquad
-E\,G(Fp\lor Fq).
-\]
-
-For every CTL formula, rewrite it explicitly as a CTL* state formula.
+\begin{exercise}
+Classify each of the following formulas as: % LTL, CTL, or CTL* but not
+%syntactically CTL: i.e.,
+\hfil\(
+  \text{LTL},\qquad
+  \text{CTL},\qquad
+  \text{CTL*}-\text{CTL}.
+\)\hfil
+\begin{multicols}{2}
+\begin{enumerate}[label=(\alph*)]
+  \item $A\,GFp$
+  \item $AG\,EFp$
+  \item $E(Fp\land Fq)$
+  \item $A(p\,U\,(q\land EXr))$
+  \item $EF\,AGp$
+  \item $E\,G(Fp\lor Fq)$
+\end{enumerate}
+\end{multicols}
+\noindent For every CTL formula, rewrite it explicitly as a CTL* state formula.
 \end{exercise}
 
 
 % ============================================================
-\section*{9. Counterexamples and witnesses}
+\section{Counterexamples and witnesses}
 % ============================================================
 
-\begin{exercise}{11}
+\begin{exercise}\label{ex:11}
 For finite Kripke structures, describe the form of a witness or counterexample
 for each of the following.
-
+\begin{multicols}{2}
 \begin{enumerate}[label=(\alph*)]
   \item $EF\,p$
   \item $EG\,p$
@@ -443,6 +445,7 @@ for each of the following.
   \item $AF\,p$
   \item $E(p\,U\,q)$
 \end{enumerate}
+\end{multicols}
 
 Show that whenever a finite Kripke structure violates $AF\,p$, there exists an
 ultimately periodic counterexample path (a finite prefix followed by a cycle).
@@ -450,10 +453,10 @@ ultimately periodic counterexample path (a finite prefix followed by a cycle).
 
 
 % ============================================================
-\section*{10. Challenge: infinite-state systems}
+\section{Challenge: infinite-state systems}
 % ============================================================
 
-\begin{exercise}{12}[Pushdown systems]
+\begin{exercise}[Pushdown systems]
 A pushdown system has configurations of the form $(q,w)$, where $q$ is a
 control state and $w$ is a stack word.
 
@@ -472,7 +475,7 @@ which known undecidable problem is encoded.
 \end{exercise}
 
 
-\begin{exercise}{13}[VASS / Petri nets]
+\begin{exercise}[VASS / Petri nets]
 Consider a VASS as an infinite transition system.  Study the model-checking
 problems for LTL and CTL under state labellings defined by predicates on
 configurations.
@@ -495,10 +498,10 @@ If you claim undecidability, give a reduction.
 
 
 % ============================================================
-\section*{11. Challenge: CTL* model checking}
+\section{Challenge: CTL* model checking}
 % ============================================================
 
-\begin{exercise}{14}
+\begin{exercise}
 Assume as a black box that for every LTL formula $\varphi$ one can construct
 a B\"uchi automaton $\mathcal A_\varphi$ accepting exactly the words satisfying
 $\varphi$.
