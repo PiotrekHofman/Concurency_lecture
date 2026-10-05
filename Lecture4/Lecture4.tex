@@ -600,9 +600,8 @@ They have an $a$-transition into $B$, but none into $S\setminus B$.
 \begin{alertblock}{The implementation trick}
 Maintain $c_a(x,Y)$, the number of $a$-successors of $x$ in $Y$. While scanning edges entering $B$, test
 \[
-  c_a(x,B)=c_a(x,S),
+  \text{Look for }c_a(x,B)=c_a(x,S).
 \]
-which means that $x$ has no $a$-successor in $S\setminus B$. The blackboard derivation explains why this finds exactly the needed states.
 \end{alertblock}
 }
 \end{frame}
@@ -903,27 +902,7 @@ Examples:
 }
 \end{frame}
 
-\begin{frame}{Take-home picture}
-\Margines{
-\begin{center}
-\begin{tikzpicture}[node distance=1.25cm,>=stealth]
-  \node[draw,rounded corners,align=center,minimum width=2.7cm] (logic) at (0,0) {logic};
-  \node[draw,rounded corners,align=center,minimum width=3.2cm] (equiv) at (4,0) {equivalence /\ refinement};
-  \node[draw,rounded corners,align=center,minimum width=2.9cm] (alg) at (8,0) {algorithm};
-  \draw[->] (logic) -- node[above] {induces} (equiv);
-  \draw[->] (equiv) -- node[above] {checking} (alg);
 
-  \node[align=center] at (0,-1.6) {LTL\\$\leadsto$ traces};
-  \node[align=center] at (4,-1.6) {language inclusion\\language equivalence};
-  \node[align=center] at (8,-1.6) {automata methods};
-
-  \node[align=center] at (0,-3.0) {CTL/CTL$^*$\\$\leadsto$ branching};
-  \node[align=center] at (4,-3.0) {simulation\\bisimulation};
-  \node[align=center] at (8,-3.0) {partition refinement\\or hard/undecidable};
-\end{tikzpicture}
-\end{center}
-}
-\end{frame}
 
 \begin{frame}{Summary}
 \Margines{
