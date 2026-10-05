@@ -12,11 +12,6 @@
 % 2. Load Base Class & Core Packages
 \LoadClass[11pt]{article}
 
-\RequirePackage[a4paper,margin=25mm]{geometry}
-\RequirePackage{enumitem}
-\RequirePackage[hidelinks]{hyperref}
-\RequirePackage{datetime}
-
 % 3. Font Engine & Math Alphabets Configuration
 \iflmodern
   \RequirePackage[T1]{fontenc}
@@ -45,7 +40,34 @@
   \let\mathbb\undefined
   \let\mathbfbb\undefined
   \RequirePackage[bb=px,cal=euler]{mathalpha}
+  
+	% \newVdash: Double vertical bar, single horizontal extension
+	%\rule[lift]{width}{height}
+	% #1: Length of the horizontal dash (default 1.2em)
+	\makeatletter
+	\newcommand{\oldstdmodels@}[2]{%
+	%  #1\vert\mkern-8mu=%
+	  \mathord{#1\vert}%
+	  \mkern-3mu%
+	  \mathord{#1=}%
+	}
+	\newcommand{\oldstmodels}{\mathrel{\mathpalette\oldstdmodels@{}}}
+	\makeatother
+	
+	\AtBeginDocument{%
+	  \let\models\oldstmodels
+	  \let\mmodels\oldstmodels
+	}
 \fi
+
+%% 4.5 Loading other packages
+\RequirePackage[a4paper,margin=25mm]{geometry}
+\RequirePackage{enumitem}
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{datetime}
+\RequirePackage{cleveref}
+\RequirePackage{xparse}
+
 
 % 4. List Spacing Setup
 \setlist[enumerate]{itemsep=0.35em,topsep=0.4em}
@@ -105,3 +127,24 @@
 
 \RequirePackage{titlesec}
 \renewcommand{\thesubsection}{\arabic{subsection}.\hskip -7pt}
+
+
+\newcounter{exercise}
+\NewDocumentEnvironment{exercise}{O{} o}
+{%
+  \par\medskip\noindent
+  \IfNoValueTF{#2}
+    {\refstepcounter{exercise}}
+    {\setcounter{exercise}{\numexpr#2-1\relax}%
+     \refstepcounter{exercise}}%
+  \textbf{Exercise \theexercise.}%
+  \if\relax\detokenize{#1}\relax
+  \else
+    \ [\textit{#1}]%
+  \fi
+  \ %
+}
+{\par\medskip}
+
+\crefname{exercise}{exercise}{exercises}
+\Crefname{exercise}{Exercise}{Exercises}

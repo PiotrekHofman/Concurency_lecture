@@ -126,7 +126,7 @@ semilinear.
 
 \section*{Exercises}
 
-\subsection{Reading a finite LTS}
+\begin{exercise}[Reading a finite LTS]
 Consider the LTS with states $C=\{r,g\}$, initial state $r$, and transitions
 \[
   r\xrightarrow{\mathsf{go}}g,
@@ -142,8 +142,9 @@ Consider the LTS with states $C=\{r,g\}$, initial state $r$, and transitions
   \item Add one transition so that the system has a deadlock. Give two
         different choices and explain the difference between them.
 \end{enumerate}
+\end{exercise}
 
-\subsection{A one-counter system}
+\begin{exercise}[One-counter systems]
 A one-counter system has a finite set of control states $Q$ and a counter
 in $\mathbb{N}=\{0,1,2,\ldots\}$. A rule
 \[
@@ -172,8 +173,9 @@ Take $Q=\{q\}$, initial configuration $(q,0)$, and rules
         over $\mathbb{Z}$ but impossible over $\mathbb{N}$.
   \item Is the reachable LTS finite in either version? Explain briefly.
 \end{enumerate}
+\end{exercise}
 
-\subsection{Lossy and gainy counter systems}
+\begin{exercise}[Lossy and gainy counter systems]
 Start with a one-counter system as in Exercise~2, with rules
 $p\xrightarrow{a,d}q$ for $d\in\mathbb{Z}$. Configurations are
 $(p,n)\in Q\times\mathbb{N}$. Define the following two variants.
@@ -197,20 +199,25 @@ reachability by zero or more steps.
   \item For each variant, prove the appropriate closure properties of
         $\Post^+(X)$ and $\Pre^+(X)$, separately
         for each control state. Which sets are downward-closed, and which
-        are upward-closed?
+        upward-closed?
   \item Prove that every upward-closed or downward-closed subset of
         $\mathbb{N}$ is semilinear. Use this and the fact that a finite union
         of semilinear sets is semilinear to show that if $X$ is semilinear,
         then both $\Post^*(X)$ and $\Pre^*(X)$
         are semilinear for lossy and gainy counter systems.
-        [Hint: prove first that 
+        [\emph{Hint}: prove first that \(\Pre^\ast(\{c\})\) and \(\Post^\ast(\{c\})\)
+        are semilinear, and then use the fact that
+          \[ \Pre^\ast(X) = \bigcup_{c \in X} \Pre^\ast(\{c\}), \]
+        and similarly for $\Post$, to deduce the result.]
     \item Apply both semantics to the one-state system with the single rule
         $q\xrightarrow{\mathsf{dec},-1}q$, starting from $(q,0)$. Describe
         the reachable counter values after zero or more steps in each
         system and explain why the two answers differ.
 \end{enumerate}
+\end{exercise}
 
-\subsection{A pushdown system}
+
+\begin{exercise}[Pushdown systems]
 A pushdown system has a finite set of control states and a stack over a
 finite alphabet. The rightmost symbol is the top of the stack. For this
 exercise, let the stack alphabet be $\{\bot,0,1\}$, where $\bot$ is a
@@ -238,8 +245,10 @@ $(q,\bot 0)\xrightarrow{\mathsf{push}_1}(q,\bot 01)$.
         recording only the stack, or only the control state, lose
         information about future behaviour?
 \end{enumerate}
+\end{exercise}
 
-\subsection{Independent steps and interleaving}
+
+\begin{exercise}[Independent steps and interleaving]
 Consider a system with configuration $(x,y)\in\{0,1\}^2$, initially
 $(0,0)$. Action $a$ changes $x$ from $0$ to $1$ and leaves $y$ unchanged;
 action $b$ changes $y$ from $0$ to $1$ and leaves $x$ unchanged. Each
@@ -254,8 +263,9 @@ action can be performed only once.
   \item Change the rules so that $b$ is enabled only after $a$. Which of
         the two traces remains possible?
 \end{enumerate}
+\end{exercise}
 
-\subsection{From rules to an induced LTS}
+\begin{exercise}[From rules to an induced LTS]
 For each model in Exercises 2--4, explicitly identify its configuration
 space, initial configuration, action labels, and one-step transition
 relation. Then compare the resulting reachable LTSs:
@@ -264,8 +274,10 @@ relation. Then compare the resulting reachable LTSs:
   \item Which have a branching structure, and which have cycles?
   
 \end{enumerate}
+\end{exercise}
 
-\subsection{Reachability sets: semilinear or regular?}
+
+\begin{exercise}[Reachability sets: semilinear or regular?]
 In this exercise, a one-counter net has finite control and counter updates
 by fixed integers, enabled when the resulting counter remains
 nonnegative. A one-counter automaton additionally has guards testing
@@ -295,11 +307,12 @@ configuration $(q,n)$ with its control state and counter value.
   \item For the same grammar, let $K\subseteq T^*$ be a regular language
         of terminal target words. Show that the sentential forms in
         $\Pre^*(K)$ form a regular language over $T\cup V$.
-        Hint: take a DFA for $K$ and, for each grammar variable $A$, record
-        the pairs of DFA states connected by some word generated from $A$.
+        [\emph{Hint}: take a DFA for $K$ and, for each grammar variable $A$, record
+        the pairs of DFA states connected by some word generated from $A$.]
 \end{enumerate}
+\end{exercise}
 
-\subsection{Same language, different transition systems: BPA and PDA}
+\begin{exercise}[Same language, different transition systems: BPA and PDA]
 Language equivalence compares only which finite words are accepted; it
 does not require the induced LTSs to have the same structure. Consider
 the BPA process given by the recursive equation
@@ -328,8 +341,9 @@ word and ends in an accepting state.
         between context-free grammars and PDAs: what information does
         language equivalence forget?
 \end{enumerate}
+\end{exercise}
 
-\subsection{Challenge: a nonsemilinear Turing-machine reachability set}
+\begin{exercise}[Challenge: a nonsemilinear Turing-machine reachability set]
 For this exercise, use the following explicit convention. A Turing-machine
 configuration has a finite-control state and a tape encoding. At selected
 checkpoint configurations, the tape has the form
@@ -355,8 +369,9 @@ coordinate projection of such a set must be semilinear.
         ``semilinear'' is not a representation-free property of arbitrary
         sets of Turing-machine configurations.
 \end{enumerate}
+\end{exercise}
 
-\subsection{Optional challenge: treewidth of a pushdown graph}
+\begin{exercise}[Optional challenge: treewidth of a pushdown graph]
 This challenge uses the following normal form. Let $Q$ be a finite set of
 control states and $\Gamma$ a finite stack alphabet containing $\bot$.
 Every transition replaces the top stack symbol $A$ by a word $\beta$ of
@@ -391,8 +406,9 @@ minus one.
           \operatorname{tw}(G)\leq |Q|(|\Gamma|+1)-1.
         \]
 \end{enumerate}
+\end{exercise}
 
-\subsection{Timed automata, infinite branching, and Zeno runs}
+\begin{exercise}[Timed automata, infinite branching, and Zeno runs]
 Consider a timed automaton with one location $\ell$, one clock $x$, and
 initial configuration $(\ell,x=0)$. The invariant at $\ell$ is $x\leq 1$.
 There is one discrete transition, labelled $a$, from $\ell$ to itself,
@@ -414,6 +430,7 @@ with guard $x>0$ and reset $x:=0$.
         LTS above. Distinguish an infinite run (infinitely many transitions)
         from a run with unbounded accumulated duration.
 \end{enumerate}
+\end{exercise}
 
 \paragraph{Further questions for discussion.}
 For a first meeting, useful habits beyond drawing the graph are to state

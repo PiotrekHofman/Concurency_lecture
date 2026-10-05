@@ -1,12 +1,9 @@
-\documentclass[11pt,a4paper]{article}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern,amsmath,amssymb,enumitem,booktabs,array}
-\usepackage[margin=25mm]{geometry}
-\usepackage[hidelinks]{hyperref}
-\newcounter{exercise}
-\newenvironment{exercise}[1]{\refstepcounter{exercise}\par\medskip
-  \noindent\textbf{Exercise \theexercise. #1}\par\smallskip}{\par}
+%!TeX program=xelatex
+\documentclass[11pt,a4paper]{tutorial}
+
+\usepackage{enumitem,booktabs,array}
+\usepackage{multicol}
+
 \newcommand{\Tr}{\operatorname{Tr}}
 \newcommand{\Lang}{\mathcal{L}}
 \newcommand{\EX}{\mathrm{EX}}
@@ -15,15 +12,25 @@
 \newcommand{\AF}{\mathrm{AF}}
 \newcommand{\EG}{\mathrm{EG}}
 \newcommand{\AG}{\mathrm{AG}}
+
 \setlist[enumerate]{label=(\alph*),itemsep=3pt,topsep=3pt}
 \setlength{\parindent}{0pt}
-\begin{document}
-\begin{center}
-{\Large\bfseries Theory of Concurrency: Exercise Sheet 3}\\[4pt]
-{\large Languages, simulation, and logical abstraction}
-\end{center}
 
-\textbf{Conventions.}
+\semester{Z. 2026}
+\coursetitle{Concurrency Theory}
+\lecturer{P. Hofman}
+
+\tutorial{16}{10}{2026}
+
+\documenttitle{Tutorial 3, \formatdate, by \textsc{vrm}}
+\abstract{Languages, simulation, and logical abstraction}
+
+\renewcommand{\thesection}{\Alph{section}.}
+
+\begin{document}
+\maketitle 
+
+\paragraph{Conventions.}
 For an action-labelled LTS, let
 \[
  \Lang(s)=\{w\in\Sigma^*:s\xrightarrow{w}s'\text{ for some }s'\}
@@ -34,15 +41,15 @@ state labels; the transition relation is total. LTL uses universal path
 semantics. Write $s\preceq t$ when $t$ simulates $s$; on Kripke
 structures, simulations preserve state labels exactly.
 HML uses action modalities on LTSs, while CTL uses state propositions
-on Kripke structures.
+on Kripke structures.\par
 
-\textbf{Scope.} Give explicit witnesses and short arguments. Do not compute
+\paragraph{Scope.} Give explicit witnesses and short arguments. Do not compute
 maximal bisimulation relations or use partition refinement.
 Exercises marked $\star$ are optional extensions.
 
-\section*{A. What does an abstraction preserve?}
 
-\begin{exercise}{Equal languages, different branching}
+\section{What does an abstraction preserve?}
+\begin{exercise}[Equal languages, different branching]
 Construct two finite pointed LTSs $(T,s)$ and $(U,t)$ such that
 $\Lang(s)=\Lang(t)$ but $s\not\sim t$.
 \begin{enumerate}
@@ -50,13 +57,13 @@ $\Lang(s)=\Lang(t)$ but $s\not\sim t$.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{Bisimilar but not isomorphic}
+\begin{exercise}[Bisimilar but not isomorphic]
 Construct two finite pointed LTSs with different numbers of reachable
 states whose initial states are bisimilar. Exhibit a bisimulation witnessing
 this and explain why the systems are not isomorphic.
 \end{exercise}
 
-\begin{exercise}{Simulation versus language inclusion}
+\begin{exercise}[Simulation versus language inclusion]
 \begin{enumerate}
 \item Prove that $s\preceq t$ implies $\Lang(s)\subseteq\Lang(t)$.
 \item Construct finite LTSs showing that the converse fails. Explain the
@@ -67,7 +74,7 @@ for each action.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{CTL fragments and preservation under simulation}
+\begin{exercise}[CTL fragments and preservation under simulation]
 Assume $s\preceq t$ in a Kripke structure. For each formula below, determine
 whether the following implications hold for all such pairs:
 \[
@@ -77,20 +84,33 @@ whether the following implications hold for all such pairs:
 \]
 Answer \emph{both}, \emph{only $\rightarrow$}, \emph{only $\leftarrow$},
 or \emph{neither}. 
-\[
-\begin{array}{lll}
-\text{(i)}\ p\land\neg q & \text{(ii)}\ \EX p & \text{(iii)}\ \AX p\\[3pt]
-\text{(iv)}\ \EF(p\land\EX q) & \text{(v)}\ \AG(p\lor\AF q)
- & \text{(vi)}\ \AG\EF p\\[3pt]
-\text{(vii)}\ \EX p\land\AX q & \text{(viii)}\ \neg\EX\neg p
- & \text{(ix)}\ \EG p\lor\AF q.
-\end{array}
-\]
+%\[
+%\begin{array}{lll}
+%\text{(i)}\ p\land\neg q & \text{(ii)}\ \EX p & \text{(iii)}\ \AX p\\[3pt]
+%\text{(iv)}\ \EF(p\land\EX q) & \text{(v)}\ \AG(p\lor\AF q)
+% & \text{(vi)}\ \AG\EF p\\[3pt]
+%\text{(vii)}\ \EX p\land\AX q & \text{(viii)}\ \neg\EX\neg p
+% & \text{(ix)}\ \EG p\lor\AF q.
+%\end{array}
+%\]
+\begin{multicols}{3}
+\begin{enumerate}[label=(\roman*)]
+  \item \(p\land\neg q\)
+  \item \(\EX p\)
+  \item \(\AX p\)
+  \item \(\EF(p\land\EX q)\)
+  \item \(\AG(p\lor\AF q)\)
+  \item \(\AG\EF p\)
+  \item \(\EX p\land\AX q\)
+  \item \(\neg\EX\neg p\)
+  \item \(\EG p\lor\AF q\)
+\end{enumerate}
+\end{multicols}
 Justify valid directions using preservation results. For each invalid
 direction, give a finite counterexample and a witnessing simulation.
 \end{exercise}
 
-\begin{exercise}{Trace equivalence and a distinguishing CTL formula}
+\begin{exercise}[Trace equivalence and a distinguishing CTL formula]
 Consider the following two Kripke structures. Unlisted transitions are absent.
 \begin{itemize}[itemsep=3pt,topsep=3pt]
 \item $K$: $s\to x$, $x\to u$, $x\to v$, $u\to u$, $v\to v$;\\
@@ -106,7 +126,7 @@ express that one immediate successor offers two different possible futures.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{Choose a sufficient abstraction}
+\begin{exercise}[Choose a sufficient abstraction]
 For each verification task, choose a sufficient relation between a concrete
 state $c$ and an abstract state $a$. State the direction of any trace
 inclusion or simulation, and justify your answer in one sentence.
@@ -122,9 +142,8 @@ In (a)--(c), consider whether trace inclusion alone suffices; your relation
 need only be sufficient, so do not claim necessity without proof.
 \end{exercise}
 
-\section*{B. Language problems for finite and infinite-state systems}
-
-\textbf{Acceptance conventions.}
+\section{Language problems for finite and infinite-state systems}
+\paragraph{Acceptance conventions.}
 Write $L(A)$ for an \emph{accepted} finite-word language, distinguished from
 the all-traces language $\Lang$ above. NFAs and PDAs accept by final state
 after consuming the whole input; PDAs may have $\varepsilon$-moves.
@@ -148,7 +167,7 @@ A deterministic VASS has at most one outgoing transition per
 control state and letter.
 \end{itemize}
 
-\begin{exercise}{NFA inclusion and equivalence}
+\begin{exercise}[NFA inclusion and equivalence]
 \begin{enumerate}
 \item Give algorithms deciding $L(A)\subseteq L(B)$ and $L(A)=L(B)$
 for two NFAs. Explain why simply interchanging final and non-final
@@ -159,7 +178,7 @@ in terms of the numbers of states of $A$ and $B$.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{PDA languages and regular specifications}
+\begin{exercise}[PDA languages and regular specifications]
 Let $P$ be a PDA and $A$ an NFA over the same alphabet.
 \begin{enumerate}
 \item Show that $L(P)\subseteq L(A)$ is decidable using closure
@@ -174,7 +193,7 @@ do not infer inclusion from equivalence or conversely without an argument.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{A unary alphabet}
+\begin{exercise}[A unary alphabet]
 \begin{enumerate}
 \item Prove that every unary context-free language is regular.
 You may use the effective version of Parikh's theorem.
@@ -185,11 +204,11 @@ $\{\varepsilon,a,\ldots,a^n\}$ for some $n\geq0$, or $a^*$.
 equivalence of all-traces languages. You may use decidability of VASS
 termination, meaning absence of an infinite run from the initial configuration.
 \item Explain why (b) does not establish regularity of every unary
-\emph{accepted} {\bf language} of an arbitrary infinite-state system.
+\emph{accepted {\bfseries language}} of an arbitrary infinite-state system.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{Regularity and unbounded configurations}
+\begin{exercise}[Regularity and unbounded configurations]
 Consider a one-counter VASS with initial configuration $(r,0)$,
 final control state $f$, and transitions
 \[
@@ -206,7 +225,7 @@ does not decide language regularity.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{Deterministic VASSs and regular specifications}
+\begin{exercise}[Deterministic VASSs and regular specifications]
 Let $V$ be a VASS and $A$ an NFA.
 \begin{enumerate}
 \item Show that $L(V)\subseteq L(A)$ is decidable by a product construction.
@@ -221,21 +240,26 @@ deterministic model.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}{$\star$ A decidability map: BPA, BPP, and VASS}
+\begin{exercise}[$\star$ A decidability map: BPA, BPP, and VASS]
 Complete the following table for the \emph{accepted-language conventions}
 fixed above. Write D (decidable) or U (undecidable).
 For each non-elementary result, supply a precise theorem reference and
 check its acceptance convention. A full proof is not required.
 \begin{center}
-\begin{tabular}{lccc}
+\begin{tabular}{lc|c|c}
 \toprule
 Model & $L(A)\subseteq L(B)$ & $L(A)=L(B)$ & Is $L(A)$ regular?\\
 \midrule
 NFA & & &\\
+\hline
 PDA & & &\\
+\hline
 BPA & & &\\
+\hline
 BPP & & &\\
+\hline
 VASS & & &\\
+\hline
 Deterministic VASS & & &\\
 \bottomrule
 \end{tabular}
