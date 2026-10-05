@@ -507,7 +507,7 @@ It repeatedly searches for every pair $(a,C)$ that splits a block. A straightfor
 \end{enumerate}
 \end{block}
 
-For one transition relation, the data structures give $O((n+m)\log n)$ time (usually written $O(m\log n)$). For a labelled LTS, keep the relations and splitter obligations separate by label; the same edge-charging argument applies to labelled edges.
+The algorith proposed by Page and Tarjan in 1987 works in $O((n+m)\log n)$ time (usually written $O(m\log n)$).
 }
 \end{frame}
 
@@ -547,36 +547,83 @@ Every transition has one destination, and that destination belongs to exactly on
 }
 \end{frame}
 
-\begin{frame}{Why use the smaller half?}
+\begin{frame}{Why the smaller half is not enough}
 \Margines{
 \small
-When a block $C$ splits into $C_1,C_2$, schedule the smaller child as a new refining set (while preserving any obligations already on the worklist). Its size is at most $|C|/2$.
-
-\begin{block}{Count selected blocks containing one state}
-Fix a state $v$. The selected refining blocks that contain $v$ form a nested sequence. Each new one is at most half the size of the preceding one, so there are at most $\lfloor\log_2 n\rfloor+1$ such blocks.
+\begin{block}{The tempting rule}
+When a set $S$ is split into $B$ and $S\setminus B$, use only the smaller part $B$ as the next splitter. Then $|B|\le |S|/2$, which is exactly what we want for a logarithmic bound.
 \end{block}
 
-This is the counting argument in Paige--Tarjan, Section 3, p.~980.
+\begin{alertblock}{But can we ignore the larger part?}
+For DFA minimization, stability with respect to $S$ and $B$ implies stability with respect to $S\setminus B$. For a general transition relation, this implication is false.
+\end{alertblock}
+
+So the large part still has to be accounted for; Paige--Tarjan's key idea is to do that without scanning it.
 }
 \end{frame}
 
-\begin{frame}{From the count to the time bound REDO!!!!}
+\begin{frame}{Paige--Tarjan: keep two partitions}
 \Margines{
 \small
-\begin{block}{Charge edge scans to destinations}
-To process a selected refining block $B$, inspect edges entering $B$. An edge $(u,v)$ is inspected only when its destination $v$ belongs to the selected block.
+\begin{block}{The invariant}
+Maintain a fine partition $Q$ and a coarser partition $X$, with $Q\preceq X$. The fine partition is already stable with respect to every block of $X$.
 \end{block}
 
-If $c(v)$ is the number of selected refining blocks containing $v$, then
+Choose a compound block $S\in X$ and a block $B\in Q$ inside it with $|B|\le |S|/2$. Split $S$ in $X$ into $B$ and $S\setminus B$.
+
+\begin{block}{What must be restored}
+Refine $Q$ with respect to \emph{both} $B$ and $S\setminus B$. The smaller-half rule chooses the work to scan efficiently; it does not declare the larger half irrelevant.
+\end{block}
+}
+\end{frame}
+
+\begin{frame}{Handle the large half without scanning it}
+\Margines{
+\small
+Consider a block $D\in Q$ that was stable with respect to $S$. First refine $D$ using $B$:
+\[
+  D_1=D\cap\PreA_a(B),
+  \qquad
+  D_2=D\setminus D_1.
+\]
+
+\begin{block}{Paige--Tarjan's key observation}
+The subsequent refinement with respect to $S\setminus B$ cannot split $D_2$; any further split is confined to $D_1$.
+\end{block}
+
+Thus the only states that need to be found for the large-half step are in
+\[
+  D\cap\bigl(\PreA_a(B)\setminus\PreA_a(S\setminus B)\bigr).
+\]
+They have an $a$-transition into $B$, but none into $S\setminus B$.
+
+\begin{alertblock}{The implementation trick}
+Maintain $c_a(x,Y)$, the number of $a$-successors of $x$ in $Y$. While scanning edges entering $B$, test
+\[
+  c_a(x,B)=c_a(x,S),
+\]
+which means that $x$ has no $a$-successor in $S\setminus B$. The blackboard derivation explains why this finds exactly the needed states.
+\end{alertblock}
+}
+\end{frame}
+
+\begin{frame}{Why the smaller-half choice gives the time bound}
+\Margines{
+\small
+\begin{block}{Charge the work to the small set}
+For each selected small refining block $B$, inspect edges entering $B$. This scan both handles refinement by $B$ and finds the states needed to account for $S\setminus B$.
+\end{block}
+
+For a fixed state $v$, the selected small blocks containing it form a nested sequence, and each is at most half the size of its predecessor. Hence there are at most $\lfloor\log_2 n\rfloor+1$ such blocks. If $c(v)$ is their number, then
 \[
   \text{edge inspections}
-  =\sum_{(u,v)\in E}c(v)
+  =\sum_{(u,a,v)\in\to}c(v)
   \le m\bigl(\lfloor\log_2 n\rfloor+1\bigr).
 \]
 Thus the edge work is $O(m\log n)$; initialization and bookkeeping add $O(n)$, giving $O((n+m)\log n)$ overall.
 
 \begin{alertblock}{Not “the larger half is irrelevant”}
-The bound concerns how often selected blocks are scanned. It does not say that stability with respect to one child implies stability with respect to the other. The refinement algorithm still updates its pending obligations when a block splits.
+The bound comes from scanning only small sets. The algorithm still accounts for both children and preserves the pending splitter obligations when blocks split.
 \end{alertblock}
 }
 \end{frame}
