@@ -1,11 +1,14 @@
 %!TeX program=xelatex
 \documentclass[11pt,a4paper]{tutorial}
-
-\usepackage{enumitem,booktabs,array}
 \usepackage{multicol}
 
+\newcommand{\AP}{\mathsf{AP}}
+\newcommand{\Sat}{\mathsf{Sat}}
+\renewcommand{\Pre}{\mathsf{Pre}}
+\newcommand{\true}{\mathsf{true}}
 \newcommand{\Tr}{\operatorname{Tr}}
 \newcommand{\Lang}{\mathcal{L}}
+
 \newcommand{\EX}{\mathrm{EX}}
 \newcommand{\AX}{\mathrm{AX}}
 \newcommand{\EF}{\mathrm{EF}}
@@ -13,261 +16,499 @@
 \newcommand{\EG}{\mathrm{EG}}
 \newcommand{\AG}{\mathrm{AG}}
 
-\setlist[enumerate]{label=(\alph*),itemsep=3pt,topsep=3pt}
-\setlength{\parindent}{0pt}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,automata,calc}
+
+\tikzset{
+  state/.style={circle,draw,minimum size=7mm,inner sep=1pt},
+  blackstate/.style={circle,draw,fill=black,minimum size=6mm,inner sep=1pt},
+  whitestate/.style={circle,draw,fill=white,minimum size=6mm,inner sep=1pt},
+  every edge/.style={draw,->,>=Latex}
+}
+
 
 \semester{Z. 2026}
 \coursetitle{Concurrency Theory}
 \lecturer{P. Hofman}
 
-\tutorial{16}{10}{2026}
+\tutorial{9}{10}{2026}
 
-\documenttitle{Tutorial 3, \formatdate, by \textsc{vrm}}
-\abstract{Languages, simulation, and logical abstraction}
+\documenttitle{Tutorial 2, \formatdate, by \textsc{vrm}}
+\abstract{LTL, CTL, and CTL$^\ast$}
 
 \renewcommand{\thesection}{\Alph{section}.}
 
+
 \begin{document}
-\maketitle 
+\maketitle
 
-\paragraph{Conventions.}
-For an action-labelled LTS, let
-\[
- \Lang(s)=\{w\in\Sigma^*:s\xrightarrow{w}s'\text{ for some }s'\}
-\]
-be its language of all finite traces, including $\varepsilon$.
-For a Kripke structure, $\Tr(s)$ denotes its set of infinite words of
-state labels; the transition relation is total. LTL uses universal path
-semantics. Write $s\preceq t$ when $t$ simulates $s$; on Kripke
-structures, simulations preserve state labels exactly.
-HML uses action modalities on LTSs, while CTL uses state propositions
-on Kripke structures.\par
+\paragraph{Note.} Unless stated otherwise, transition systems are finite Kripke structures and every
+state has at least one successor.  LTL formulas are interpreted universally over
+all paths starting in the initial state.
 
-\paragraph{Scope.} Give explicit witnesses and short arguments. Do not compute
-maximal bisimulation relations or use partition refinement.
-Exercises marked $\star$ are optional extensions.
+% ============================================================
+\section{Reading and writing temporal formulas}
+% ============================================================
 
+\begin{exercise}
+Let $req$, $ack$, $error$, $reset$, $crit$ and $ready$ be atomic propositions.
+Write formulas expressing the following properties.  For each property, state
+whether your formula is in LTL, CTL, or requires CTL*.
 
-\section{What does an abstraction preserve?}
-\begin{exercise}[Equal languages, different branching]
-Construct two finite pointed LTSs $(T,s)$ and $(U,t)$ such that
-$\Lang(s)=\Lang(t)$ but $s\not\sim t$.
-\begin{enumerate}
-\item Give an HML formula true at one initial state and false at the other.
+\begin{enumerate}[label=(\alph*)]
+  \item Every request is eventually acknowledged.
+  \item An error never occurs.
+  \item From every reachable state, it is possible to reach a reset state.
+  \item Whenever the system enters a critical section, it eventually leaves it.
+  \item There exists a computation on which $ready$ holds infinitely often.
+  \item Along every computation, from some point onward $ready$ holds forever.
+  \item From every reachable state there exists a computation on which $ready$
+        eventually holds forever.
+  \item Whenever $error$ occurs, there exists a continuation on which $reset$
+        is reached before the next occurrence of $error$.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Bisimilar but not isomorphic]
-Construct two finite pointed LTSs with different numbers of reachable
-states whose initial states are bisimilar. Exhibit a bisimulation witnessing
-this and explain why the systems are not isomorphic.
-\end{exercise}
 
-\begin{exercise}[Simulation versus language inclusion]
-\begin{enumerate}
-\item Prove that $s\preceq t$ implies $\Lang(s)\subseteq\Lang(t)$.
-\item Construct finite LTSs showing that the converse fails. Explain the
-failure by identifying a transition that cannot be matched by a simulation.
-\item Prove that, for deterministic LTSs, the converse holds.
-Here deterministic means that each state has at most one successor
-for each action.
-\end{enumerate}
-\end{exercise}
+% ============================================================
+\section{Evaluate formulas on a transition system}
+% ============================================================
 
-\begin{exercise}[CTL fragments and preservation under simulation]
-Assume $s\preceq t$ in a Kripke structure. For each formula below, determine
-whether the following implications hold for all such pairs:
+\begin{exercise}
+Consider the following Kripke structure.
+
+\begin{center}
+\begin{tikzpicture}[node distance=18mm and 23mm]
+  \node[state,label=above:$s_0$,label=left:{$\{p\}$}] (s0) {};
+  \node[state,right=of s0,label=above:$s_1$,label=below right:{$\{p,q\}$}] (s1) {};
+  \node[state,below=of s0,label=below:{$s_2:\{q\}$}] (s2) {};
+  \node[state,right=of s2,label=below:{$s_3:\emptyset$}] (s3) {};
+
+  \path
+    (s0) edge (s1)
+         edge (s2)
+    (s1) edge[loop right] (s1)
+         edge (s3)
+    (s2) edge (s3)
+    (s3) edge[loop right] (s3);
+\end{tikzpicture}
+\end{center}
+
+For each formula below, determine the set of states satisfying it:
 \[
- (\rightarrow)\quad s\models\varphi\Rightarrow t\models\varphi,
- \qquad
- (\leftarrow)\quad t\models\varphi\Rightarrow s\models\varphi.
+\Sat(\varphi)=\{s\mid s\models\varphi\}.
 \]
-Answer \emph{both}, \emph{only $\rightarrow$}, \emph{only $\leftarrow$},
-or \emph{neither}. 
-%\[
-%\begin{array}{lll}
-%\text{(i)}\ p\land\neg q & \text{(ii)}\ \EX p & \text{(iii)}\ \AX p\\[3pt]
-%\text{(iv)}\ \EF(p\land\EX q) & \text{(v)}\ \AG(p\lor\AF q)
-% & \text{(vi)}\ \AG\EF p\\[3pt]
-%\text{(vii)}\ \EX p\land\AX q & \text{(viii)}\ \neg\EX\neg p
-% & \text{(ix)}\ \EG p\lor\AF q.
-%\end{array}
-%\]
+
 \begin{multicols}{3}
-\begin{enumerate}[label=(\roman*)]
-  \item \(p\land\neg q\)
-  \item \(\EX p\)
-  \item \(\AX p\)
-  \item \(\EF(p\land\EX q)\)
-  \item \(\AG(p\lor\AF q)\)
-  \item \(\AG\EF p\)
-  \item \(\EX p\land\AX q\)
-  \item \(\neg\EX\neg p\)
-  \item \(\EG p\lor\AF q\)
+\begin{enumerate}[label=(\alph*)]
+  \item $\EX\,q$
+  \item $\AX\,q$
+  \item $\EF\,q$
+  \item $\AF\,q$
+  \item $\EG\,p$
+  \item $\AG\,p$
+  \item $E(p\,U\,q)$
+  \item $A(p\,U\,q)$
+  \item $\AG\,\EF\,q$
 \end{enumerate}
 \end{multicols}
-Justify valid directions using preservation results. For each invalid
-direction, give a finite counterexample and a witnessing simulation.
+
+For at least two formulas, compute $\Sat(\varphi)$ explicitly using the
+bottom-up CTL model-checking algorithm.
 \end{exercise}
 
-\begin{exercise}[Trace equivalence and a distinguishing CTL formula]
-Consider the following two Kripke structures. Unlisted transitions are absent.
-\begin{itemize}[itemsep=3pt,topsep=3pt]
-\item $K$: $s\to x$, $x\to u$, $x\to v$, $u\to u$, $v\to v$;\\
-$L(s)=L(x)=\varnothing$, $L(u)=\{p\}$, $L(v)=\{q\}$.
-\item $H$: $t\to y$, $t\to z$, $y\to u'$, $z\to v'$, $u'\to u'$, $v'\to v'$;\\
-$L(t)=L(y)=L(z)=\varnothing$, $L(u')=\{p\}$, $L(v')=\{q\}$.
-\end{itemize}
-\begin{enumerate}
-\item Show that $\Tr(s)=\Tr(t)$ and conclude that $s$ and $t$ satisfy
-the same LTL formulas.
-\item Find a CTL formula distinguishing $s$ from $t$. Your formula should
-express that one immediate successor offers two different possible futures.
-\end{enumerate}
-\end{exercise}
 
-\begin{exercise}[Choose a sufficient abstraction]
-For each verification task, choose a sufficient relation between a concrete
-state $c$ and an abstract state $a$. State the direction of any trace
-inclusion or simulation, and justify your answer in one sentence.
-\begin{enumerate}
-\item Transfer the LTL formula $\mathrm{F}p$ from $a$ to $c$.
-\item Transfer the CTL formula $\AF p$ from $a$ to $c$. How does this task
-relate to (a)?
-\item Transfer the CTL formula $\EF p$ from $c$ to $a$.
-\item Preserve the truth of the CTL formula $\EF\AG p$ in both directions.
-\end{enumerate}
-Use trace inclusion/equality, simulation, or bisimulation as appropriate.
-In (a)--(c), consider whether trace inclusion alone suffices; your relation
-need only be sufficient, so do not claim necessity without proof.
-\end{exercise}
+% ============================================================
+\section{Find a distinguishing formula}
+% ============================================================
 
-\section{Language problems for finite and infinite-state systems}
-\paragraph{Acceptance conventions.}
-Write $L(A)$ for an \emph{accepted} finite-word language, distinguished from
-the all-traces language $\Lang$ above. NFAs and PDAs accept by final state
-after consuming the whole input; PDAs may have $\varepsilon$-moves.
-For the process and counter models below, every transition consumes one
-letter; there are no silent transitions.
-\begin{itemize}[itemsep=3pt,topsep=3pt]
-\item A \textbf{BPA} has finitely many rules $X\xrightarrow{a}\alpha$,
-where $\alpha$ is a word of variables. Its configurations are words,
-with $X\beta\xrightarrow{a}\alpha\beta$. An initial word is specified;
-acceptance is by reaching the empty word.
-\item A \textbf{BPP} has the same rule form but configurations are
-multisets of variables. A rule replaces one occurrence of $X$ by
-the multiset $\alpha$. An initial multiset is specified; acceptance
-is by reaching the empty multiset.
-\item A \textbf{VASS} has configurations $(q,\mathbf v)$ with
-$\mathbf v\in\mathbb N^d$ and transitions
-$q\xrightarrow{a,\mathbf z}q'$, enabled when
-$\mathbf v+\mathbf z\geq\mathbf0$. An initial configuration and final
-control states are specified; final counter values are unrestricted.
-A deterministic VASS has at most one outgoing transition per
-control state and letter.
-\end{itemize}
+\begin{exercise}
+Consider the following two Kripke structures.
+All unlabeled states satisfy no atomic propositions.
 
-\begin{exercise}[NFA inclusion and equivalence]
-\begin{enumerate}
-\item Give algorithms deciding $L(A)\subseteq L(B)$ and $L(A)=L(B)$
-for two NFAs. Explain why simply interchanging final and non-final
-states of $B$ does not compute its complement.
-\item Show how to extract a distinguishing word when equivalence fails.
-\item Give an upper bound on the length of a shortest distinguishing word
-in terms of the numbers of states of $A$ and $B$.
-\end{enumerate}
-\end{exercise}
 
-\begin{exercise}[PDA languages and regular specifications]
-Let $P$ be a PDA and $A$ an NFA over the same alphabet.
-\begin{enumerate}
-\item Show that $L(P)\subseteq L(A)$ is decidable using closure
-properties and an emptiness test.
-
-\item Investigate whether $L(A)\subseteq L(P)$ is decidable.
-Consider the special case $L(A)=\Sigma^*$.
-(Show that halting problem for automaton with two pushdowns is undecidbale. Try to accept all incorrect runs of an automaton with two pushdowns.)
-\item Determine whether inclusion and equivalence of two PDA languages
-are decidable. Give reductions from a standard undecidable problem;
-do not infer inclusion from equivalence or conversely without an argument.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[A unary alphabet]
-\begin{enumerate}
-\item Prove that every unary context-free language is regular.
-You may use the effective version of Parikh's theorem.
-Deduce decidability of inclusion and equivalence for unary PDA languages.
-\item Show that the all-traces language of \emph{any} unary LTS is either
-$\{\varepsilon,a,\ldots,a^n\}$ for some $n\geq0$, or $a^*$.
-\item For unary VASSs, give an effective procedure deciding inclusion and
-equivalence of all-traces languages. You may use decidability of VASS
-termination, meaning absence of an infinite run from the initial configuration.
-\item Explain why (b) does not establish regularity of every unary
-\emph{accepted {\bfseries language}} of an arbitrary infinite-state system.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Regularity and unbounded configurations]
-Consider a one-counter VASS with initial configuration $(r,0)$,
-final control state $f$, and transitions
-\[
- r\xrightarrow{a,+1}r,\qquad
- r\xrightarrow{b,-1}f,\qquad
- f\xrightarrow{b,-1}f.
-\]
-\begin{enumerate}
-\item Describe its accepted language and prove that it is not regular.
-\item Describe its all-traces language and determine whether it is regular.
-\item Construct a VASS with infinitely many reachable configurations
-whose accepted language is regular. Explain why unboundedness alone
-does not decide language regularity.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Deterministic VASSs and regular specifications]
-Let $V$ be a VASS and $A$ an NFA.
-\begin{enumerate}
-\item Show that $L(V)\subseteq L(A)$ is decidable by a product construction.
-State whether the required VASS test is reachability or coverability.
-\item Now let $V_1,V_2$ be deterministic VASSs.
-Design a procedure for deciding $L(V_1)\subseteq L(V_2)$.
-Separate rejection by $V_2$ caused by a missing transition, an insufficient
-counter value, or a non-final control state.
-You may use decidability of VASS reachability to semilinear target sets.
-\item Deduce decidability of accepted-language equivalence for this
-deterministic model. 
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[$\star$ A decidability map: BPA, BPP, and VASS]
-Complete the following table for the \emph{accepted-language conventions}
-fixed above. Write D (decidable) or U (undecidable).
-For each non-elementary result, supply a precise theorem reference and
-check its acceptance convention. A full proof is not required.
 \begin{center}
-\begin{tabular}{lc|c|c}
-\toprule
-Model & $L(A)\subseteq L(B)$ & $L(A)=L(B)$ & Is $L(A)$ regular?\\
-\midrule
-NFA & & &\\
-\hline
-PDA & & &\\
-\hline
-BPA & & &\\
-\hline
-BPP & & &\\
-\hline
-VASS & & &\\
-\hline
-Deterministic VASS & & &\\
-\bottomrule
-\end{tabular}
+\begin{tikzpicture}[
+%    node distance=13mm and 18mm,
+    state/.style={circle,draw,minimum size=7mm,inner sep=1pt},
+    >=Latex
+]
+
+% =========================================================
+% Left system
+% =========================================================
+
+\node[state,label=above:$s$] (s) {};
+
+\node[state,below left=of s] (u) {};
+\node[state,below right=of s] (v) {};
+
+\node[state,below left=of u,label=below:{$\{p\}$}] (p1) {};
+\node[state,below right=of u,label=below:{$\{q\}$}] (q1) {};
+
+\node[state,below=of v,label=below:{$\{r\}$}] (r1) {};
+
+\draw[->] (s) -- (u);
+\draw[->] (s) -- (v);
+
+\draw[->] (u) -- (p1);
+\draw[->] (u) -- (q1);
+\draw[->] (v) -- (r1);
+
+\draw[->] (p1) edge[loop left] ();
+\draw[->] (q1) edge[loop right] ();
+\draw[->] (r1) edge[loop right] ();
+
+
+% =========================================================
+% Right system
+% =========================================================
+
+\node[state,right=65mm of s,label=above:$t$] (t) {};
+
+\node[state,below left=of t] (up) {};
+\node[state,below right=of t] (vq) {};
+
+\node[state,below=of up,label=below:{$\{p\}$}] (p2) {};
+\node[state,below left=of vq,label=below:{$\{q\}$}] (q2) {};
+\node[state,below right=of vq,label=below:{$\{r\}$}] (r2) {};
+
+\draw[->] (t) -- (up);
+\draw[->] (t) -- (vq);
+
+\draw[->] (up) -- (p2);
+\draw[->] (vq) -- (q2);
+\draw[->] (vq) -- (r2);
+
+\draw[->] (p2) edge[loop left] ();
+\draw[->] (q2) edge[loop left] ();
+\draw[->] (r2) edge[loop right] ();
+
+% Extra transition making the trace sets different
+\draw[->] (q2) to[bend left=25] (r2);
+
+\end{tikzpicture}
 \end{center}
-\begin{enumerate}
-\item Investigate which table entries change when accepted languages are
-replaced by all finite trace languages. State each convention explicitly.
+
+\begin{enumerate}[label=(\alph*)]
+  \item Find a CTL formula distinguishing $s$ and $t$.
+  \item Find such a formula of the smallest temporal depth you can.
+  \item Show that the two systems do not have the same set of traces.
+  \item Find an LTL formula distinguishing the two systems.
+  \item Can an LTL formula distinguish the two systems when interpreted from $s$ and $t$?
+        Justify your answer in terms of traces.
 \end{enumerate}
 \end{exercise}
+
+
+\begin{exercise}
+Construct two finite Kripke structures with the same set of traces from their
+initial states, but which are distinguished by some CTL formula.
+
+Your answer should contain:
+\begin{enumerate}[label=(\alph*)]
+  \item the two transition systems;
+  \item an argument that their trace sets are equal;
+  \item a CTL formula distinguishing their initial states.
+\end{enumerate}
+\end{exercise}
+
+
+% ============================================================
+\section{Equivalences and counterexamples}
+% ============================================================
+
+\begin{exercise}
+Prove the following LTL equivalences or give a counterexample if they are not valid.
+\begin{multicols}{2}
+\begin{enumerate}[label=(\alph*)]
+\item $FF\varphi \equiv F\varphi$
+\item $GG\varphi \equiv G\varphi$,
+\item $FGF\varphi \equiv GF\varphi$,
+\item $GFG\varphi \equiv FG\varphi$,
+\item $X(\varphi\land\psi)\equiv X\varphi\land X\psi$,
+\item $F(\varphi\lor\psi)\equiv F\varphi\lor F\psi$,
+\item $G(\varphi\land\psi)\equiv G\varphi\land G\psi$.
+\end{enumerate}
+\end{multicols}
+For every proof, work directly from the semantics.
+\end{exercise}
+
+
+\begin{exercise}
+For each proposed equivalence below, decide whether it is valid.
+If it is valid, prove it.  Otherwise draw a counterexample.
+
+\begin{enumerate}[label=(\alph*),itemsep=0.75\baselineskip]
+  \item \hfil
+  \(F(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    F\varphi\land F\psi\)
+  \hfil
+
+  \item \hfil
+  \(G(\varphi\lor\psi)
+    \stackrel{?}{\equiv}
+    G\varphi\lor G\psi\)
+  \hfil
+
+  \item \hfil
+  \(\EF(\varphi\lor\psi)
+    \stackrel{?}{\equiv}
+    \EF\varphi\lor \EF\psi\)
+  \hfil
+
+  \item \hfil
+  \(\EF(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    \EF\varphi\land \EF\psi\)
+  \hfil
+
+  \item \hfil
+  \(\AF(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    \AF\varphi\land \AF\psi\)
+  \hfil
+
+  \item \hfil
+  \(\EG(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    \EG\varphi\land \EG\psi\)
+  \hfil
+
+  \item \hfil
+  \(\AG(\varphi\land\psi)
+    \stackrel{?}{\equiv}
+    \AG\varphi\land \AG\psi\)
+  \hfil
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}
+Prove the following CTL dualities:
+\[
+\neg \EX\,\varphi \equiv \AX\,\neg\varphi,
+\]
+\[
+\neg \EF\,\varphi \equiv \AG\,\neg\varphi,
+\]
+\[
+\neg \AF\,\varphi \equiv \EG\,\neg\varphi.
+\]
+
+Which of the following are valid?
+\[
+\EX\,\EF\,p \stackrel{?}{\equiv} \EF\,\EX\,p,
+\qquad
+\AX\,\AF\,p \stackrel{?}{\equiv} \AF\,\AX\,p.
+\]
+Give a proof or a counterexample.
+\end{exercise}
+
+
+
+
+% ============================================================
+\section{Bounded CTL depth}
+% ============================================================
+
+\begin{exercise}
+For $n\geq 0$, let $s\equiv_n t$ mean that $s$ and $t$ satisfy the same
+CTL formulas of temporal depth at most $n$.
+
+Consider the infinite family below.  Black states are $P_i$, white states are
+$R_i$.
+
+\begin{center}
+\begin{tikzpicture}[x=16mm,y=12mm]
+  \node at (-1,0) {$\cdots$};
+
+  \node[blackstate] (p3) at (0,0) {};
+  \node[whitestate] (r3) at (1,0) {};
+  \node[blackstate] (p2) at (2,0) {};
+  \node[whitestate] (r2) at (3,0) {};
+  \node[blackstate] (p1) at (4,0) {};
+  \node[whitestate] (r1) at (5,0) {};
+  \node[blackstate] (p0) at (6,0) {};
+
+  \node[below=3pt of p3] {$P_3$};
+  \node[below=3pt of r3] {$R_3$};
+  \node[below=3pt of p2] {$P_2$};
+  \node[below=3pt of r2] {$R_2$};
+  \node[below=3pt of p1] {$P_1$};
+  \node[below=3pt of r1] {$R_1$};
+  \node[below=3pt of p0] {$P_0$};
+
+  \path
+    (p3) edge (r3)
+         edge[loop above] (p3)
+    (r3) edge (p2)
+    (p2) edge (r2)
+         edge[loop above] (p2)
+    (r2) edge (p1)
+    (p1) edge (r1)
+         edge[loop above] (p1)
+    (r1) edge (p0)
+    (p0) edge[loop above] (p0);
+\end{tikzpicture}
+\end{center}
+
+Prove, by induction on $n$, the strengthened statement
+\[
+P_k\equiv_n P_j,
+\qquad
+R_k\equiv_n R_j
+\qquad
+\text{whenever } n\leq k\leq j.
+\]
+
+Your proof should explain why the statement has to be strengthened from just
+$P_n\equiv_n P_j$ to simultaneous statements about the $P$- and $R$-states.
+
+\medskip
+\noindent
+\textbf{Optional.}
+Formulate the argument as an $n$-round game between two players.
+\end{exercise}
+
+
+% ============================================================
+\section{LTL versus CTL}
+% ============================================================
+
+\begin{exercise}
+The CTL* formula
+\[
+A\,FG\,black
+\]
+is an LTL property under the usual universal interpretation of LTL.
+
+Using the family from \Cref{ex:11}, construct two families of transition systems
+$T_i$ and $T_i'$ such that
+\[
+T_i \mmodels \AF G\,black,
+\qquad
+T_i' \mmodels \AF G\,black,
+\]
+but their initial states cannot be distinguished by CTL formulas of temporal
+depth at most $i$.
+
+Conclude that the LTL property $FG\,black$ is not expressible in CTL.
+\end{exercise}
+
+
+\begin{exercise}
+Classify each of the following formulas as: % LTL, CTL, or CTL* but not
+%syntactically CTL: i.e.,
+\hfil\(
+  \text{LTL},\qquad
+  \text{CTL},\qquad
+  \text{CTL*}-\text{CTL}.
+\)\hfil
+\begin{multicols}{2}
+\begin{enumerate}[label=(\alph*)]
+  \item $A\,GFp$
+  \item $\AG\,\EF p$
+  \item $E(Fp\land Fq)$
+  \item $A(p\,U\,(q\land \EX r))$
+  \item $\EF\,\AG p$
+  \item $E\,G(Fp\lor Fq)$
+\end{enumerate}
+\end{multicols}
+\noindent For every CTL formula, rewrite it explicitly as a CTL* state formula.
+\end{exercise}
+
+
+% ============================================================
+\section{Counterexamples and witnesses}
+% ============================================================
+
+\begin{exercise}\label{ex:11}
+For finite Kripke structures, describe the form of a witness or counterexample
+for each of the following.
+\begin{multicols}{2}
+\begin{enumerate}[label=(\alph*)]
+  \item $\EF\,p$
+  \item $\EG\,p$
+  \item $\AG\,p$
+  \item $\AF\,p$
+  \item $E(p\,U\,q)$
+\end{enumerate}
+\end{multicols}
+
+Show that whenever a finite Kripke structure violates $AF\,p$, there exists an
+ultimately periodic counterexample path (a finite prefix followed by a cycle).
+\end{exercise}
+
+
+% ============================================================
+\section{Challenge: infinite-state systems}
+% ============================================================
+
+\begin{exercise}[Pushdown systems]
+A pushdown system has configurations of the form $(q,w)$, where $q$ is a
+control state and $w$ is a stack word.
+
+Investigate model checking for LTL and CTL under the following two choices of
+atomic propositions:
+
+\begin{enumerate}[label=(\alph*)]
+  \item propositions depend only on the control state $q$;
+  \item propositions are given by regular sets of configurations.
+\end{enumerate}
+
+For every decidable case, describe the algorithm.
+
+For every claimed undecidable variant, give a reduction or identify precisely
+which known undecidable problem is encoded.
+\end{exercise}
+
+
+\begin{exercise}[VASS / Petri nets]
+Consider a VASS as an infinite transition system.  Study the model-checking
+problems for LTL and CTL under state labellings defined by predicates on
+configurations.
+
+Separate carefully the following questions:
+
+\begin{enumerate}[label=(\alph*)]
+  \item propositions depending only on the finite control state;
+  \item reachability predicates;
+  \item coverability / upward-closed predicates;
+\end{enumerate}
+
+For each setting, determine whether model checking is decidable.
+If you claim decidability, sketch an algorithm.
+If you claim undecidability, give a reduction.
+
+\medskip
+\noindent
+\end{exercise}
+
+
+% ============================================================
+\section{Challenge: CTL* model checking}
+% ============================================================
+
+\begin{exercise}
+Assume as a black box that for every LTL formula $\varphi$ one can construct
+a B\"uchi automaton $\mathcal A_\varphi$ accepting exactly the words satisfying
+$\varphi$.
+
+Design a model-checking algorithm for CTL* on finite Kripke structures.
+
+\begin{enumerate}[label=(\alph*)]
+  \item Explain how to evaluate innermost CTL* state subformulas first.
+  \item Once their truth values are known, treat them as fresh atomic propositions.
+  \item Explain how an existential path formula $E\psi$ can be checked using a
+        product with a B\"uchi automaton for $\psi$.
+  \item Explain how universal path formulas can be reduced to existential ones.
+\end{enumerate}
+
+Give a rough upper bound on the complexity of your construction.
+\end{exercise}
+
+
 
 \end{document}
