@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2025.10.20)  8 OCT 2026 15:17
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2025.10.20)  8 OCT 2026 15:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -244,13 +244,13 @@ t;+smcp;"
 
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
 (Font)                  OT1/cmr/m/n --> TU/OldStandard-Regular.otf(1)/m/n on in
-put line 34.
+put line 36.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
 (Font)                  OT1/cmr/m/it --> TU/OldStandard-Regular.otf(1)/m/it on 
-input line 34.
+input line 36.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
 (Font)                  OT1/cmr/bx/n --> TU/OldStandard-Regular.otf(1)/b/n on i
-nput line 34.
+nput line 36.
 
 Package fontspec Info: Font family 'OldStandard-Math.otf(0)' created for font
 (fontspec)             'OldStandard-Math.otf' with options
@@ -283,15 +283,15 @@ y=0;"<-7.1175>"[OldStandard-Math.otf]/OT:script=math;language=dflt;+ssty=1;"
 (fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
 
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 36.
+(Font)              `operators' in the math version `normal' on input line 38.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/cmr/m/n --> TU/OldStandard-Math.otf(1)/m/n on input
- line 36.
+ line 38.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 36.
+(Font)              `operators' in the math version `bold' on input line 38.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  OT1/cmr/bx/n --> TU/OldStandard-Math.otf(1)/b/n on inpu
-t line 36.
+t line 38.
 
 Package fontspec Info: OldStandard-Math scale = 1.0001.
 
@@ -344,15 +344,15 @@ ath;language=dflt;+ssty=1;"
 (fontspec)             =0pt\relax \fontdimen 21\font =0pt\relax 
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 36.
+(Font)              `symbols' in the math version `normal' on input line 38.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
 (Font)                  OMS/cmsy/m/n --> TU/OldStandard-Math.otf(2)/m/n on inpu
-t line 36.
+t line 38.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 36.
+(Font)              `symbols' in the math version `bold' on input line 38.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
 (Font)                  OMS/cmsy/b/n --> TU/OldStandard-Math.otf(2)/b/n on inpu
-t line 36.
+t line 38.
 
 Package fontspec Info: OldStandard-Math scale = 0.9999.
 
@@ -394,16 +394,16 @@ ath;language=dflt;+ssty=1;"
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
 (Font)              `largesymbols' in the math version `normal' on input line 3
-6.
+8.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
 (Font)                  OMX/cmex/m/n --> TU/OldStandard-Math.otf(3)/m/n on inpu
-t line 36.
+t line 38.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 36.
+(Font)              `largesymbols' in the math version `bold' on input line 38.
 
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 (Font)                  OMX/cmex/m/n --> TU/OldStandard-Math.otf(3)/b/n on inpu
-t line 36.
+t line 38.
 
 (/usr/share/texlive/texmf-dist/tex/latex/mathalpha/mathalpha.sty
 Package: mathalpha 2021/11/18 - 1.143mathalpha (License LPPL) Michael Sharpe
@@ -422,10 +422,12 @@ Package: xkeyval 2022/06/16 v2.9 package option processing (HA)
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 ))
 LaTeX Font Info:    Overwriting math alphabet `\mathbb' in version `bold'
-(Font)                  U/px-math-ds/m/n --> U/px-math-ds/b/n on input line 221
+(Font)                  U/BOONDOX-ds/m/n --> U/BOONDOX-ds/b/n on input line 209
 .
 LaTeX Font Info:    Overwriting math alphabet `\mathcal' in version `bold'
 (Font)                  U/eus/m/n --> U/eus/b/n on input line 454.
+LaTeX Font Info:    Overwriting math alphabet `\mathscr' in version `bold'
+(Font)                  U/mt2msc/m/it --> U/mt2msc/b/it on input line 896.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
@@ -1108,38 +1110,38 @@ File: pgflibraryshapes.multipart.code.tex 2023-01-15 v3.1.10 (3.1.10)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
 zlibrarycalc.code.tex
 File: tikzlibrarycalc.code.tex 2023-01-15 v3.1.10 (3.1.10)
-)
-No file tutorial2.aux.
+) (./tutorial2.aux)
 \openout1 = `tutorial2.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 42.
+(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 38.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 42.
+(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 38.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 42.
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 38.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 42.
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 38.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -1174,12 +1176,11 @@ LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 42.
+Package hyperref Info: Link coloring OFF on input line 38.
+(./tutorial2.out) (./tutorial2.out)
 \@outlinefile=\write4
 \openout4 = `tutorial2.out'.
 
-
-Package hyperref Warning: Rerun to get /PageLabels entry.
 
 (/usr/share/texlive/texmf-dist/tex/latex/fmtcount/fc-english.def
 Invalid UTF-8 byte or sequence at line 10 replaced by U+FFFD.
@@ -1189,61 +1190,56 @@ File: fc-english.def 2016/01/12
 LaTeX Font Info:    Font shape `TU/OldStandard-Regular.otf(0)/m/sl' in size <10
 .95> not available
 (Font)              Font shape `TU/OldStandard-Regular.otf(0)/m/it' tried inste
-ad on input line 43.
+ad on input line 39.
 LaTeX Font Info:    Font shape `TU/OldStandard-Math.otf(2)/m/n' will be
-(Font)              scaled to size 10.95116pt on input line 43.
+(Font)              scaled to size 10.95116pt on input line 39.
 LaTeX Font Info:    Font shape `TU/OldStandard-Math.otf(2)/m/n' will be
-(Font)              scaled to size 7.6658pt on input line 43.
+(Font)              scaled to size 7.6658pt on input line 39.
 LaTeX Font Info:    Font shape `TU/OldStandard-Math.otf(2)/m/n' will be
-(Font)              scaled to size 6.5707pt on input line 43.
+(Font)              scaled to size 6.5707pt on input line 39.
 LaTeX Font Info:    Font shape `TU/OldStandard-Math.otf(3)/m/n' will be
-(Font)              scaled to size 10.94882pt on input line 43.
+(Font)              scaled to size 10.94882pt on input line 39.
 LaTeX Font Info:    Font shape `TU/OldStandard-Math.otf(3)/m/n' will be
-(Font)              scaled to size 7.66417pt on input line 43.
+(Font)              scaled to size 7.66417pt on input line 39.
 LaTeX Font Info:    Font shape `TU/OldStandard-Math.otf(3)/m/n' will be
-(Font)              scaled to size 6.5693pt on input line 43.
+(Font)              scaled to size 6.5693pt on input line 39.
+LaTeX Font Info:    Font shape `U/eus/m/n' will be
+(Font)              scaled to size 10.95pt on input line 49.
+LaTeX Font Info:    Font shape `U/eus/m/n' will be
+(Font)              scaled to size 7.665pt on input line 49.
+LaTeX Font Info:    Font shape `U/eus/m/n' will be
+(Font)              scaled to size 6.57pt on input line 49.
+LaTeX Font Info:    Font shape `U/mt2msc/m/it' will be
+(Font)              scaled to size 10.95pt on input line 49.
+LaTeX Font Info:    Font shape `U/mt2msc/m/it' will be
+(Font)              scaled to size 7.665pt on input line 49.
+LaTeX Font Info:    Font shape `U/mt2msc/m/it' will be
+(Font)              scaled to size 6.57pt on input line 49.
  [1
 
 ] [2]
-[3]
-
-LaTeX Warning: Reference `ex:11' on page 1 undefined on input line 387.
-
-[4]
-LaTeX Font Info:    Font shape `U/eus/m/n' will be
-(Font)              scaled to size 10.95pt on input line 496.
-LaTeX Font Info:    Font shape `U/eus/m/n' will be
-(Font)              scaled to size 7.665pt on input line 496.
-LaTeX Font Info:    Font shape `U/eus/m/n' will be
-(Font)              scaled to size 6.57pt on input line 496.
- [5] (./tutorial2.aux)
+[3] [4] [5] [6]
+LaTeX Font Info:    Font shape `U/BOONDOX-ds/m/n' will be
+(Font)              scaled to size 10.95pt on input line 621.
+LaTeX Font Info:    Font shape `U/BOONDOX-ds/m/n' will be
+(Font)              scaled to size 7.665pt on input line 621.
+LaTeX Font Info:    Font shape `U/BOONDOX-ds/m/n' will be
+(Font)              scaled to size 6.57pt on input line 621.
+ [7] [8] (./tutorial2.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `tutorial2.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `tutorial2.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  6BCC0AB60B93C076CB8CFAA109DA0A76;1767.
+Package rerunfilecheck Info: File `tutorial2.out' has not changed.
+(rerunfilecheck)             Checksum: C7D864C560B0FB7E0C830B702772DD9B;1303.
  ) 
 Here is how much of TeX's memory you used:
- 30989 strings out of 474878
- 623749 string characters out of 5762515
- 1936627 words of memory out of 5000000
- 52584 multiletter control sequences out of 15000+600000
- 561090 words of font info for 81 fonts, out of 8000000 for 9000
+ 30799 strings out of 474878
+ 621383 string characters out of 5762515
+ 1938627 words of memory out of 5000000
+ 52372 multiletter control sequences out of 15000+600000
+ 566841 words of font info for 112 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 102i,6n,128p,1038b,974s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 102i,11n,128p,1038b,559s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on tutorial2.pdf (5 pages).
+Output written on tutorial2.pdf (8 pages).

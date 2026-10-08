@@ -21,7 +21,9 @@
   \let\mathbfcal\undefined
   \let\mathbb\undefined
   \let\mathbfbb\undefined
-  \RequirePackage[bb=boondox,cal=euler]{mathalpha}
+  \let\mathscr\undefined
+  \let\mathbfscr\undefined
+  \RequirePackage[bb=boondox,cal=euler,scr=mt]{mathalpha}
 \else
   \RequirePackage{fontspec}
   \RequirePackage{unicode-math}
@@ -39,7 +41,9 @@
   \let\mathbfcal\undefined
   \let\mathbb\undefined
   \let\mathbfbb\undefined
-  \RequirePackage[bb=px,cal=euler]{mathalpha}
+  \let\mathscr\undefined
+  \let\mathbfscr\undefined
+  \RequirePackage[bb=boondox,cal=euler,scr=mt]{mathalpha}
   
 	% \newVdash: Double vertical bar, single horizontal extension
 	%\rule[lift]{width}{height}
