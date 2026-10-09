@@ -1,7 +1,7 @@
 %!TeX program=xelatex
 \documentclass[11pt,a4paper]{tutorial}
 \usepackage{multicol}
-
+\usepackage{booktabs}
 \newcommand{\AP}{\mathsf{AP}}
 \newcommand{\Sat}{\mathsf{Sat}}
 \renewcommand{\Pre}{\mathsf{Pre}}
@@ -218,14 +218,25 @@ following languages.
 \item Words containing infinitely many occurrences of both $a$ and $b$.
 \item Words in which every occurrence of $a$ is eventually followed
 by an occurrence of $b$.
-\item Words containing infinitely many occurrences of the factor $ab$.
-\item Words that are ultimately periodic with period $ab$:
-\[
-\{u(ab)^\omega:u\in\Sigma^*\}.
-\]
 \item Words containing infinitely many $a$'s, but no two consecutive
 occurrences of $a$.
-\item Words having some suffix belonging to $(a^*b)^\omega$.
+\item Words containing infinitely many $b$ such that, between every two
+\emph{consecutive} $b$'s, the number of $a$'s is divisible by $3$.
+\item Words such that, between every two consecutive $b$'s, the number
+of $a$'s is divisible by $3$. There is no requirement that $b$ occurs
+infinitely often.
+
+\item The number of $b$'s is infinite, and only finitely many gaps
+between consecutive $b$'s contain a number of $a$'s divisible by $3$.
+[\textit{Hint}: equivalently, from some point on, every gap between consecutive $b$'s
+has length non-zero modulo $3$.]
+
+\item The number of $b$'s is finite, and every gap between consecutive
+$b$'s contains a number of $a$'s divisible by $3$.
+
+\item The number of $b$'s is finite, and for every two \emph{distinct}
+occurrences of $b$, the number of $a$'s between them is not divisible
+by $3$. [\textit{Hint}: how many $b$'s can there be?]
 \end{enumerate}
 Which of these languages can be recognized by deterministic Büchi
 automata?
@@ -373,9 +384,7 @@ Show that any Büchi automata can be simulated by Muller, Rabin, and parity auto
 
 \begin{exercise}[Parity to Rabin]
 Let $\mathcal A$ be a parity automaton with priority function
-\[
-\Omega:Q\to\{0,\ldots,d\}.
-\]
+{\({\Omega:Q\to\{0,\ldots,d\}}\).}
 For every even priority $2i\le d$, define
 \[
 E_i=\{q:\Omega(q)<2i\},
@@ -383,23 +392,16 @@ E_i=\{q:\Omega(q)<2i\},
 F_i=\{q:\Omega(q)=2i\}.
 \]
 Prove that the Rabin condition consisting of the pairs
-$(E_i,F_i)$ is equivalent to the original parity condition.
+$(E_i,F_i)$ is equivalent to the original parity condition of $\mathcal A$.
 \end{exercise}
 
 \begin{exercise}[Rabin to Muller]
-Let
-\[
-\mathcal R=\{(E_i,F_i):1\le i\le k\}
-\]
+Let \(\mathcal R=\{(E_i,F_i):1\le i\le k\}\)
 be a Rabin acceptance condition. Define
 \[
 \mathcal F=
 \left\{
-S\subseteq Q:
-\exists i\
-(S\cap E_i=\varnothing
-\ \land\
- S\cap F_i\ne\varnothing)
+S\subseteq Q \ : \ \exists i\ (S\cap E_i=\varnothing \ \land\ S\cap F_i\neq\varnothing)
 \right\}.
 \]
 Prove that the Muller condition $\mathcal F$ is equivalent to
@@ -437,12 +439,11 @@ the following are equivalent:
 \noindent[\textit{Hint for (2)$\Rightarrow$(1)}:
 Let $U,V\subseteq\Sigma^*$ be regular languages, with
 $\varepsilon\notin V$. Construct a Büchi automaton recognizing
-\(UV^\omega\).
-Combine finite automata for $U$ and $V$. The Büchi automaton
+\(UV^\omega\)
+by combining the finite automata for $U$ and $V$. The Büchi automaton
 should read a prefix in $U$, then repeatedly read nonempty
 words in $V$, visiting an accepting state after each repetition.
-Explain how to extend the construction to finite unions.
-]
+Explain how to extend the construction to finite unions.]
 \bigskip
 
 \noindent[\textit{Hint for (1)$\Rightarrow$(2)}:
@@ -480,7 +481,9 @@ Prove that there exists a Büchi automaton $\mathcal B$ such that
 
 \noindent[\emph{Hint}:
 The naive product with accepting set
-$F_1\times F_2$ does not work. Add a component that alternates
+$F_1\times F_2$ does not work for regular Büchi automata 
+(however it works for generalized Büchi automata). 
+Add a component that alternates
 between waiting for a visit to $F_1$ and waiting for a visit
 to $F_2$.]
 
@@ -519,17 +522,17 @@ for every $u\in\Sigma^*$ and $w\in\Sigma^\omega$.
 \item words containing finitely many $a$'s;
 \item words containing infinitely many occurrences of $ab$.
 \end{enumerate}
-\item Give an example of an $\omega$-regular language that is
-not prefix-independent.
+\item Give an example of an $\omega$-regular language 
+that is not prefix independent.
 \end{enumerate}
 \end{exercise}
 
 \begin{exercise}[Ultimately periodic words]
 Let
 \[
-\mathrm{UP}=\left\{uv^\omega:u,v\in\Sigma^*,\ v\ne\varepsilon\right\};
+\mathrm{UP}=\left\{uv^\omega:u,v\in\Sigma^*,\ v\ne\varepsilon\right\}
 \]
-call $\mathrm{UP}$ the set of \emph{ultimately periodic words}.
+be the set of \emph{ultimately periodic words}.
 
 Show that every nonempty language recognized by a Büchi automaton contains
 an ultimately periodic word.
@@ -599,7 +602,91 @@ s(ut)^\omega\in L\iff s(vt)^\omega\in L
 where the second condition is understood only when
 $ut,vt\ne\varepsilon$.
 \end{enumerate}
+
+\noindent[\textit{Hint}: the language 
+\[L = \left\{ \alpha \in \{a,b\}^\ast 
+\left| \
+    \parbox{0.35\textwidth}
+	        {$\alpha$ contains infinitely many $b$'s, and arbitrarily long blocks of $a$'s}
+\right. \
+\right\}\]
+has finite index w.r.t. all three, yet is not $\omega$-regular.]
 \end{exercise}
+
+
+
+\begin{exercise}[co-Büchi automata]
+A \emph{co-Büchi automaton} is an automaton
+$\mathcal A=(Q,\Sigma,\delta,q_0,F)$ in which a run $\rho$
+is accepting if
+\[
+\operatorname{Inf}(\rho)\subseteq F,
+\]
+i.e., if it visits states outside $F$ only finitely often.
+
+The aim is to prove that every nondeterministic co-Büchi automaton is
+equivalent to a deterministic co-Büchi automaton.
+Adapt the subset construction, using as states pairs $(S,R)$ with
+$R\subseteq S\subseteq Q$. The set $S$ tracks all states
+reachable after reading the current prefix, whereas $R$
+tracks those reachable by runs that have remained inside
+$F$ since the last time $R$ was empty.
+
+Initially, $(S,R)=(\{q_0\},\varnothing)$. On reading a
+letter $a$, update
+\[
+S'=\delta(S,a),\qquad
+R'=
+\begin{cases}
+\delta(S,a)\cap F,&R=\varnothing,\\
+\delta(R,a)\cap F,&R\ne\varnothing.
+\end{cases}
+\]
+Equip the resulting deterministic automaton with the
+co-Büchi accepting set
+\[
+\{(S,R):R\ne\varnothing\}.
+\]
+Prove that it recognizes the same language as $\mathcal A$.
+\end{exercise}
+
+
+
+\section{Summary}
+Here is a summary of properties of finite-word and $\omega$-automata.
+An underlined Y indicates that the corresponding construction
+or algorithm requires only polynomial time.
+``RegEx equiv.'' means that the model is equivalent to $\omega$-regular expressions,
+``Det.'' indicates whether for every nondeterministc automaton 
+there is an equivalent deterministic one with the same acceptance condition, and the 
+other three columns indicate whether the corresponding operation 
+can be performed without extensive modification of the respective transition graphs.
+\begin{table}[htbp]
+\centering
+\medskip
+\begin{tabular}{@{}llcc|ccc@{}}
+\toprule
+\multicolumn{2}{@{}l}{Automaton type}
+  & RegEx equiv. & Det. & Union & Inters. & Comp.\\
+\midrule
+NFA/DFA & & \underline{Y} & Y
+  & \underline{Y} & \underline{Y} & \underline{Y}\\
+\midrule
+NBA/DBA & (Büchi)    & \underline{Y} & N
+  & \underline{Y} & N & N\\
+NCA/DCA & (Co-Büchi) & N & Y
+  & N & \underline{Y} & N\\
+NRA/DRA & (Rabin)    & \underline{Y} & Y
+  & \underline{Y} & N & N\\
+NSA/DSA & (Streett)  & \underline{Y} & Y
+  & N & \underline{Y} & N\\
+NPA/DPA & (Parity)   & \underline{Y} & Y
+  & N & N & \underline{Y}\\
+NMA/DMA & (Muller)   & Y & Y
+  & Y & Y & Y\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
 \end{document}
