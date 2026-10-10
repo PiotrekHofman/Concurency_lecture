@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (Web2C 2025) (preloaded format=xelatex 2026.2.17)  9 OCT 2026 00:51
+This is XeTeX, Version 3.141592653-2.6-0.999997 (Web2C 2025) (preloaded format=xelatex 2026.2.17)  9 OCT 2026 10:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -759,14 +759,34 @@ Package: multicol 2024/09/14 v1.9i multicolumn formatting (FMi)
 \colbreak@box=\box103
 \mc@col@check@num=\count350
 )
+(/usr/local/share/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen181
+\lightrulewidth=\dimen182
+\cmidrulewidth=\dimen183
+\belowrulesep=\dimen184
+\belowbottomsep=\dimen185
+\aboverulesep=\dimen186
+\abovetopsep=\dimen187
+\cmidrulesep=\dimen188
+\cmidrulekern=\dimen189
+\defaultaddspace=\dimen190
+\@cmidla=\count351
+\@cmidlb=\count352
+\@aboverulesep=\dimen191
+\@belowrulesep=\dimen192
+\@thisruleclass=\count353
+\@lastruleclass=\count354
+\@thisrulewidth=\dimen193
+)
 (/usr/local/share/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
 (/usr/local/share/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
 (/usr/local/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/utilities/pgfutil-common.te
 x
 \pgfutil@everybye=\toks36
-\pgfutil@tempdima=\dimen181
-\pgfutil@tempdimb=\dimen182
+\pgfutil@tempdima=\dimen194
+\pgfutil@tempdimb=\dimen195
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/utilities/pgfutil-latex.def
 \pgfutil@abb=\box104
@@ -791,8 +811,8 @@ File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: xetex.def on input line 106.
 )
-\Gin@req@height=\dimen183
-\Gin@req@width=\dimen184
+\Gin@req@height=\dimen196
+\Gin@req@width=\dimen197
 )
 (/usr/local/share/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/systemlayer/pgfsys.code.tex
@@ -805,26 +825,26 @@ Package: pgfsys 2025-08-29 v3.1.11a (3.1.11a)
 tered.code.tex
 \pgfkeys@tmptoks=\toks39
 ))
-\pgf@x=\dimen185
-\pgf@y=\dimen186
-\pgf@xa=\dimen187
-\pgf@ya=\dimen188
-\pgf@xb=\dimen189
-\pgf@yb=\dimen190
-\pgf@xc=\dimen191
-\pgf@yc=\dimen192
-\pgf@xd=\dimen193
-\pgf@yd=\dimen194
+\pgf@x=\dimen198
+\pgf@y=\dimen199
+\pgf@xa=\dimen256
+\pgf@ya=\dimen257
+\pgf@xb=\dimen258
+\pgf@yb=\dimen259
+\pgf@xc=\dimen260
+\pgf@yc=\dimen261
+\pgf@xd=\dimen262
+\pgf@yd=\dimen263
 \w@pgf@writea=\write3
 \r@pgf@reada=\read2
-\c@pgf@counta=\count351
-\c@pgf@countb=\count352
-\c@pgf@countc=\count353
-\c@pgf@countd=\count354
+\c@pgf@counta=\count355
+\c@pgf@countb=\count356
+\c@pgf@countc=\count357
+\c@pgf@countd=\count358
 \t@pgf@toka=\toks40
 \t@pgf@tokb=\toks41
 \t@pgf@tokc=\toks42
-\pgf@sys@id@count=\count355
+\pgf@sys@id@count=\count359
 
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/systemlayer/pgf.cfg
 File: pgf.cfg 2025-08-29 v3.1.11a (3.1.11a)
@@ -843,13 +863,13 @@ File: pgfsys-dvipdfmx.def 2025-08-29 v3.1.11a (3.1.11a)
 df.def
 File: pgfsys-common-pdf.def 2025-08-29 v3.1.11a (3.1.11a)
 )
-\pgfsys@objnum=\count356
+\pgfsys@objnum=\count360
 )))
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/systemlayer/pgfsyssoftpath.
 code.tex
 File: pgfsyssoftpath.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgfsyssoftpath@smallbuffer@items=\count357
-\pgfsyssoftpath@bigbuffer@items=\count358
+\pgfsyssoftpath@smallbuffer@items=\count361
+\pgfsyssoftpath@bigbuffer@items=\count362
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/systemlayer/pgfsysprotocol.
 code.tex
@@ -860,8 +880,8 @@ Package: pgfcore 2025-08-29 v3.1.11a (3.1.11a)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/math/pgfmath.code.tex
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/math/pgfmathutil.code.tex)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/math/pgfmathparser.code.tex
-\pgfmath@dimen=\dimen195
-\pgfmath@count=\count359
+\pgfmath@dimen=\dimen264
+\pgfmath@count=\count363
 \pgfmath@box=\box105
 \pgfmath@toks=\toks43
 \pgfmath@stack@operand=\toks44
@@ -887,37 +907,37 @@ code.tex)
 erarithmetics.code.tex)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/math/pgfmathcalc.code.tex)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/math/pgfmathfloat.code.tex
-\c@pgfmathroundto@lastzeros=\count360
+\c@pgfmathroundto@lastzeros=\count364
 )) (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/math/pgfint.code.tex)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcorepoints.co
 de.tex
 File: pgfcorepoints.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@picminx=\dimen196
-\pgf@picmaxx=\dimen197
-\pgf@picminy=\dimen198
-\pgf@picmaxy=\dimen199
-\pgf@pathminx=\dimen256
-\pgf@pathmaxx=\dimen257
-\pgf@pathminy=\dimen258
-\pgf@pathmaxy=\dimen259
-\pgf@xx=\dimen260
-\pgf@xy=\dimen261
-\pgf@yx=\dimen262
-\pgf@yy=\dimen263
-\pgf@zx=\dimen264
-\pgf@zy=\dimen265
+\pgf@picminx=\dimen265
+\pgf@picmaxx=\dimen266
+\pgf@picminy=\dimen267
+\pgf@picmaxy=\dimen268
+\pgf@pathminx=\dimen269
+\pgf@pathmaxx=\dimen270
+\pgf@pathminy=\dimen271
+\pgf@pathmaxy=\dimen272
+\pgf@xx=\dimen273
+\pgf@xy=\dimen274
+\pgf@yx=\dimen275
+\pgf@yy=\dimen276
+\pgf@zx=\dimen277
+\pgf@zy=\dimen278
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcorepathconst
 ruct.code.tex
 File: pgfcorepathconstruct.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@path@lastx=\dimen266
-\pgf@path@lasty=\dimen267
+\pgf@path@lastx=\dimen279
+\pgf@path@lasty=\dimen280
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcorepathusage
 .code.tex
 File: pgfcorepathusage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@shorten@end@additional=\dimen268
-\pgf@shorten@start@additional=\dimen269
+\pgf@shorten@end@additional=\dimen281
+\pgf@shorten@start@additional=\dimen282
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcorescopes.co
 de.tex
@@ -925,19 +945,19 @@ File: pgfcorescopes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 \pgfpic=\box106
 \pgf@hbox=\box107
 \pgf@layerbox@main=\box108
-\pgf@picture@serial@count=\count361
+\pgf@picture@serial@count=\count365
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcoregraphicst
 ate.code.tex
 File: pgfcoregraphicstate.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgflinewidth=\dimen270
+\pgflinewidth=\dimen283
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcoretransform
 ations.code.tex
 File: pgfcoretransformations.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@pt@x=\dimen271
-\pgf@pt@y=\dimen272
-\pgf@pt@temp=\dimen273
+\pgf@pt@x=\dimen284
+\pgf@pt@y=\dimen285
+\pgf@pt@temp=\dimen286
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcorequick.cod
 e.tex
@@ -954,14 +974,14 @@ File: pgfcorepathprocessing.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcorearrows.co
 de.tex
 File: pgfcorearrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgfarrowsep=\dimen274
+\pgfarrowsep=\dimen287
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcoreshade.cod
 e.tex
 File: pgfcoreshade.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@max=\dimen275
-\pgf@sys@shading@range@num=\count362
-\pgf@shadingcount=\count363
+\pgf@max=\dimen288
+\pgf@sys@shading@range@num=\count366
+\pgf@shadingcount=\count367
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/basiclayer/pgfcoreimage.cod
 e.tex
@@ -1000,8 +1020,8 @@ File: pgfmoduleplot.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 (/usr/local/share/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-0-65.s
 ty
 Package: pgfcomp-version-0-65 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@nodesepstart=\dimen276
-\pgf@nodesepend=\dimen277
+\pgf@nodesepstart=\dimen289
+\pgf@nodesepend=\dimen290
 )
 (/usr/local/share/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-1-18.s
 ty
@@ -1013,8 +1033,8 @@ Package: pgfcomp-version-1-18 2025-08-29 v3.1.11a (3.1.11a)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/math/pgfmath.code.tex))
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/utilities/pgffor.code.tex
 Package: pgffor 2025-08-29 v3.1.11a (3.1.11a)
-\pgffor@iter=\dimen278
-\pgffor@skip=\dimen279
+\pgffor@iter=\dimen291
+\pgffor@skip=\dimen292
 \pgffor@stack=\toks46
 \pgffor@toks=\toks47
 ))
@@ -1025,34 +1045,34 @@ Package: tikz 2025-08-29 v3.1.11a (3.1.11a)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/libraries/pgflibraryplothan
 dlers.code.tex
 File: pgflibraryplothandlers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@plot@mark@count=\count364
-\pgfplotmarksize=\dimen280
+\pgf@plot@mark@count=\count368
+\pgfplotmarksize=\dimen293
 )
-\tikz@lastx=\dimen281
-\tikz@lasty=\dimen282
-\tikz@lastxsaved=\dimen283
-\tikz@lastysaved=\dimen284
-\tikz@lastmovetox=\dimen285
-\tikz@lastmovetoy=\dimen286
-\tikzleveldistance=\dimen287
-\tikzsiblingdistance=\dimen288
+\tikz@lastx=\dimen294
+\tikz@lasty=\dimen295
+\tikz@lastxsaved=\dimen296
+\tikz@lastysaved=\dimen297
+\tikz@lastmovetox=\dimen298
+\tikz@lastmovetoy=\dimen299
+\tikzleveldistance=\dimen300
+\tikzsiblingdistance=\dimen301
 \tikz@figbox=\box111
 \tikz@figbox@bg=\box112
 \tikz@tempbox=\box113
 \tikz@tempbox@bg=\box114
-\tikztreelevel=\count365
-\tikznumberofchildren=\count366
-\tikznumberofcurrentchild=\count367
-\tikz@fig@count=\count368
+\tikztreelevel=\count369
+\tikznumberofchildren=\count370
+\tikznumberofcurrentchild=\count371
+\tikz@fig@count=\count372
 
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/modules/pgfmodulematrix.cod
 e.tex
 File: pgfmodulematrix.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgfmatrixcurrentrow=\count369
-\pgfmatrixcurrentcolumn=\count370
-\pgf@matrix@numberofcolumns=\count371
+\pgfmatrixcurrentrow=\count373
+\pgfmatrixcurrentcolumn=\count374
+\pgf@matrix@numberofcolumns=\count375
 )
-\tikz@expandcount=\count372
+\tikz@expandcount=\count376
 
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/frontendlayer/tikz/librarie
 s/tikzlibrarytopaths.code.tex
@@ -1061,10 +1081,10 @@ File: tikzlibrarytopaths.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/libraries/pgflibraryarrows.
 meta.code.tex
 File: pgflibraryarrows.meta.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgfarrowinset=\dimen289
-\pgfarrowlength=\dimen290
-\pgfarrowwidth=\dimen291
-\pgfarrowlinewidth=\dimen292
+\pgfarrowinset=\dimen302
+\pgfarrowlength=\dimen303
+\pgfarrowwidth=\dimen304
+\pgfarrowlinewidth=\dimen305
 )
 (/home/vrmich/texmf/tex/generic/pgf/tex/generic/pgf/frontendlayer/tikz/librarie
 s/tikzlibrarypositioning.code.tex
@@ -1240,26 +1260,36 @@ LaTeX Font Info:    Font shape `U/mt2msc/m/it' will be
 
 
 [2]
+Overfull \hbox (2.15688pt too wide) in paragraph at lines 386--389
+[]\TU/OldStandard-Regular.otf(0)/b/n/10.95 Exercise 7. \TU/OldStandard-Regular.
+otf(0)/m/n/10.95 [\TU/OldStandard-Regular.otf(0)/m/it/10.95 Parity to Rabin\TU/
+OldStandard-Regular.otf(0)/m/n/10.95 ]  Let $\U/eus/m/n/10.95 A$ \TU/OldStandar
+d-Regular.otf(0)/m/n/10.95 be a parity automaton with priority function $[]$.
+ []
+
+
 
 [3]
 
 [4]
 
-[5] (./tutorial2.aux)
+[5]
+
+[6] (./tutorial2.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2022-01-01>
  ***********
 Package rerunfilecheck Info: File `tutorial2.out' has not changed.
-(rerunfilecheck)             Checksum: 49B44E8713ACFDA45A45169DCAB45D78;361.
+(rerunfilecheck)             Checksum: F5785AE043D3D30317C880F4513CD3DB;439.
  ) 
 Here is how much of TeX's memory you used:
- 30931 strings out of 473839
- 626186 string characters out of 5733090
- 1168265 words of memory out of 5000000
- 53512 multiletter control sequences out of 15000+600000
+ 31007 strings out of 473839
+ 627451 string characters out of 5733090
+ 1168151 words of memory out of 5000000
+ 53584 multiletter control sequences out of 15000+600000
  569845 words of font info for 131 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 102i,11n,121p,1038b,1079s stack positions out of 10000i,2500n,20000p,300000b,200000s
+ 102i,12n,121p,1038b,1045s stack positions out of 10000i,2500n,20000p,300000b,200000s
 
-Output written on tutorial2.pdf (5 pages).
+Output written on tutorial2.pdf (6 pages).

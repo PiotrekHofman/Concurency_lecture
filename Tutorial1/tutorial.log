@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (Web2C 2025) (preloaded format=pdflatex 2026.2.17)  28 SEP 2026 23:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (Web2C 2025) (preloaded format=pdflatex 2026.2.17)  9 OCT 2026 09:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**tutorial
+**tutorial.tex
 (./tutorial.tex
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -1143,8 +1143,7 @@ LaTeX Font Info:    Trying to load font information for OT1+lmss on input line
 
 (/usr/local/share/texmf-dist/tex/latex/lm/ot1lmss.fd
 File: ot1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-No file tutorial.aux.
+) (./tutorial.aux)
 \openout1 = `tutorial.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 52.
@@ -1165,6 +1164,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 52.
 LaTeX Font Info:    ... okay on input line 52.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 52.
 LaTeX Font Info:    ... okay on input line 52.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -1222,6 +1222,8 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 Package hyperref Info: Link coloring OFF on input line 52.
+
+(./tutorial.out) (./tutorial.out)
 \@outlinefile=\write5
 \openout5 = `tutorial.out'.
 
@@ -1297,12 +1299,12 @@ Dictionary: translator-numbers-dictionary, Language: English
 Dictionary: translator-theorem-dictionary, Language: English 
 )
 \c@lstlisting=\count387
-
-No file tutorial.nav.
+ (./tutorial.nav)
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <6> not available
 (Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 82.
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 8
 2.
+
 (/usr/local/share/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -1500,24 +1502,17 @@ Overfull \vbox (45.62805pt too high) detected at line 721
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2022-01-01>
  ***********
-
-
-Package rerunfilecheck Warning: File `tutorial.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `tutorial.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  D41D8CD98F00B204E9800998ECF8427E;0.
+Package rerunfilecheck Info: File `tutorial.out' has not changed.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 36236 strings out of 473198
- 788656 string characters out of 5719928
- 1193668 words of memory out of 5000000
- 58715 multiletter control sequences out of 15000+600000
+ 36284 strings out of 473198
+ 789122 string characters out of 5719928
+ 1194279 words of memory out of 5000000
+ 58755 multiletter control sequences out of 15000+600000
  591020 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,19n,123p,425b,1138s stack positions out of 10000i,2500n,20000p,300000b,200000s
+ 128i,19n,123p,429b,1138s stack positions out of 10000i,2500n,20000p,300000b,200000s
  </home/vrmich/.texlive2025/texmf-var/fonts/pk/ljfour/public/amsfonts/symbols
 /msbm7.514pk></home/vrmich/texmf/fonts/type1/public/lm/lmex10.pfb></home/vrmich
 /texmf/fonts/type1/public/lm/lmmi5.pfb></home/vrmich/texmf/fonts/type1/public/l
@@ -1525,7 +1520,7 @@ m/lmmi6.pfb></home/vrmich/texmf/fonts/type1/public/lm/lmss12.pfb></home/vrmich/
 texmf/fonts/type1/public/lm/lmss8.pfb></home/vrmich/texmf/fonts/type1/public/lm
 /lmsso8.pfb></home/vrmich/texmf/fonts/type1/public/lm/lmsy5.pfb></home/vrmich/t
 exmf/fonts/type1/public/lm/lmsy6.pfb>
-Output written on tutorial.pdf (16 pages, 186510 bytes).
+Output written on tutorial.pdf (16 pages, 186743 bytes).
 PDF statistics:
  718 PDF objects out of 1000 (max. 8388607)
  545 compressed objects within 6 object streams

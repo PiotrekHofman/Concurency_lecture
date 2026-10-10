@@ -18,6 +18,8 @@
 \newcommand{\trans}[1]{\xrightarrow{#1}}
 \newcommand{\bis}{\mathrel{\sim}}
 \newcommand{\appn}[1]{\mathrel{\sim_{#1}}}
+\newcommand{\PD}{\mathrm{PD}}
+\newcommand{\NF}{\mathrm{NF}}
 
 \begin{document}
 
@@ -307,7 +309,7 @@ A BPA has variables $X_1,\ldots,X_k$ and rules
       X\trans{a}\alpha,
       \qquad \alpha\in\{X_1,\ldots,X_k\}^*.
 \]
-Configurations are words.  The operational rule is
+Configurations are words. The operational rule is
 \[
       X\beta\trans{a}\alpha\beta.
 \]
@@ -340,155 +342,141 @@ Assume that the BPA is normed.
       \]
 \item Construct two normed BPA configurations with the same norm which are
       not bisimilar.
+\item Call a transition $\alpha\trans{a}\beta$ \emph{norm-reducing} if
+      $\|\beta\|=\|\alpha\|-1$. Prove that every non-empty configuration
+      has a norm-reducing transition.
 \end{enumerate}
 
-\textbf{Discussion.}
-Norm is only the first invariant used by polynomial algorithms for normed
-BPA bisimilarity.  A full algorithm needs stronger decomposition properties.
-Which additional information, beyond the norm, would be useful when comparing
-two long BPA words?
-
-% ---------------------------------------------------------------------------
-
-\section*{G. Summary question}
-
-\textbf{Exercise 10. [What made the decidability proof work?]}
-For the BPP argument above, identify the role of each property:
-
-\begin{enumerate}[label=(\roman*)]
-\item finite branching;
-\item bisimilarity being a congruence;
-\item every congruence on $\N^k$ being semilinear;
-\item decidability of Presburger arithmetic;
-\item dovetailing two semi-decision procedures.
-\end{enumerate}
-
-For each item, say which part of the proof would fail without it.
-
-
-\textbf{Exercise 9. [Norm as a bisimulation invariant]}
-Assume that the BPA is normed.
-
+\textbf{Exercise 10. [Congruence and cancellation]}
 \begin{enumerate}[label=(\alph*)]
-	\item Prove that every non-empty configuration has an outgoing transition.
-	\item Prove
-	\[
-	\|\alpha\beta\|
-	=
-	\|\alpha\|+\|\beta\|.
-	\]
-	\item Prove that
-	\[
-	\alpha\sim\beta
-	\quad\Longrightarrow\quad
-	\|\alpha\|=\|\beta\|.
-	\]
-	\item Construct two normed BPA configurations with the same norm which are
-	not bisimilar.
+\item Prove that bisimilarity is a congruence for concatenation:
+      if $\alpha\sim\beta$, then
+      \[
+          \alpha\gamma\sim\beta\gamma
+          \qquad\text{and}\qquad
+          \gamma\alpha\sim\gamma\beta.
+      \]
+      Pay attention to the moment when the left component terminates.
+
+\item Prove \emph{right cancellation} for normed BPA:
+      \[
+          \alpha\gamma\sim\beta\gamma
+          \quad\Longrightarrow\quad
+          \alpha\sim\beta.
+      \]
+      Hint: consider
+      \[
+          R=\{(\alpha,\beta):
+          \alpha\gamma\sim\beta\gamma
+          \text{ for some normed }\gamma\}
+      \]
+      and prove that $R$ is a bisimulation.
+
+\item Prove \emph{left cancellation}:
+      \[
+          \gamma\alpha\sim\gamma\beta
+          \quad\Longrightarrow\quad
+          \alpha\sim\beta.
+      \]
+ 
 \end{enumerate}
 
-\textbf{Exercise 10. [Cancellation and prime decomposition]}
-A BPA word is called \emph{prime} (up to bisimilarity) if it is non-empty
-and is not bisimilar to a product of two non-empty words.
-Here products are concatenations, and $\eps$ is the identity.
-
-\begin{enumerate}[label=(\alph*)]
-	\item Prove that bisimilarity is a congruence for concatenation:
-	$\alpha\sim\beta$ implies $\alpha\gamma\sim\beta\gamma$ and
-	$\gamma\alpha\sim\gamma\beta$. Pay attention to termination.
-	\item Prove \emph{right cancellation} for normed BPA:
-	\[
-	\alpha\gamma\sim\beta\gamma\quad\Longrightarrow\quad\alpha\sim\beta.
-	\]
-	Hint: use a relation of pairs with the same suffix and the fact that a
-	non-empty normed prefix can make a move.
-	\item Prove \emph{left cancellation}:
-	\[
-	\gamma\alpha\sim\gamma\beta\quad\Longrightarrow\quad\alpha\sim\beta.
-	\]
-	Hint: follow a shortest word reducing $\gamma$ to $\eps$.
-	\item Explain why normedness is important in these arguments.
-\end{enumerate}
-
-\textbf{Exercise 11. [Unique decomposition]}
-You may use the following \emph{unique decomposition theorem} for normed
-BPA: every configuration is bisimilar to a concatenation of primes, and
-the sequence of prime equivalence classes is unique.
-
-\begin{enumerate}[label=(\alph*)]
-	\item Prove existence of a prime decomposition by induction on the norm.
-	\item Use the theorem to show that, if prime decompositions are known,
-	checking bisimilarity of two BPA words reduces to comparing two sequences.
-	\item Let $X_1,\ldots,X_k$ be the variables. Explain why it is enough to
-	compute prime decompositions of these $k$ variables, rather than of all
-	words. How do you decompose a word $X_{i_1}\cdots X_{i_m}$?
-	\item Show that every prime appearing in the decomposition of a variable
-	has norm at most the norm of that variable. Can the total decomposition
-	length exceed the norm?
-\end{enumerate}
-
-\textbf{Exercise 12. [A finite decomposition base]}
-A \emph{decomposition base} chooses some variables as representatives of
-prime classes and gives each remaining variable $X$ a word $d(X)$ over
-prime representatives. Extend $d$ to words by concatenation, and let
-$\equiv_d$ mean equality of the resulting words:
+A nonterminal $P$ is called \emph{prime} if
 \[
-\alpha\equiv_d\beta\quad\Longleftrightarrow\quad d(\alpha)=d(\beta).
+     P\sim \alpha\beta,\quad \alpha,\beta\neq\eps
+\]
+is impossible. Equivalently, $P$ is prime if
+\[
+     P\sim X\alpha
+     \quad\Longrightarrow\quad
+     \alpha=\eps.
+\]
+Primality is understood up to bisimilarity.
+
+\textbf{Exercise 11. [syntactically equality of prime words]}
+
+\begin{enumerate}[label=(\alph*)]
+\item Give two different words built only from prime nonterminals which are
+      bisimilar.
+\item Based on this example, formulate the natural condition under which
+      two words
+      \[
+          P_1\cdots P_m,\qquad Q_1\cdots Q_n
+      \]
+      of prime nonterminals should be bisimilar. (Without proving that condition is necessary and sufficient.)
+\end{enumerate}
+
+\textbf{Exercise 12. [Existence of prime decompositions]}
+A \emph{prime decomposition} of a word $\alpha$ is a word
+$P_1\cdots P_m$ of prime nonterminals such that
+\[
+    \alpha\sim P_1\cdots P_m.
 \]
 
 \begin{enumerate}[label=(\alph*)]
-	\item Show that $\equiv_d$ is a congruence. Why can one test equality
-	modulo $\equiv_d$ without constructing an infinite-state graph?
-	\item Write a finite set of conditions on the BPA rules sufficient to
-	ensure that $\equiv_d$ is a bisimulation. Explain how to test these
-	conditions by comparing normal forms of rule successors.
-	\item Suppose $\equiv_d$ is a bisimulation and the base contains the
-	input pair $(\alpha,\beta)$ in the sense that
-	$d(\alpha)=d(\beta)$. What can you conclude?
-	\item Why is checking that a proposed base is a bisimulation easier than
-	finding the correct base?
+\item Prove by induction on the norm that every nonterminal has a prime
+      decomposition.
+\item Deduce that every BPA word has a prime decomposition.
 \end{enumerate}
 
-\textbf{Exercise 13. [Towards a polynomial-time algorithm --- challenge]}
-Assume that all variables are normed and their norms are available.
-The unique decomposition theorem is available as a black box.
+\textbf{Exercise 13. [Unique prime decomposition]}
+Prove the following theorem.
+
+\medskip
+\emph{If}
+\[
+    P_1\cdots P_m\sim Q_1\cdots Q_n
+\]
+\emph{and all $P_i,Q_j$ are prime, then}
+\[
+    m=n
+    \qquad\text{and}\qquad
+    P_i\sim Q_i
+    \quad\text{for every }i.
+\]
+
+
+
+
+
+\textbf{Exercise 14. [Canonical prime decomposition]}
+Choose one representative from every bisimilarity class of prime
+nonterminals and call these representatives \emph{canonical primes}.
+
+For every nonterminal $X$, let $\PD(X)$ be its unique word of canonical
+primes. Extend $\PD$ to words by concatenation:
+\[
+    \PD(X_1\cdots X_r)
+    =
+    \PD(X_1)\cdots\PD(X_r).
+\]
 
 \begin{enumerate}[label=(\alph*)]
-	\item Order variables by nondecreasing norm. Why can a composite
-	variable of norm $n$ only decompose into primes of smaller norm?
-	\item Propose how to represent candidate decompositions by a compact
-	finite base. Identify the operations needed to compare two words under
-	such a base.
-	\item A proposed base can be checked by finitely many transition tests.
-	Explain why this does \emph{not} by itself prove that a polynomial-time
-	algorithm exists.
-	\item Research challenge: describe how a decomposition-base refinement
-	algorithm avoids enumerating all candidate bases. State what must be
-	bounded to obtain polynomial running time.
+\item Assume that $\PD(X)$ is given explicitly for every nonterminal $X$.
+      Give an algorithm deciding whether two input words $\alpha,\beta$
+      are bisimilar.
 \end{enumerate}
 
-\textbf{Remark.} The preceding exercises explain why prime decomposition
-turns equivalence into a finite algebraic problem. The complete
-polynomial-time algorithm for normed BPA requires an additional
-polynomial-time base-refinement argument; unique decomposition alone is
-not an algorithm for finding the base.
+\textbf{Exercise 15. [Prime decompositions may be exponentially long]}
+How long can the prime decomposition of a nonterminal be 
+in terms of the size of the BPA?  
 
 % ---------------------------------------------------------------------------
+\section*{G. An exponential-space algorithm for normed BPA}
 
-\section*{G. Summary question}
+Let $V$ be the set of nonterminals.
+Recall that every nonterminal has a unique prime decomposition,
+up to bisimilarity of the prime factors.
 
-\textbf{Exercise 14. [What made the decidability proof work?]}
-For the BPP argument above, identify the role of each property:
+\textbf{Exercise 16. [Guessing the prime decomposition]}
 
-\begin{enumerate}[label=(\roman*)]
-	\item finite branching;
-	\item bisimilarity being a congruence;
-	\item every congruence on $\N^k$ being semilinear;
-	\item decidability of Presburger arithmetic;
-	\item dovetailing two semi-decision procedures.
-\end{enumerate}
+Design an algorithm which, given a normed BPA finds its prime decomposition
+in EXPSPACE.
 
-For each item, say which part of the proof would fail without it.
+\medskip
+\textbf{Remark.}
+There is a polynomial time algorithm for 
+deciding strong bisimilarity of normed BPA.
 
 \end{document}
 
