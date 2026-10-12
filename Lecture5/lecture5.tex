@@ -12,6 +12,7 @@
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb,mathtools,booktabs,array}
 \usepackage{tikz}
+\usepackage{todonotes}
 \usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
 \usepackage{appendixnumberbeamer}
 \usefonttheme{professionalfonts}
@@ -375,8 +376,9 @@
   \end{block}
   \renewcommand{\arraystretch}{1.45}
   \begin{tabular}{@{}p{.26\textwidth}p{.68\textwidth}@{}}
-    \textbf{Logical} & Strong bisimulation preserves HML; on Kripke structures, its label-preserving version preserves CTL$^*$.\\
-    \textbf{Algebraic} & It supports substitution under the chosen constructors.\\
+    \textbf{Logical} & Strong bisimulation preserves HML; on Kripke structures, its label-preserving version preserves CTL$^*$. \\
+    & Interaction can not be defined on the basis of traces.\\
+    \textbf{Algebraic} & It supports substitution.\\
     \textbf{Proof-theoretic} & A witness is checked locally by matching transitions; finite-state minimisation uses partition refinement.
   \end{tabular}
   \vspace{2mm}
@@ -713,8 +715,8 @@
     \]
   \end{block}
 
-  \Takeaway{This is an ``until $a$ happens'' modality:
-  it observes properties of the intermediate silent states.}
+  %\Takeaway{This is an ``until $a$ happens'' modality:
+  %it observes properties of the intermediate silent states.}
 
   \note{This is the essential operator of Hennessy--Milner Logic with Until,
   HMLU. I would call it CTL-style rather than ``weak CTL'', because
@@ -778,8 +780,8 @@
       R\not\models\chi.
   \]
 
-  \Takeaway{Weak bisimulation forgets too much for an until operator
-  that inspects the internal path.}
+  %\Takeaway{Weak bisimulation forgets too much for an until operator
+  %that inspects the internal path.}
 \end{frame}
 
 
@@ -799,6 +801,7 @@
     Before $a$ happens, we are still in $S$, where $b$ is possible.
   \end{block}
 
+  \vspace{-0.3cm}
   \begin{alertblock}{$R\not\models\chi$}
     Every execution of $a$ has to start with
     \[
@@ -811,8 +814,8 @@
     \]
   \end{alertblock}
 
-  \Takeaway{The difference is not the visible trace.
-  It is \emph{when a branching possibility disappears}.}
+%  \Takeaway{The difference is not the visible trace.
+%  It is \emph{when a branching possibility disappears}.}
 \end{frame}
 
 
@@ -926,6 +929,8 @@
     \]
   \end{block}
 
+
+\vspace{-0.3cm}
   \[
       \underbrace{\text{weak HML}}_{\text{endpoint only}}
       \quad\leadsto\quad
@@ -943,39 +948,39 @@
 
 
 % ----------------------------------------------------------------------
-\begin{frame}{Connection with CTL without the next operator}
-  HMLU already gives the cleanest action-based characterization.
-  There is also a direct connection with CTL.
+% \begin{frame}{Connection with CTL without the next operator}
+%   HMLU already gives the cleanest action-based characterization.
+%   There is also a direct connection with CTL.
 
-  \begin{block}{Translate an LTS to a state-labelled system}
-    Keep original states and label them by a fresh proposition $\bot$.
-    Replace every visible transition
-    \[
-        p\step{a}q
-    \]
-    by
-    \[
-        p\longrightarrow [p,a,q]\longrightarrow q,
-    \]
-    where the intermediate state is labelled by $a$.
-    Silent transitions $p\step{\tau}q$ remain direct edges.
-  \end{block}
+%   \begin{block}{Translate an LTS to a state-labelled system}
+%     Keep original states and label them by a fresh proposition $\bot$.
+%     Replace every visible transition
+%     \[
+%         p\step{a}q
+%     \]
+%     by
+%     \[
+%         p\longrightarrow [p,a,q]\longrightarrow q,
+%     \]
+%     where the intermediate state is labelled by $a$.
+%     Silent transitions $p\step{\tau}q$ remain direct edges.
+%   \end{block}
 
-  \begin{block}{Theorem for finite LTSs}
-    Under the divergence-blind interpretation,
-    \[
-      p\approx_{\mathrm b}q
-      \quad\Longleftrightarrow\quad
-      p,q\text{ satisfy the same }\mathrm{CTL}^{*}\!-\!X
-      \text{ formulas}.
-    \]
-    In fact, $\mathrm{CTL}-X$ already induces the same equivalence.
-  \end{block}
+%   \begin{block}{Theorem for finite LTSs}
+%     Under the divergence-blind interpretation,
+%     \[
+%       p\approx_{\mathrm b}q
+%       \quad\Longleftrightarrow\quad
+%       p,q\text{ satisfy the same }\mathrm{CTL}^{*}\!-\!X
+%       \text{ formulas}.
+%     \]
+%     In fact, $\mathrm{CTL}-X$ already induces the same equivalence.
+%   \end{block}
 
-  \Takeaway{Removing $X$ makes finite stuttering invisible,
-  while Until still observes whether properties remain true
-  throughout the stuttering segment.}
-\end{frame}
+%   \Takeaway{Removing $X$ makes finite stuttering invisible,
+%   while Until still observes whether properties remain true
+%   throughout the stuttering segment.}
+% \end{frame}
 
 
 % ----------------------------------------------------------------------
@@ -1006,6 +1011,8 @@
     while $p$ does not.
   \end{alertblock}
 
+
+  \vspace{-0.3cm}
   If this distinction matters, use a
   \textbf{divergence-preserving} version of the equivalence
   (and a corresponding divergence-sensitive logic).
@@ -1120,7 +1127,20 @@
     and symmetrically.
   \end{block}
 
-  \begin{block}{Compositional role}
+  % \begin{block}{Compositional role}
+  %   The rooted variants repair the failure under nondeterministic choice.
+  %   For the standard CCS-style operators they give the corresponding
+  %   congruences.
+  % \end{block}
+
+  % \Takeaway{Rootedness and branching preservation solve different problems:
+  % branching controls what may happen \emph{inside} a silent computation;
+  % rootedness controls how a component may be used by its environment.}
+\end{frame}
+
+
+\begin{frame}
+ \begin{block}{Compositional role}
     The rooted variants repair the failure under nondeterministic choice.
     For the standard CCS-style operators they give the corresponding
     congruences.
@@ -1130,7 +1150,6 @@
   branching controls what may happen \emph{inside} a silent computation;
   rootedness controls how a component may be used by its environment.}
 \end{frame}
-
 
 % ----------------------------------------------------------------------
 \begin{frame}{What $\tau$ adds to the picture}
@@ -1173,361 +1192,361 @@
 \end{frame}
 
 % 18 -----------------------------------------------------------------
-\begin{frame}{First example: an internal delay}
-  \[
-    P=a.\nil,\qquad Q=\tau.a.\nil.
-  \]
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \node[st] (p) at (0,1.05) {$P$}; \node[terminal] (p0) at (5,1.05) {$0$};
-    \node[st] (q) at (0,-.6) {$Q$}; \node[st] (q1) at (2.5,-.6) {$a.0$};
-    \node[terminal] (q0) at (5,-.6) {$0$};
-    \draw[trans] (p)--node[lab,above] {$a$}(p0);
-    \draw[tauedge] (q)--node[lab,below] {$\tau$}(q1);
-    \draw[trans] (q1)--node[lab,below] {$a$}(q0);
-    \draw[rel] (p)--(q); \draw[rel] (p)--(q1); \draw[rel] (p0)--(q0);
-  \end{tikzpicture}
-  \par\vspace{1mm}
-  \uncover<2->{\Takeaway{$P\wb Q$, but $P\not\sim Q$. The $\tau$-step of $Q$ can be matched by $P$ doing nothing.}}
-  \note{The two displayed states named a.0/P have identical behaviour; the dotted links show a possible witness across disjoint copies. All displayed zero states are deadlocks.}
-\end{frame}
+% \begin{frame}{First example: an internal delay}
+%   \[
+%     P=a.\nil,\qquad Q=\tau.a.\nil.
+%   \]
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (p) at (0,1.05) {$P$}; \node[terminal] (p0) at (5,1.05) {$0$};
+%     \node[st] (q) at (0,-.6) {$Q$}; \node[st] (q1) at (2.5,-.6) {$a.0$};
+%     \node[terminal] (q0) at (5,-.6) {$0$};
+%     \draw[trans] (p)--node[lab,above] {$a$}(p0);
+%     \draw[tauedge] (q)--node[lab,below] {$\tau$}(q1);
+%     \draw[trans] (q1)--node[lab,below] {$a$}(q0);
+%     \draw[rel] (p)--(q); \draw[rel] (p)--(q1); \draw[rel] (p0)--(q0);
+%   \end{tikzpicture}
+%   \par\vspace{1mm}
+%   \uncover<2->{\Takeaway{$P\wb Q$, but $P\not\sim Q$. The $\tau$-step of $Q$ can be matched by $P$ doing nothing.}}
+%   \note{The two displayed states named a.0/P have identical behaviour; the dotted links show a possible witness across disjoint copies. All displayed zero states are deadlocks.}
+% \end{frame}
 
-% 19 -----------------------------------------------------------------
-\begin{frame}{Weak bisimulation detects silent deadlock}
-  Return to $P=a.\nil+\tau.\nil$ and $Q=a.\nil$.
-  \begin{block}{The missing obligation is now present}
-    If $P\,R\,Q$ and $P\step{\tau}\nil$, we need
-    \[
-      Q\silent Q'\quad\text{and}\quad\nil\,R\,Q'.
-    \]
-    $Q$ has no internal move, so $Q'=Q$.
-    But $Q$ can perform $a$, and $\nil$ cannot match it.
-  \end{block}
-  Therefore $P\notwb Q$.
-  \begin{exampleblock}{What is intentionally ignored}
-    $\tau.\nil\wb\nil$: finite internal work leading only to inaction adds no visible possibility.
+% % 19 -----------------------------------------------------------------
+% \begin{frame}{Weak bisimulation detects silent deadlock}
+%   Return to $P=a.\nil+\tau.\nil$ and $Q=a.\nil$.
+%   \begin{block}{The missing obligation is now present}
+%     If $P\,R\,Q$ and $P\step{\tau}\nil$, we need
+%     \[
+%       Q\silent Q'\quad\text{and}\quad\nil\,R\,Q'.
+%     \]
+%     $Q$ has no internal move, so $Q'=Q$.
+%     But $Q$ can perform $a$, and $\nil$ cannot match it.
+%   \end{block}
+%   Therefore $P\notwb Q$.
+%   \begin{exampleblock}{What is intentionally ignored}
+%     $\tau.\nil\wb\nil$: finite internal work leading only to inaction adds no visible possibility.
 
-  \end{exampleblock}
-  \Takeaway{Ignore the duration of finite internal work, not its effect on the available continuations.}
-\end{frame}
+%   \end{exampleblock}
+%   \Takeaway{Ignore the duration of finite internal work, not its effect on the available continuations.}
+% \end{frame}
 
-% 20 -----------------------------------------------------------------
-\section{Branching bisimulation}
-\begin{frame}{Weak matching may pass over a choice}
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \node[st] (p) at (0,1.3) {$p$}; \node[st] (pp) at (7,1.3) {$p'$};
-    \node[st] (q) at (0,-.5) {$q$}; \node[st] (q0) at (2.3,-.5) {$q_0$};
-    \node[st] (q1) at (4.7,-.5) {$q_1$}; \node[st] (qq) at (7,-.5) {$q'$};
-    \draw[trans] (p)--node[lab,above] {$a$}(pp);
-    \draw[tauedge] (q)--node[lab,below] {$\tau^*$}(q0);
-    \draw[trans] (q0)--node[lab,below] {$a$}(q1);
-    \draw[tauedge] (q1)--node[lab,below] {$\tau^*$}(qq);
-    \draw[rel] (p)--node[lab,left] {$R$}(q);
-    \draw[rel] (pp)--node[lab,right] {$R$}(qq);
-    \uncover<2->{\draw[rel,line width=1.2pt] (p)--node[lab,above right] {$R$}(q0);
-      \draw[rel,line width=1.2pt] (pp)--node[lab,above left] {$R$}(q1);}
-  \end{tikzpicture}
-  \par\vspace{4mm}
-  \begin{block}{Weak bisimulation}
-    Requires related endpoints; no explicit obligations at $q_0$ and $q_1$.
-  \end{block}
-  \uncover<2->{\Takeaway{Branching bisimulation also preserves the choices \emph{around} the matching visible action. We use an equivalent definition with no trailing silent path.}}
-  \Source{Adapted matching diagram from \cite{GW96}; the next slide uses the formulation of \cite{GLT09}.}
-\end{frame}
+% % 20 -----------------------------------------------------------------
+% \section{Branching bisimulation}
+% \begin{frame}{Weak matching may pass over a choice}
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (p) at (0,1.3) {$p$}; \node[st] (pp) at (7,1.3) {$p'$};
+%     \node[st] (q) at (0,-.5) {$q$}; \node[st] (q0) at (2.3,-.5) {$q_0$};
+%     \node[st] (q1) at (4.7,-.5) {$q_1$}; \node[st] (qq) at (7,-.5) {$q'$};
+%     \draw[trans] (p)--node[lab,above] {$a$}(pp);
+%     \draw[tauedge] (q)--node[lab,below] {$\tau^*$}(q0);
+%     \draw[trans] (q0)--node[lab,below] {$a$}(q1);
+%     \draw[tauedge] (q1)--node[lab,below] {$\tau^*$}(qq);
+%     \draw[rel] (p)--node[lab,left] {$R$}(q);
+%     \draw[rel] (pp)--node[lab,right] {$R$}(qq);
+%     \uncover<2->{\draw[rel,line width=1.2pt] (p)--node[lab,above right] {$R$}(q0);
+%       \draw[rel,line width=1.2pt] (pp)--node[lab,above left] {$R$}(q1);}
+%   \end{tikzpicture}
+%   \par\vspace{4mm}
+%   \begin{block}{Weak bisimulation}
+%     Requires related endpoints; no explicit obligations at $q_0$ and $q_1$.
+%   \end{block}
+%   \uncover<2->{\Takeaway{Branching bisimulation also preserves the choices \emph{around} the matching visible action. We use an equivalent definition with no trailing silent path.}}
+%   \Source{Adapted matching diagram from \cite{GW96}; the next slide uses the formulation of \cite{GLT09}.}
+% \end{frame}
 
-% 21 -----------------------------------------------------------------
-\begin{frame}{Branching bisimulation: definition}
-  Write $u\optstep{\alpha}v$ for a single $\alpha$-step, or for $u=v$ when $\alpha=\tau$.
-  \begin{block}{Definition}
-    A symmetric relation $R$ is a \textbf{branching bisimulation} if
-    $p\,R\,q$ and $p\step{\alpha}p'$ imply that there exist $q_0,q'$ with
-    \[
-      q\silent q_0\optstep{\alpha}q',
-      \qquad \boxed{p\,R\,q_0},\qquad p'\,R\,q'.
-    \]
-    We write $p\bb q$ if some branching bisimulation relates them.
-  \end{block}
-  \begin{itemize}\setlength\itemsep{2mm}
-    \item Before the matching action, $q_0$ must still represent $p$.
-    \item Immediately afterwards, $q'$ must represent $p'$.
-    \item A $\tau$-step may be ignored only when the required states remain related.
-  \end{itemize}
-  \Source{\cite[Definition 2.1]{GLT09}. Branching bisimilarity is an equivalence relation.}
-  \note{This is the optional-final-step relational definition from GLT09, which induces standard branching bisimilarity. Do not insist that every tau-transition must be inert. For the largest relation, the stuttering property ensures that the preparatory tau path stays in the source equivalence class.}
-\end{frame}
+% % 21 -----------------------------------------------------------------
+% \begin{frame}{Branching bisimulation: definition}
+%   Write $u\optstep{\alpha}v$ for a single $\alpha$-step, or for $u=v$ when $\alpha=\tau$.
+%   \begin{block}{Definition}
+%     A symmetric relation $R$ is a \textbf{branching bisimulation} if
+%     $p\,R\,q$ and $p\step{\alpha}p'$ imply that there exist $q_0,q'$ with
+%     \[
+%       q\silent q_0\optstep{\alpha}q',
+%       \qquad \boxed{p\,R\,q_0},\qquad p'\,R\,q'.
+%     \]
+%     We write $p\bb q$ if some branching bisimulation relates them.
+%   \end{block}
+%   \begin{itemize}\setlength\itemsep{2mm}
+%     \item Before the matching action, $q_0$ must still represent $p$.
+%     \item Immediately afterwards, $q'$ must represent $p'$.
+%     \item A $\tau$-step may be ignored only when the required states remain related.
+%   \end{itemize}
+%   \Source{\cite[Definition 2.1]{GLT09}. Branching bisimilarity is an equivalence relation.}
+%   \note{This is the optional-final-step relational definition from GLT09, which induces standard branching bisimilarity. Do not insist that every tau-transition must be inert. For the largest relation, the stuttering property ensures that the preparatory tau path stays in the source equivalence class.}
+% \end{frame}
 
-% 22 -----------------------------------------------------------------
-\begin{frame}{Weak, but not branching, bisimilar}
-  \[
-    X=b.\nil+\tau.C,\quad C=c.\nil,\qquad
-    P=a.X,\quad Q=a.X+a.C.
-  \]
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \node[st] (p) at (-2,1.05) {$P$};
-    \node[st] (q) at (2,1.05) {$Q$};
-    \node[st] (x) at (-.8,-.1) {$X$};
-    \node[st] (c) at (2,-1.35) {$C$};
-    \node[terminal] (z) at (-2,-2.0) {$0$};
-    \draw[trans] (p)--node[lab,above left] {$a$}(x);
-    \draw[trans] (q)--node[lab,above] {$a$}(x);
-    \draw[newedge] (q)--node[lab,right] {$a$}(c);
-    \draw[tauedge] (x)--node[lab,above right] {$\tau$}(c);
-    \draw[trans] (x)--node[lab,left] {$b$}(z);
-    \draw[trans] (c)--node[lab,below] {$c$}(z);
-  \end{tikzpicture}
-  \par\vspace{1mm}
-  \Takeaway{$P\wb Q$, but $P\notbb Q$: the additional transition bypasses $X$, where $b$ is still possible.}
-  \note{This is a compact instance of the standard weak tau-law a.(B+tau.C)+a.C approximately a.(B+tau.C). Share X, C and 0 between the two roots, so the weak witness consists of identity pairs plus (P,Q) and its converse.}
-\end{frame}
+% % 22 -----------------------------------------------------------------
+% \begin{frame}{Weak, but not branching, bisimilar}
+%   \[
+%     X=b.\nil+\tau.C,\quad C=c.\nil,\qquad
+%     P=a.X,\quad Q=a.X+a.C.
+%   \]
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (p) at (-2,1.05) {$P$};
+%     \node[st] (q) at (2,1.05) {$Q$};
+%     \node[st] (x) at (-.8,-.1) {$X$};
+%     \node[st] (c) at (2,-1.35) {$C$};
+%     \node[terminal] (z) at (-2,-2.0) {$0$};
+%     \draw[trans] (p)--node[lab,above left] {$a$}(x);
+%     \draw[trans] (q)--node[lab,above] {$a$}(x);
+%     \draw[newedge] (q)--node[lab,right] {$a$}(c);
+%     \draw[tauedge] (x)--node[lab,above right] {$\tau$}(c);
+%     \draw[trans] (x)--node[lab,left] {$b$}(z);
+%     \draw[trans] (c)--node[lab,below] {$c$}(z);
+%   \end{tikzpicture}
+%   \par\vspace{1mm}
+%   \Takeaway{$P\wb Q$, but $P\notbb Q$: the additional transition bypasses $X$, where $b$ is still possible.}
+%   \note{This is a compact instance of the standard weak tau-law a.(B+tau.C)+a.C approximately a.(B+tau.C). Share X, C and 0 between the two roots, so the weak witness consists of identity pairs plus (P,Q) and its converse.}
+% \end{frame}
 
-% 23 -----------------------------------------------------------------
-\begin{frame}{The separating example: why the relations differ}
-  \[
-    P=a.X,\quad Q=a.X+a.C,\quad X=b.\nil+\tau.C,\quad C=c.\nil.
-  \]
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{.48\textwidth}
-      \begin{exampleblock}{Weak: $P\wb Q$}
-        Match the additional move $Q\step{a}C$ by
-        \[
-          P\step{a}X\step{\tau}C.
-        \]
-        Other moves match directly.\\[1mm]
-        A witness is
-        \[
-          R=\Id\cup\{(P,Q),(Q,P)\}.
-        \]
-      \end{exampleblock}
-    \end{column}
-    \begin{column}{.48\textwidth}
-      \begin{alertblock}{Branching: $P\notbb Q$}
-        $P$ has no initial $\tau$-step. Matching $Q\step{a}C$ must therefore use
-        \[
-          P\step{a}X.
-        \]
-        This requires $X\bb C$, but only $X$ can perform $b$.
-      \end{alertblock}
-    \end{column}
-  \end{columns}
-  \Takeaway{Weak matching may combine the $a$-step with discarding $b$. Branching matching cannot.}
-\end{frame}
+% % 23 -----------------------------------------------------------------
+% \begin{frame}{The separating example: why the relations differ}
+%   \[
+%     P=a.X,\quad Q=a.X+a.C,\quad X=b.\nil+\tau.C,\quad C=c.\nil.
+%   \]
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{.48\textwidth}
+%       \begin{exampleblock}{Weak: $P\wb Q$}
+%         Match the additional move $Q\step{a}C$ by
+%         \[
+%           P\step{a}X\step{\tau}C.
+%         \]
+%         Other moves match directly.\\[1mm]
+%         A witness is
+%         \[
+%           R=\Id\cup\{(P,Q),(Q,P)\}.
+%         \]
+%       \end{exampleblock}
+%     \end{column}
+%     \begin{column}{.48\textwidth}
+%       \begin{alertblock}{Branching: $P\notbb Q$}
+%         $P$ has no initial $\tau$-step. Matching $Q\step{a}C$ must therefore use
+%         \[
+%           P\step{a}X.
+%         \]
+%         This requires $X\bb C$, but only $X$ can perform $b$.
+%       \end{alertblock}
+%     \end{column}
+%   \end{columns}
+%   \Takeaway{Weak matching may combine the $a$-step with discarding $b$. Branching matching cannot.}
+% \end{frame}
 
-% 24 -----------------------------------------------------------------
-\begin{frame}{Why prefer branching bisimulation?}
-  For a visible step $p\step{a}p'$, a branching response can be chosen as
-  \[
-    \begin{gathered}
-      q=q_0\step{\tau}q_1\step{\tau}\cdots\step{\tau}q_k\step{a}q',\\[1mm]
-      \boxed{p\bb q_i\quad(0\leq i\leq k)},\qquad p'\bb q'.
-    \end{gathered}
-  \]
-  \begin{block}{Internal preparation stays in one abstract state}
-    Every $q_i$ represents $p$. Immediately after the matching visible step,
-    $q'$ represents $p'$.
-  \end{block}
-  \begin{exampleblock}{Contrast with weak matching}
-    Only the endpoints must be related. Internal preparation and completion
-    may pass through other behaviours.
-  \end{exampleblock}
-  \Takeaway{Branching equivalence preserves more intermediate structure. Divergence preservation and rootedness remain separate requirements.}
-  \vspace{-2mm}\Source{Branching transfer and the stuttering property: \cite{GW96,GLT09}.}
-  \note{For the largest branching equivalence, both ends of the preparatory path are equivalent to p. The stuttering property puts every intermediate state in that class. Do not present the bare endpoint stuttering property alone as a separator from weak bisimilarity: the extra transfer obligations are decisive. Weak bisimulation remains a legitimate coarser observation regime.}
-\end{frame}
+% % 24 -----------------------------------------------------------------
+% \begin{frame}{Why prefer branching bisimulation?}
+%   For a visible step $p\step{a}p'$, a branching response can be chosen as
+%   \[
+%     \begin{gathered}
+%       q=q_0\step{\tau}q_1\step{\tau}\cdots\step{\tau}q_k\step{a}q',\\[1mm]
+%       \boxed{p\bb q_i\quad(0\leq i\leq k)},\qquad p'\bb q'.
+%     \end{gathered}
+%   \]
+%   \begin{block}{Internal preparation stays in one abstract state}
+%     Every $q_i$ represents $p$. Immediately after the matching visible step,
+%     $q'$ represents $p'$.
+%   \end{block}
+%   \begin{exampleblock}{Contrast with weak matching}
+%     Only the endpoints must be related. Internal preparation and completion
+%     may pass through other behaviours.
+%   \end{exampleblock}
+%   \Takeaway{Branching equivalence preserves more intermediate structure. Divergence preservation and rootedness remain separate requirements.}
+%   \vspace{-2mm}\Source{Branching transfer and the stuttering property: \cite{GW96,GLT09}.}
+%   \note{For the largest branching equivalence, both ends of the preparatory path are equivalent to p. The stuttering property puts every intermediate state in that class. Do not present the bare endpoint stuttering property alone as a separator from weak bisimilarity: the extra transfer obligations are decisive. Weak bisimulation remains a legitimate coarser observation regime.}
+% \end{frame}
 
-% 25 -----------------------------------------------------------------
-\begin{frame}{Three equivalences, three levels of abstraction}
-  \[
-    {\sim}\ \subsetneq\ {\approx_{\mathrm b}}\ \subsetneq\ {\approx_{\mathrm w}}.
-  \]
-  \vspace{3mm}
-  \renewcommand{\arraystretch}{1.6}
-  \begin{tabular}{@{}p{.27\textwidth}p{.67\textwidth}@{}}
-    \textbf{Strong} & Match one transition by one transition.\\
-    \textbf{Branching} & Abstract from internal steps while preserving branching during matching.\\
-    \textbf{Weak} & Match transitions by weak paths with related endpoints.
-  \end{tabular}
-  \vspace{2mm}
-  \begin{block}{Witnesses for strictness}
-    $a.\nil\bb\tau.a.\nil$, but they are not strongly bisimilar.\\[1mm]
-    The previous $P,Q$ are weakly, but not branching, bisimilar.
-  \end{block}
-  \Source{On LTSs without $\tau$-transitions, all three notions coincide. See \cite{GW96}.}
-  \note{Branching implies weak directly: the branching response is a legal weak response. For an optional tau final step this is still a tau-star path. No claim about a partial-order or true-concurrency semantics is being made.}
-\end{frame}
+% % 25 -----------------------------------------------------------------
+% \begin{frame}{Three equivalences, three levels of abstraction}
+%   \[
+%     {\sim}\ \subsetneq\ {\approx_{\mathrm b}}\ \subsetneq\ {\approx_{\mathrm w}}.
+%   \]
+%   \vspace{3mm}
+%   \renewcommand{\arraystretch}{1.6}
+%   \begin{tabular}{@{}p{.27\textwidth}p{.67\textwidth}@{}}
+%     \textbf{Strong} & Match one transition by one transition.\\
+%     \textbf{Branching} & Abstract from internal steps while preserving branching during matching.\\
+%     \textbf{Weak} & Match transitions by weak paths with related endpoints.
+%   \end{tabular}
+%   \vspace{2mm}
+%   \begin{block}{Witnesses for strictness}
+%     $a.\nil\bb\tau.a.\nil$, but they are not strongly bisimilar.\\[1mm]
+%     The previous $P,Q$ are weakly, but not branching, bisimilar.
+%   \end{block}
+%   \Source{On LTSs without $\tau$-transitions, all three notions coincide. See \cite{GW96}.}
+%   \note{Branching implies weak directly: the branching response is a legal weak response. For an optional tau final step this is still a tau-star path. No claim about a partial-order or true-concurrency semantics is being made.}
+% \end{frame}
 
-% 26 -----------------------------------------------------------------
-\section{Divergence}
-\begin{frame}{Divergence: silent activity may continue forever}
-  \begin{block}{Definition}
-    A state $p$ \textbf{diverges} if there is an infinite execution
-    \[
-      p=p_0\step{\tau}p_1\step{\tau}p_2\step{\tau}\cdots.
-    \]
-  \end{block}
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \node[st] (p) at (0,0) {$p$}; \node[terminal] (z1) at (2.2,0) {$0$};
-    \node[st] (q) at (5.2,0) {$q$}; \node[terminal] (z2) at (7.4,0) {$0$};
-    \draw[trans] (p)--node[lab,above] {$a$}(z1);
-    \draw[trans] (q)--node[lab,above] {$a$}(z2);
-    \draw[tauedge] (q) edge[loop above] node[lab] {$\tau$} (q);
-  \end{tikzpicture}
-  \par\vspace{2mm}
-  \uncover<2->{\Takeaway{$p\bb q$, yet only $q$ has an infinite execution avoiding $a$.}}
-  \Source{For maximal executions, with no fairness assumption. Infinite activity is not a deadlock.}
-\end{frame}
+% % 26 -----------------------------------------------------------------
+% \section{Divergence}
+% \begin{frame}{Divergence: silent activity may continue forever}
+%   \begin{block}{Definition}
+%     A state $p$ \textbf{diverges} if there is an infinite execution
+%     \[
+%       p=p_0\step{\tau}p_1\step{\tau}p_2\step{\tau}\cdots.
+%     \]
+%   \end{block}
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (p) at (0,0) {$p$}; \node[terminal] (z1) at (2.2,0) {$0$};
+%     \node[st] (q) at (5.2,0) {$q$}; \node[terminal] (z2) at (7.4,0) {$0$};
+%     \draw[trans] (p)--node[lab,above] {$a$}(z1);
+%     \draw[trans] (q)--node[lab,above] {$a$}(z2);
+%     \draw[tauedge] (q) edge[loop above] node[lab] {$\tau$} (q);
+%   \end{tikzpicture}
+%   \par\vspace{2mm}
+%   \uncover<2->{\Takeaway{$p\bb q$, yet only $q$ has an infinite execution avoiding $a$.}}
+%   \Source{For maximal executions, with no fairness assumption. Infinite activity is not a deadlock.}
+% \end{frame}
 
-% 27 -----------------------------------------------------------------
-\begin{frame}{Finite silence, deadlock, and infinite silence}
-  Let $D$ have only the self-loop $D\step{\tau}D$.
-  \begin{block}{Ordinary weak and branching bisimilarity}
-    \[
-      \nil\bb\tau.\nil\bb D.
-    \]
-    All three have no visible behaviour, but only $D$ has infinite internal activity.
-  \end{block}
-  \begin{exampleblock}{Divergence-preserving branching bisimilarity}
-    Add an obligation to match infinite internal activity within related behaviour.
-    Then
-    \[
-      \nil\dbb\tau.\nil,\qquad \nil\notdbb D.
-    \]
-  \end{exampleblock}
-  \Takeaway{Divergence preservation distinguishes infinite activity from finite silence. It does not make every internal step observable.}
-  \Source{\cite{GLT09}. No fairness assumption is implicit; the exact divergence clause is in the appendix.}
-  \note{A deadlock has no outgoing transition. An internal loop is not a deadlock, even though it may provide no visible progress. Ordinary weak and branching equivalence ignore this distinction in the pure-loop example. The previous example with an a-exit explains why this matters for inevitable response. Do not claim preservation of arbitrary CTL formulas or arbitrary fairness assumptions.}
-\end{frame}
+% % 27 -----------------------------------------------------------------
+% \begin{frame}{Finite silence, deadlock, and infinite silence}
+%   Let $D$ have only the self-loop $D\step{\tau}D$.
+%   \begin{block}{Ordinary weak and branching bisimilarity}
+%     \[
+%       \nil\bb\tau.\nil\bb D.
+%     \]
+%     All three have no visible behaviour, but only $D$ has infinite internal activity.
+%   \end{block}
+%   \begin{exampleblock}{Divergence-preserving branching bisimilarity}
+%     Add an obligation to match infinite internal activity within related behaviour.
+%     Then
+%     \[
+%       \nil\dbb\tau.\nil,\qquad \nil\notdbb D.
+%     \]
+%   \end{exampleblock}
+%   \Takeaway{Divergence preservation distinguishes infinite activity from finite silence. It does not make every internal step observable.}
+%   \Source{\cite{GLT09}. No fairness assumption is implicit; the exact divergence clause is in the appendix.}
+%   \note{A deadlock has no outgoing transition. An internal loop is not a deadlock, even though it may provide no visible progress. Ordinary weak and branching equivalence ignore this distinction in the pure-loop example. The previous example with an a-exit explains why this matters for inevitable response. Do not claim preservation of arbitrary CTL formulas or arbitrary fairness assumptions.}
+% \end{frame}
 
-% 28 -----------------------------------------------------------------
-\section{Rooted relations}
-\begin{frame}{Ordinary weak equivalences fail under choice}
-  \[
-    P=\tau.a.\nil\bb a.\nil=Q,\qquad C[-]=[-]+b.\nil.
-  \]
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{.49\textwidth}\centering
-      \begin{tikzpicture}[x=1cm,y=1cm]
-        \node[st] (p) at (0,1.0) {$C[P]$};
-        \node[st] (a) at (-1.25,-.2) {$a.0$};
-        \node[terminal] (z) at (1.25,-1.45) {$0$};
-        \draw[tauedge] (p)--node[lab,left] {$\tau$}(a);
-        \draw[trans] (p)--node[lab,right] {$b$}(z);
-        \draw[trans] (a)--node[lab,below left] {$a$}(z);
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{.49\textwidth}\centering
-      \begin{tikzpicture}[x=1cm,y=1cm]
-        \node[st] (q) at (0,1.0) {$C[Q]$};
-        \node[terminal] (z) at (0,-1.45) {$0$};
-        \draw[trans] (q) to[bend right=25] node[lab,left] {$a$} (z);
-        \draw[trans] (q) to[bend left=25] node[lab,right] {$b$} (z);
-      \end{tikzpicture}
-    \end{column}
-  \end{columns}
-  \uncover<2->{\Takeaway{$C[P]\notwb C[Q]$, hence also $C[P]\notbb C[Q]$. The left process can silently discard $b$; the right process cannot.}}
-  \Source{The weak-choice counterexample from the supplied slides, made explicit.}
-\end{frame}
+% % 28 -----------------------------------------------------------------
+% \section{Rooted relations}
+% \begin{frame}{Ordinary weak equivalences fail under choice}
+%   \[
+%     P=\tau.a.\nil\bb a.\nil=Q,\qquad C[-]=[-]+b.\nil.
+%   \]
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{.49\textwidth}\centering
+%       \begin{tikzpicture}[x=1cm,y=1cm]
+%         \node[st] (p) at (0,1.0) {$C[P]$};
+%         \node[st] (a) at (-1.25,-.2) {$a.0$};
+%         \node[terminal] (z) at (1.25,-1.45) {$0$};
+%         \draw[tauedge] (p)--node[lab,left] {$\tau$}(a);
+%         \draw[trans] (p)--node[lab,right] {$b$}(z);
+%         \draw[trans] (a)--node[lab,below left] {$a$}(z);
+%       \end{tikzpicture}
+%     \end{column}
+%     \begin{column}{.49\textwidth}\centering
+%       \begin{tikzpicture}[x=1cm,y=1cm]
+%         \node[st] (q) at (0,1.0) {$C[Q]$};
+%         \node[terminal] (z) at (0,-1.45) {$0$};
+%         \draw[trans] (q) to[bend right=25] node[lab,left] {$a$} (z);
+%         \draw[trans] (q) to[bend left=25] node[lab,right] {$b$} (z);
+%       \end{tikzpicture}
+%     \end{column}
+%   \end{columns}
+%   \uncover<2->{\Takeaway{$C[P]\notwb C[Q]$, hence also $C[P]\notbb C[Q]$. The left process can silently discard $b$; the right process cannot.}}
+%   \Source{The weak-choice counterexample from the supplied slides, made explicit.}
+% \end{frame}
 
-% 29 -----------------------------------------------------------------
-\begin{frame}{The coarsest congruence contained in an equivalence}
-  Starting with an equivalence $\approx$, define
-  \[
-    P\approx^{\mathrm{ctx}}Q
-    \quad\Longleftrightarrow\quad
-    \forall C[-]:\ C[P]\approx C[Q].
-  \]
-  \begin{block}{Why this is the desired repair}
-    \begin{itemize}\setlength\itemsep{2mm}
-      \item The identity context gives $\approx^{\mathrm{ctx}}\,\subseteq\,\approx$.
-      \item Composing contexts shows that $\approx^{\mathrm{ctx}}$ is a congruence.
-      \item Every congruence contained in $\approx$ is contained in $\approx^{\mathrm{ctx}}$.
-    \end{itemize}
-  \end{block}
-  \Takeaway{Root conditions give a local characterisation, avoiding quantification over all contexts.}
-  \Source{For the usual CCS setting, root conditions provide such characterisations; see \cite{MCS}.}
-  \note{The claim that contextual refinement is an equivalence is pointwise inherited from the base equivalence. Closure of our one-hole contexts under composition proves compatibility. 'Coarsest' means largest as a relation among congruences contained in the base equivalence.}
-\end{frame}
+% % 29 -----------------------------------------------------------------
+% \begin{frame}{The coarsest congruence contained in an equivalence}
+%   Starting with an equivalence $\approx$, define
+%   \[
+%     P\approx^{\mathrm{ctx}}Q
+%     \quad\Longleftrightarrow\quad
+%     \forall C[-]:\ C[P]\approx C[Q].
+%   \]
+%   \begin{block}{Why this is the desired repair}
+%     \begin{itemize}\setlength\itemsep{2mm}
+%       \item The identity context gives $\approx^{\mathrm{ctx}}\,\subseteq\,\approx$.
+%       \item Composing contexts shows that $\approx^{\mathrm{ctx}}$ is a congruence.
+%       \item Every congruence contained in $\approx$ is contained in $\approx^{\mathrm{ctx}}$.
+%     \end{itemize}
+%   \end{block}
+%   \Takeaway{Root conditions give a local characterisation, avoiding quantification over all contexts.}
+%   \Source{For the usual CCS setting, root conditions provide such characterisations; see \cite{MCS}.}
+%   \note{The claim that contextual refinement is an equivalence is pointwise inherited from the base equivalence. Closure of our one-hole contexts under composition proves compatibility. 'Coarsest' means largest as a relation among congruences contained in the base equivalence.}
+% \end{frame}
 
-% 30 -----------------------------------------------------------------
-\begin{frame}{Rooted branching bisimilarity}
-  \begin{block}{Definition}
-    $P\rbb Q$ if every transition $P\step{\alpha}P'$ has a match
-    \[
-      Q\step{\alpha}Q'\quad\text{with}\quad P'\bb Q',
-    \]
-    and conversely, for every $\alpha\in\Act$.
-  \end{block}
-  \Takeaway{Match the initial step \textbf{strictly}, including $\tau$; compare successors by \textbf{ordinary branching bisimilarity}.}
-  \[
-    \tau.a.\nil\notrbb a.\nil,
-    \qquad
-    a.\tau.b.\nil\rbb a.b.\nil.
-  \]
-  {\small\textcolor{Warn}{Do not require rooted equivalence of the successors:} that would impose strong-style matching at every step.}
-  \Source{Root conditions: \cite{MCS,GLS20}.}
-\end{frame}
+% % 30 -----------------------------------------------------------------
+% \begin{frame}{Rooted branching bisimilarity}
+%   \begin{block}{Definition}
+%     $P\rbb Q$ if every transition $P\step{\alpha}P'$ has a match
+%     \[
+%       Q\step{\alpha}Q'\quad\text{with}\quad P'\bb Q',
+%     \]
+%     and conversely, for every $\alpha\in\Act$.
+%   \end{block}
+%   \Takeaway{Match the initial step \textbf{strictly}, including $\tau$; compare successors by \textbf{ordinary branching bisimilarity}.}
+%   \[
+%     \tau.a.\nil\notrbb a.\nil,
+%     \qquad
+%     a.\tau.b.\nil\rbb a.b.\nil.
+%   \]
+%   {\small\textcolor{Warn}{Do not require rooted equivalence of the successors:} that would impose strong-style matching at every step.}
+%   \Source{Root conditions: \cite{MCS,GLS20}.}
+% \end{frame}
 
-% 31 -----------------------------------------------------------------
-\begin{frame}{Rooted weak bisimilarity: a different root condition}
-  \begin{block}{Definition: observational congruence}
-    $P\rwb Q$ if every $P\step{\alpha}P'$ can be matched by
-    \[
-      Q\silent Q_0\step{\alpha}Q_1\silent Q'
-      \quad\text{with}\quad P'\wb Q',
-    \]
-    and symmetrically, for all $\alpha\in\Act$.
-  \end{block}
-  \begin{alertblock}{The middle step is compulsory, also for $\alpha=\tau$}
-    Matching an initial $\tau$ requires at least one $\tau$-transition: $\tau^+$, not merely $\tau^*$.
-  \end{alertblock}
-  \renewcommand{\arraystretch}{1.45}
-  \begin{tabular}{@{}ll@{}}
-    Rooted branching: & one initial step; branching-equivalent successors.\\
-    Rooted weak: & a nonempty matching weak path; weak-equivalent successors.
-  \end{tabular}
-  \Source{\cite{MCS}. Both are congruences for the constructors used in the lecture.}
-\end{frame}
+% % 31 -----------------------------------------------------------------
+% \begin{frame}{Rooted weak bisimilarity: a different root condition}
+%   \begin{block}{Definition: observational congruence}
+%     $P\rwb Q$ if every $P\step{\alpha}P'$ can be matched by
+%     \[
+%       Q\silent Q_0\step{\alpha}Q_1\silent Q'
+%       \quad\text{with}\quad P'\wb Q',
+%     \]
+%     and symmetrically, for all $\alpha\in\Act$.
+%   \end{block}
+%   \begin{alertblock}{The middle step is compulsory, also for $\alpha=\tau$}
+%     Matching an initial $\tau$ requires at least one $\tau$-transition: $\tau^+$, not merely $\tau^*$.
+%   \end{alertblock}
+%   \renewcommand{\arraystretch}{1.45}
+%   \begin{tabular}{@{}ll@{}}
+%     Rooted branching: & one initial step; branching-equivalent successors.\\
+%     Rooted weak: & a nonempty matching weak path; weak-equivalent successors.
+%   \end{tabular}
+%   \Source{\cite{MCS}. Both are congruences for the constructors used in the lecture.}
+% \end{frame}
 
-% 32 -----------------------------------------------------------------
-\begin{frame}{Rootedness repairs the choice problem}
-  \begin{block}{Theorem}
-    Rooted branching and rooted weak bisimilarity are congruences for prefix, choice, blocking, and hiding.
-  \end{block}
-  \textbf{Choice case.} Assume $P\rbb Q$ and consider $P+R$ and $Q+R$.
-  \begin{itemize}\setlength\itemsep{2.5mm}
-    \item If $P+R\step{\alpha}P'$ uses $P$, rootedness provides
-      $Q\step{\alpha}Q'$ with $P'\bb Q'$. Thus $Q+R$ has the required \emph{single} matching step.
-    \item If the move uses $R$, use the identical step of $R$ on the other side.
-  \end{itemize}
-  \Takeaway{Once the first transition has resolved the choice, ordinary branching equivalence suffices for the derivatives.}
-  \Source{\cite{MCS}. For rooted weak equivalence, a nonempty response also resolves the outer choice; a zero-step response would not.}
-  \note{For prefix, use P approximately_b Q, implied by rootedness. For parallel, the immediate step is either a component step or a synchronisation, and the derivative pair is branching equivalent by compatibility of branching equivalence with parallel. Restriction and hiding preserve the matching label, and the derivative pair remains branching equivalent.}
-\end{frame}
+% % 32 -----------------------------------------------------------------
+% \begin{frame}{Rootedness repairs the choice problem}
+%   \begin{block}{Theorem}
+%     Rooted branching and rooted weak bisimilarity are congruences for prefix, choice, blocking, and hiding.
+%   \end{block}
+%   \textbf{Choice case.} Assume $P\rbb Q$ and consider $P+R$ and $Q+R$.
+%   \begin{itemize}\setlength\itemsep{2.5mm}
+%     \item If $P+R\step{\alpha}P'$ uses $P$, rootedness provides
+%       $Q\step{\alpha}Q'$ with $P'\bb Q'$. Thus $Q+R$ has the required \emph{single} matching step.
+%     \item If the move uses $R$, use the identical step of $R$ on the other side.
+%   \end{itemize}
+%   \Takeaway{Once the first transition has resolved the choice, ordinary branching equivalence suffices for the derivatives.}
+%   \Source{\cite{MCS}. For rooted weak equivalence, a nonempty response also resolves the outer choice; a zero-step response would not.}
+%   \note{For prefix, use P approximately_b Q, implied by rootedness. For parallel, the immediate step is either a component step or a synchronisation, and the derivative pair is branching equivalent by compatibility of branching equivalence with parallel. Restriction and hiding preserve the matching label, and the derivative pair remains branching equivalent.}
+% \end{frame}
 
-% 33 -----------------------------------------------------------------
-\begin{frame}{Rootedness and divergence solve different problems}
-  \renewcommand{\arraystretch}{1.55}
-  \begin{tabular}{@{}p{.26\textwidth}p{.68\textwidth}@{}}
-    \textbf{Rootedness} & Protects initial branching when a component is placed in a context.\\
-    \shortstack[l]{\textbf{Divergence}\\\textbf{preservation}} & Prevents infinite internal activity from being erased by equivalence.
-  \end{tabular}
-  \vspace{3mm}
-  Let $D$ have only the self-loop $D\step{\tau}D$. Then
-  \[
-    a.\nil\rbb a.D,
-    \qquad\text{but}\qquad a.\nil\notdbb a.D.
-  \]
-  \uncover<2->{\begin{block}{The other direction also fails}
-    \[
-      a.\nil\dbb\tau.a.\nil,
-      \qquad a.\nil\notrbb\tau.a.\nil.
-    \]
-  \end{block}}
-  \Takeaway{The two refinements are incomparable. They can also be combined.}
-  \note{First example: 0 and D are branching equivalent, so strict matching of the initial a succeeds. However D diverges and 0 does not. Second example: both processes are divergence-free and branching equivalent but the roots have different immediate labels. Rooted divergence-preserving branching bisimilarity uses approximately_b^Delta for the derivatives in the rooted definition.}
-\end{frame}
+% % 33 -----------------------------------------------------------------
+% \begin{frame}{Rootedness and divergence solve different problems}
+%   \renewcommand{\arraystretch}{1.55}
+%   \begin{tabular}{@{}p{.26\textwidth}p{.68\textwidth}@{}}
+%     \textbf{Rootedness} & Protects initial branching when a component is placed in a context.\\
+%     \shortstack[l]{\textbf{Divergence}\\\textbf{preservation}} & Prevents infinite internal activity from being erased by equivalence.
+%   \end{tabular}
+%   \vspace{3mm}
+%   Let $D$ have only the self-loop $D\step{\tau}D$. Then
+%   \[
+%     a.\nil\rbb a.D,
+%     \qquad\text{but}\qquad a.\nil\notdbb a.D.
+%   \]
+%   \uncover<2->{\begin{block}{The other direction also fails}
+%     \[
+%       a.\nil\dbb\tau.a.\nil,
+%       \qquad a.\nil\notrbb\tau.a.\nil.
+%     \]
+%   \end{block}}
+%   \Takeaway{The two refinements are incomparable. They can also be combined.}
+%   \note{First example: 0 and D are branching equivalent, so strict matching of the initial a succeeds. However D diverges and 0 does not. Second example: both processes are divergence-free and branching equivalent but the roots have different immediate labels. Rooted divergence-preserving branching bisimilarity uses approximately_b^Delta for the derivatives in the rooted definition.}
+% \end{frame}
 
 % 34 -----------------------------------------------------------------
 \section{Compositional application}
@@ -1578,174 +1597,711 @@
 \end{frame}
 
 % 36 -----------------------------------------------------------------
+% \section{Confluence}
+% \begin{frame}{Confluence: different paths can be joined}
+%   For a binary reduction relation $\to_r$, \textbf{confluence} means
+%   \[
+%     s\step{r*}u\ \land\ s\step{r*}v
+%     \quad\Longrightarrow\quad
+%     \exists w:\ u\step{r*}w\ \land\ v\step{r*}w.
+%   \]
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (s) at (0,1.2) {$s$};
+%     \node[st] (u) at (-2,0) {$u$}; \node[st] (v) at (2,0) {$v$};
+%     \node[st] (w) at (0,-1.2) {$w$};
+%     \draw[trans] (s)--node[lab,above left] {$r^*$}(u);
+%     \draw[trans] (s)--node[lab,above right] {$r^*$}(v);
+%     \draw[tauedge,dashed] (u)--node[lab,below left] {$r^*$}(w);
+%     \draw[tauedge,dashed] (v)--node[lab,below right] {$r^*$}(w);
+%   \end{tikzpicture}
+%   \par\vspace{1mm}
+%   \Takeaway{For behavioural abstraction, joining internal paths is not enough: visible alternatives must also be respected.}
+%   \note{Only introduce the joining idea. Do not claim local confluence implies confluence without termination. The remaining slides use a local tau-focused sufficient condition from Groote and van de Pol, not the full CCS weak-confluence notion in the old slides.}
+% \end{frame}
+
+% % 37 -----------------------------------------------------------------
+% \begin{frame}{Internal confluence alone is insufficient}
+%   Return to
+%   \[
+%     S=\tau.a.\nil+b.\nil.
+%   \]
+%   Its $\tau$-relation is terminating and confluent: there is only one internal edge.
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{.43\textwidth}\centering
+%       \begin{tikzpicture}[x=1cm,y=1cm]
+%         \node[st] (s) at (0,1.0) {$S$};
+%         \node[st] (a) at (-1.3,-.3) {$a.0$};
+%         \node[terminal] (z) at (1.3,-.3) {$0$};
+%         \draw[tauedge] (s)--node[lab,left] {$\tau$}(a);
+%         \draw[trans] (s)--node[lab,right] {$b$}(z);
+%         \draw[newedge,dashed] (a)--node[lab,below] {$b\;?$}(z);
+%       \end{tikzpicture}
+%     \end{column}
+%     \begin{column}{.54\textwidth}
+%       \begin{alertblock}{The missing matching behaviour}
+%         After the $\tau$-step, $b$ is unavailable.\\[2mm]
+%         Therefore $S\notbb a.\nil$.
+%       \end{alertblock}
+%     \end{column}
+%   \end{columns}
+%   \Takeaway{To prioritise an internal step, check its interaction with \emph{all competing labels}, not only $\tau$.}
+% \end{frame}
+
+% % 38 -----------------------------------------------------------------
+% \begin{frame}{A local sufficient condition: $T$-confluence}
+%   Choose a set $T$ of internal transitions. Write $s\step{\tau}_T t$ for an edge in $T$.
+%   \begin{block}{Definition}
+%     For every $s\step{\tau}_T t$ and $s\step{\alpha}u$, there is $v$ such that
+%     \[
+%       t\optstep{\alpha}v
+%       \quad\text{and}\quad
+%       u=v\ \text{or}\ u\step{\tau}_T v.
+%     \]
+%   \end{block}
+%   \begin{columns}[c,onlytextwidth]
+%     \begin{column}{.45\textwidth}\centering
+%       \begin{tikzpicture}[x=1cm,y=1cm]
+%         \node[st] (s) at (0,1.15) {$s$}; \node[st] (t) at (2.7,1.15) {$t$};
+%         \node[st] (u) at (0,-.45) {$u$}; \node[st] (v) at (2.7,-.45) {$v$};
+%         \draw[tauedge] (s)--node[lab,above] {$\tau\in T$}(t);
+%         \draw[trans] (s)--node[lab,left] {$\alpha$}(u);
+%         \draw[tauedge,dashed] (u)--node[lab,below] {$\tau\in T\ \text{or }=$}(v);
+%         \draw[trans,dashed] (t)--node[lab,right] {$(\alpha)$}(v);
+%       \end{tikzpicture}
+%     \end{column}
+%     \begin{column}{.52\textwidth}
+%       The right-hand step is optional only for $\alpha=\tau$.\\[2mm]
+%       The bottom edge, when present, must belong to the \emph{same set} $T$.
+%     \end{column}
+%   \end{columns}
+%   \Source{\cite[Section 2]{GP00}. This local reduction criterion is not the full CCS confluence notion.}
+% \end{frame}
+
+% % 39 -----------------------------------------------------------------
+% \begin{frame}{Confluent internal steps are inert}
+%   \begin{block}{Theorem}
+%     If the LTS is $T$-confluent, then
+%     \[
+%       s\step{\tau}_T t\quad\Longrightarrow\quad s\bb t.
+%     \]
+%     Such an internal transition is called \textbf{inert}.
+%   \end{block}
+%   \textbf{Proof idea.} Consider
+%   \[
+%     R=\Id\cup T\cup T^{-1},
+%   \]
+%   viewing $T$ as a relation on its endpoints.
+%   \begin{itemize}\setlength\itemsep{2mm}
+%     \item Match a move from $s$ using the confluence square.
+%     \item Match a move from $t$ by first taking $s\step{\tau}_T t$, then copying it.
+%   \end{itemize}
+%   \Takeaway{This local confluence criterion is sufficient for inertness, but not necessary.}
+%   \Source{\cite[Section 2]{GP00}. This inertness theorem does not require termination.}
+% \end{frame}
+
+% % 40 -----------------------------------------------------------------
+% \begin{frame}{Prioritising internal work}
+%   \begin{block}{A sound reduction under an explicit assumption}
+%     Suppose the LTS is $T$-confluent and \textbf{$\tau$-convergent}: it has no infinite $\tau$-execution. At each state with an outgoing $T$-edge, retain one such edge and remove its other outgoing transitions.
+%   \end{block}
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm,st/.append style={minimum size=6.5mm}]
+%     \node[st] (s) at (0,1.05) {$s$}; \node[st] (t) at (2,1.05) {$t$};
+%     \node[st] (u) at (0,-.6) {$u$}; \node[st] (v) at (2,-.6) {$v$};
+%     \draw[tauedge] (s)--node[lab,above] {$\tau_T$}(t);
+%     \draw[trans] (s)--node[lab,left] {$a$}(u);
+%     \draw[trans] (t)--node[lab,right] {$a$}(v);
+%     \draw[tauedge] (u)--node[lab,below] {$\tau_T$}(v);
+%     \node[font=\Large,text=Muted] at (3.35,.2) {$\Longrightarrow$};
+%     \node[st] (s2) at (4.65,1.05) {$s$}; \node[st] (t2) at (6.65,1.05) {$t$};
+%     \node[st] (v2) at (6.65,-.6) {$v$};
+%     \draw[tauedge] (s2)--node[lab,above] {$\tau_T$}(t2);
+%     \draw[trans] (t2)--node[lab,right] {$a$}(v2);
+%     \node[font=\scriptsize,text=Muted,align=center] at (4.8,-.55) {$u$ becomes\\unreachable};
+%   \end{tikzpicture}
+%   \par\vspace{1mm}
+%   \Takeaway{The initial states remain branching bisimilar. Removing unreachable states can shrink the graph before full minimisation.}
+%   \Source{\cite[Section 5]{GP00}. The guarantee is ordinary branching bisimilarity, not rooted equivalence.}
+% \end{frame}
+
+% % 41 -----------------------------------------------------------------
+% \begin{frame}{Why the convergence assumption matters}
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (s) at (0,0) {$s$}; \node[terminal] (z) at (2.3,0) {$0$};
+%     \draw[tauedge] (s) edge[loop above] node[lab] {$\tau_T$} (s);
+%     \draw[trans] (s)--node[lab,above] {$a$}(z);
+%     \node[text=Muted,font=\Large] at (4,0) {$\Longrightarrow$};
+%     \node[st] (s2) at (6,0) {$s$};
+%     \draw[tauedge] (s2) edge[loop above] node[lab] {$\tau_T$} (s2);
+%     \node[font=\scriptsize,text=Muted] at (4,-.8) {naive priority};
+%   \end{tikzpicture}
+%   \par\vspace{4mm}
+%   \begin{alertblock}{The self-loop is confluent, but the reduction is wrong}
+%     Prioritising it removes the only $a$-transition. The resulting process is not even weakly bisimilar to the original one.
+%   \end{alertblock}
+%   \Takeaway{Inertness in the \emph{original} LTS does not justify arbitrary edge deletions. A priority policy must not trap all behaviour in an internal cycle.}
+%   \Source{Counterexample to unrestricted prioritisation; cf.\ \cite[Section 5]{GP00}.}
+%   \note{The tau-self-loop meets the local condition: a competing a-step is matched by itself, with an identity bottom edge. Thus the failure really is in prioritisation, not in confluence detection. Simply deleting tau cycles may itself erase divergence, so divergence-preserving reductions need a separate argument.}
+% \end{frame}
+
+% % 42 -----------------------------------------------------------------
+% \section{Summary}
+% \begin{frame}{The three requirements are distinct}
+%   \renewcommand{\arraystretch}{1.4}
+%   \begin{tabular}{@{}p{.32\textwidth}p{.62\textwidth}@{}}
+%     \textbf{Behavioural observations} & Traces record possible words; bisimulation also matches branching continuations.\\
+%     \textbf{Internal abstraction} & Weak paths abstract internal work; branching matching also preserves intermediate branching.\\
+%     \textbf{Infinite internal activity} & Divergence preservation prevents infinite silence from being erased.\\
+%     \textbf{Contextual replacement} & Rooted refinements restore congruence for choice.\\
+%     \textbf{State-space reduction} & Confluence gives inertness; prioritisation additionally needs convergence.
+%   \end{tabular}
+%   \vspace{2mm}
+%   \Takeaway{Congruence is the algebraic requirement. The observation regime determines which behavioural equivalence to use.}
+%   \Source{Next lecture: Mazurkiewicz traces and non-interleaving semantics; unfoldings afterwards.}
+%   \note{The refinements are not one linear hierarchy: rootedness and divergence preservation are incomparable and can be combined. Independence versus nondeterministic choice remains entirely for the next lecture.}
+% \end{frame}
+
+
+% ----------------------------------------------------------------------
 \section{Confluence}
-\begin{frame}{Confluence: different paths can be joined}
-  For a binary reduction relation $\to_r$, \textbf{confluence} means
+
+\begin{frame}{Confluence: determinism of the result}
+  A system may be locally nondeterministic:
   \[
-    s\step{r*}u\ \land\ s\step{r*}v
-    \quad\Longrightarrow\quad
-    \exists w:\ u\step{r*}w\ \land\ v\step{r*}w.
+      s\step{*}u,
+      \qquad
+      s\step{*}v.
   \]
+  The two computations may make different choices.
+
+  \begin{block}{Confluence}
+    A reachability relation $\to$ is \textbf{confluent} if
+    \[
+      s\step{*}u\ \land\ s\step{*}v
+      \quad\Longrightarrow\quad
+      \exists w:\;
+      u\step{*}w\ \land\ v\step{*}w.
+    \]
+  \end{block}
+
   \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{tikzpicture}[x=1cm,y=.9cm]
     \node[st] (s) at (0,1.2) {$s$};
-    \node[st] (u) at (-2,0) {$u$}; \node[st] (v) at (2,0) {$v$};
-    \node[st] (w) at (0,-1.2) {$w$};
-    \draw[trans] (s)--node[lab,above left] {$r^*$}(u);
-    \draw[trans] (s)--node[lab,above right] {$r^*$}(v);
-    \draw[tauedge,dashed] (u)--node[lab,below left] {$r^*$}(w);
-    \draw[tauedge,dashed] (v)--node[lab,below right] {$r^*$}(w);
+    \node[st] (u) at (-2,0) {$u$};
+    \node[st] (v) at (2,0) {$v$};
+    \node[st] (w) at (0,-1.3) {$w$};
+
+    \draw[trans] (s)--node[lab,above left] {$*$}(u);
+    \draw[trans] (s)--node[lab,above right] {$*$}(v);
+    \draw[trans,dashed] (u)--node[lab,below left] {$*$}(w);
+    \draw[trans,dashed] (v)--node[lab,below right] {$*$}(w);
   \end{tikzpicture}
-  \par\vspace{1mm}
-  \Takeaway{For behavioural abstraction, joining internal paths is not enough: visible alternatives must also be respected.}
-  \note{Only introduce the joining idea. Do not claim local confluence implies confluence without termination. The remaining slides use a local tau-focused sufficient condition from Groote and van de Pol, not the full CCS weak-confluence notion in the old slides.}
+
+  % \Takeaway{Confluence is not determinism of the next step:
+  % different choices are allowed, but they cannot create an
+  % irreversible disagreement.}
 \end{frame}
 
-% 37 -----------------------------------------------------------------
-\begin{frame}{Internal confluence alone is insufficient}
-  Return to
-  \[
-    S=\tau.a.\nil+b.\nil.
-  \]
-  Its $\tau$-relation is terminating and confluent: there is only one internal edge.
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{.43\textwidth}\centering
-      \begin{tikzpicture}[x=1cm,y=1cm]
-        \node[st] (s) at (0,1.0) {$S$};
-        \node[st] (a) at (-1.3,-.3) {$a.0$};
-        \node[terminal] (z) at (1.3,-.3) {$0$};
-        \draw[tauedge] (s)--node[lab,left] {$\tau$}(a);
-        \draw[trans] (s)--node[lab,right] {$b$}(z);
-        \draw[newedge,dashed] (a)--node[lab,below] {$b\;?$}(z);
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{.54\textwidth}
-      \begin{alertblock}{The missing matching behaviour}
-        After the $\tau$-step, $b$ is unavailable.\\[2mm]
-        Therefore $S\notbb a.\nil$.
-      \end{alertblock}
-    \end{column}
-  \end{columns}
-  \Takeaway{To prioritise an internal step, check its interaction with \emph{all competing labels}, not only $\tau$.}
-\end{frame}
 
-% 38 -----------------------------------------------------------------
-\begin{frame}{A local sufficient condition: $T$-confluence}
-  Choose a set $T$ of internal transitions. Write $s\step{\tau}_T t$ for an edge in $T$.
-  \begin{block}{Definition}
-    For every $s\step{\tau}_T t$ and $s\step{\alpha}u$, there is $v$ such that
-    \[
-      t\optstep{\alpha}v
-      \quad\text{and}\quad
-      u=v\ \text{or}\ u\step{\tau}_T v.
-    \]
-  \end{block}
-  \begin{columns}[c,onlytextwidth]
-    \begin{column}{.45\textwidth}\centering
-      \begin{tikzpicture}[x=1cm,y=1cm]
-        \node[st] (s) at (0,1.15) {$s$}; \node[st] (t) at (2.7,1.15) {$t$};
-        \node[st] (u) at (0,-.45) {$u$}; \node[st] (v) at (2.7,-.45) {$v$};
-        \draw[tauedge] (s)--node[lab,above] {$\tau\in T$}(t);
-        \draw[trans] (s)--node[lab,left] {$\alpha$}(u);
-        \draw[tauedge,dashed] (u)--node[lab,below] {$\tau\in T\ \text{or }=$}(v);
-        \draw[trans,dashed] (t)--node[lab,right] {$(\alpha)$}(v);
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{.52\textwidth}
-      The right-hand step is optional only for $\alpha=\tau$.\\[2mm]
-      The bottom edge, when present, must belong to the \emph{same set} $T$.
-    \end{column}
-  \end{columns}
-  \Source{\cite[Section 2]{GP00}. This local reduction criterion is not the full CCS confluence notion.}
-\end{frame}
 
-% 39 -----------------------------------------------------------------
-\begin{frame}{Confluent internal steps are inert}
-  \begin{block}{Theorem}
-    If the LTS is $T$-confluent, then
-    \[
-      s\step{\tau}_T t\quad\Longrightarrow\quad s\bb t.
-    \]
-    Such an internal transition is called \textbf{inert}.
-  \end{block}
-  \textbf{Proof idea.} Consider
-  \[
-    R=\Id\cup T\cup T^{-1},
-  \]
-  viewing $T$ as a relation on its endpoints.
-  \begin{itemize}\setlength\itemsep{2mm}
-    \item Match a move from $s$ using the confluence square.
-    \item Match a move from $t$ by first taking $s\step{\tau}_T t$, then copying it.
-  \end{itemize}
-  \Takeaway{This local confluence criterion is sufficient for inertness, but not necessary.}
-  \Source{\cite[Section 2]{GP00}. This inertness theorem does not require termination.}
-\end{frame}
+\begin{frame}{Confluence: determinism of the result}
 
-% 40 -----------------------------------------------------------------
-\begin{frame}{Prioritising internal work}
-  \begin{block}{A sound reduction under an explicit assumption}
-    Suppose the LTS is $T$-confluent and \textbf{$\tau$-convergent}: it has no infinite $\tau$-execution. At each state with an outgoing $T$-edge, retain one such edge and remove its other outgoing transitions.
-  \end{block}
+
   \centering
-  \begin{tikzpicture}[x=1cm,y=1cm,st/.append style={minimum size=6.5mm}]
-    \node[st] (s) at (0,1.05) {$s$}; \node[st] (t) at (2,1.05) {$t$};
-    \node[st] (u) at (0,-.6) {$u$}; \node[st] (v) at (2,-.6) {$v$};
-    \draw[tauedge] (s)--node[lab,above] {$\tau_T$}(t);
-    \draw[trans] (s)--node[lab,left] {$a$}(u);
-    \draw[trans] (t)--node[lab,right] {$a$}(v);
-    \draw[tauedge] (u)--node[lab,below] {$\tau_T$}(v);
-    \node[font=\Large,text=Muted] at (3.35,.2) {$\Longrightarrow$};
-    \node[st] (s2) at (4.65,1.05) {$s$}; \node[st] (t2) at (6.65,1.05) {$t$};
-    \node[st] (v2) at (6.65,-.6) {$v$};
-    \draw[tauedge] (s2)--node[lab,above] {$\tau_T$}(t2);
-    \draw[trans] (t2)--node[lab,right] {$a$}(v2);
-    \node[font=\scriptsize,text=Muted,align=center] at (4.8,-.55) {$u$ becomes\\unreachable};
+  \begin{tikzpicture}[x=1cm,y=.9cm]
+    \node[st] (s) at (0,1.2) {$s$};
+    \node[st] (u) at (-2,0) {$u$};
+    \node[st] (v) at (2,0) {$v$};
+    \node[st] (w) at (0,-1.3) {$w$};
+
+    \draw[trans] (s)--node[lab,above left] {$*$}(u);
+    \draw[trans] (s)--node[lab,above right] {$*$}(v);
+    \draw[trans,dashed] (u)--node[lab,below left] {$*$}(w);
+    \draw[trans,dashed] (v)--node[lab,below right] {$*$}(w);
   \end{tikzpicture}
-  \par\vspace{1mm}
-  \Takeaway{The initial states remain branching bisimilar. Removing unreachable states can shrink the graph before full minimisation.}
-  \Source{\cite[Section 5]{GP00}. The guarantee is ordinary branching bisimilarity, not rooted equivalence.}
+
+  \Takeaway{Confluence is not determinism of the next step:
+  different choices are allowed, but they cannot create an
+  irreversible disagreement.}
 \end{frame}
 
-% 41 -----------------------------------------------------------------
-\begin{frame}{Why the convergence assumption matters}
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \node[st] (s) at (0,0) {$s$}; \node[terminal] (z) at (2.3,0) {$0$};
-    \draw[tauedge] (s) edge[loop above] node[lab] {$\tau_T$} (s);
-    \draw[trans] (s)--node[lab,above] {$a$}(z);
-    \node[text=Muted,font=\Large] at (4,0) {$\Longrightarrow$};
-    \node[st] (s2) at (6,0) {$s$};
-    \draw[tauedge] (s2) edge[loop above] node[lab] {$\tau_T$} (s2);
-    \node[font=\scriptsize,text=Muted] at (4,-.8) {naive priority};
-  \end{tikzpicture}
-  \par\vspace{4mm}
-  \begin{alertblock}{The self-loop is confluent, but the reduction is wrong}
-    Prioritising it removes the only $a$-transition. The resulting process is not even weakly bisimilar to the original one.
-  \end{alertblock}
-  \Takeaway{Inertness in the \emph{original} LTS does not justify arbitrary edge deletions. A priority policy must not trap all behaviour in an internal cycle.}
-  \Source{Counterexample to unrestricted prioritisation; cf.\ \cite[Section 5]{GP00}.}
-  \note{The tau-self-loop meets the local condition: a competing a-step is matched by itself, with an identity bottom edge. Thus the failure really is in prioritisation, not in confluence detection. Simply deleting tau cycles may itself erase divergence, so divergence-preserving reductions need a separate argument.}
+% ----------------------------------------------------------------------
+\begin{frame}{Confluence and unique outcomes}
+  Confluence alone does \emph{not} say that every computation terminates.
+
+  \[
+      s\step{*}s\step{*}s\step{*}\cdots
+  \]
+  may be perfectly confluent.
+
+  \begin{block}{If termination is added}
+    If $\to$ is
+    \begin{itemize}
+      \item terminating, and
+      \item confluent,
+    \end{itemize}
+    then every state has at most one normal form.
+  \end{block}
+
+  Thus different reduction strategies may pass through different states,
+  but if they terminate, they terminate in the same result:
+  \[
+      s\step{*}n_1,\qquad
+      s\step{*}n_2,
+      \qquad n_1,n_2\text{ normal}
+      \quad\Longrightarrow\quad
+      n_1=n_2.
+  \]
+
+
 \end{frame}
 
-% 42 -----------------------------------------------------------------
-\section{Summary}
-\begin{frame}{The three requirements are distinct}
-  \renewcommand{\arraystretch}{1.4}
-  \begin{tabular}{@{}p{.32\textwidth}p{.62\textwidth}@{}}
-    \textbf{Behavioural observations} & Traces record possible words; bisimulation also matches branching continuations.\\
-    \textbf{Internal abstraction} & Weak paths abstract internal work; branching matching also preserves intermediate branching.\\
-    \textbf{Infinite internal activity} & Divergence preservation prevents infinite silence from being erased.\\
-    \textbf{Contextual replacement} & Rooted refinements restore congruence for choice.\\
-    \textbf{State-space reduction} & Confluence gives inertness; prioritisation additionally needs convergence.
-  \end{tabular}
-  \vspace{2mm}
-  \Takeaway{Congruence is the algebraic requirement. The observation regime determines which behavioural equivalence to use.}
-  \Source{Next lecture: Mazurkiewicz traces and non-interleaving semantics; unfoldings afterwards.}
-  \note{The refinements are not one linear hierarchy: rootedness and divergence preservation are incomparable and can be combined. Independence versus nondeterministic choice remains entirely for the next lecture.}
+
+\begin{frame}{Confluence and unique outcomes}
+
+  Thus different reduction strategies may pass through different states,
+  but if they terminate, they terminate in the same result:
+  \[
+      s\step{*}n_1,\qquad
+      s\step{*}n_2,
+      \qquad n_1,n_2\text{ normal}
+      \quad\Longrightarrow\quad
+      n_1=n_2.
+  \]
+
+  \Takeaway{A useful intuition is:
+  \textbf{confluence = determinism modulo temporary choices}.}
 \end{frame}
 
 \appendix
 \inbackuptrue
+
+
+
+
+% ----------------------------------------------------------------------
+\begin{frame}{From confluence to commuting computations}
+  In concurrent systems the same phenomenon often appears locally.
+
+  Suppose
+  \[
+      s\step{a}u,
+      \qquad
+      s\step{b}v.
+  \]
+
+  If the two actions do not interfere, we may obtain a commuting square:
+  \[
+  \begin{tikzpicture}[baseline=-2mm,x=1.4cm,y=.9cm]
+    \node[st] (s) at (0,1) {$s$};
+    \node[st] (u) at (-1.4,0) {$u$};
+    \node[st] (v) at (1.4,0) {$v$};
+    \node[st] (w) at (0,-1.1) {$w$};
+
+    \draw[trans] (s)--node[lab,above left] {$a$}(u);
+    \draw[trans] (s)--node[lab,above right] {$b$}(v);
+    \draw[trans] (u)--node[lab,below left] {$b$}(w);
+    \draw[trans] (v)--node[lab,below right] {$a$}(w);
+  \end{tikzpicture}
+  \]
+
+  The interleavings
+  \[
+      ab
+      \qquad\text{and}\qquad
+      ba
+  \]
+  differ as words, but may represent the same concurrent computation.
+
+  \begin{alertblock}{Important distinction}
+    Confluence says that computations can be joined.
+    It does \emph{not} by itself tell us which actions are independent.
+  \end{alertblock}
+
+  \Takeaway{Commuting diamonds suggest that some ordering information
+  in an interleaving trace may be accidental.}
+\end{frame}
+
+
+
+
+
+\begin{frame}{From confluence to commuting computations}
+
+
+  The interleavings
+  \[
+      ab
+      \qquad\text{and}\qquad
+      ba
+  \]
+  differ as words, but may represent the same concurrent computation.
+
+  \begin{alertblock}{Important distinction}
+    Confluence says that computations can be joined.
+    It does \emph{not} by itself tell us which actions are independent.
+  \end{alertblock}
+
+  \Takeaway{Commuting diamonds suggest that some ordering information
+  in an interleaving trace may be accidental.}
+\end{frame}
+
+
+% ----------------------------------------------------------------------
+\begin{frame}{What should a harmless internal step do?}
+  Suppose
+  \[
+      s\step{\tau}t
+      \qquad\text{and}\qquad
+      s\step{a}u.
+  \]
+
+  If the internal step is behaviourally harmless, performing it first
+  should not destroy the visible possibility $a$.
+
+  Ideally the two orders can be reconciled:
+  \[
+  \begin{tikzpicture}[baseline=-2mm,x=1.5cm,y=.9cm]
+    \node[st] (s) at (0,1) {$s$};
+    \node[st] (t) at (1.8,1) {$t$};
+    \node[st] (u) at (0,-.5) {$u$};
+    \node[st] (v) at (1.8,-.5) {$v$};
+
+    \draw[tauedge] (s)--node[lab,above] {$\tau$}(t);
+    \draw[trans] (s)--node[lab,left] {$a$}(u);
+    \draw[trans,dashed] (t)--node[lab,right] {$a$}(v);
+    \draw[tauedge,dashed] (u)--node[lab,below] {$\tau^*$}(v);
+  \end{tikzpicture}
+  \]
+
+  \begin{block}{Interpretation}
+    Doing the internal work first, or doing the visible action first,
+    leads to behaviourally compatible states.
+  \end{block}
+
+  % \Takeaway{$\tau$-confluence expresses that internal computation
+  % commutes with the competing observable behaviour.}
+\end{frame}
+
+% ----------------------------------------------------------------------
+\begin{frame}{Confluence of $\tau$-steps alone is not enough}
+  Consider
+  \[
+      S=\tau.a.\nil+b.\nil.
+  \]
+
+  The relation consisting only of $\tau$-steps is trivially confluent:
+  there is only one internal transition.
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.45\textwidth}\centering
+      \begin{tikzpicture}[x=1cm,y=1cm]
+        \node[st] (s) at (0,1.0) {$S$};
+        \node[st] (a) at (-1.3,-.3) {$a.0$};
+        \node[terminal] (z) at (1.3,-.3) {$0$};
+
+        \draw[tauedge] (s)--node[lab,left] {$\tau$}(a);
+        \draw[trans] (s)--node[lab,right] {$b$}(z);
+        \draw[trans,dashed] (a)--node[lab,below] {$b\ ?$}(z);
+      \end{tikzpicture}
+    \end{column}
+
+    \begin{column}{.51\textwidth}
+      \begin{alertblock}{But the $\tau$-step is not harmless}
+        Before the internal step, $b$ is possible.
+
+        \medskip
+        After
+        \[
+            S\step{\tau}a.0,
+        \]
+        the $b$-alternative has disappeared.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+
+  \[
+      S\not\approx_{\mathrm b}a.0.
+  \]
+
+  \Takeaway{For behavioural reduction, an internal transition must
+  commute with \emph{all competing behaviour}, not only with other
+  internal transitions.}
+\end{frame}
+
+
+% ----------------------------------------------------------------------
+\begin{frame}{A local criterion: $T$-confluence}
+  Choose a set $T$ of internal transitions that we would like to treat
+  as harmless.
+
+  \begin{block}{Idea}
+    Whenever a $T$-transition competes with another transition,
+    performing either one first should lead to the same state,
+    possibly after one further $T$-step.
+  \end{block}
+
+  For every
+  \[
+      s\step{\tau}_T t
+      \qquad\text{and}\qquad
+      s\step{\alpha}u,
+  \]
+  require some $v$ such that
+  \[
+      t\optstep{\alpha}v,
+      \qquad
+      u=v
+      \quad\text{or}\quad
+      u\step{\tau}_T v.
+  \]
+
+ \begin{minipage}[t]{0.44\textwidth}
+  \vspace{0pt}
+  \begin{tikzpicture}[x=1.1cm,y=.9cm]
+    \node[st] (s) at (0,1.1) {$s$};
+    \node[st] (t) at (2.8,1.1) {$t$};
+    \node[st] (u) at (0,-.5) {$u$};
+    \node[st] (v) at (2.8,-.5) {$v$};
+
+    \draw[tauedge] (s)--node[lab,above] {$\tau\in T$}(t);
+    \draw[trans] (s)--node[lab,left] {$\alpha$}(u);
+    \draw[trans,dashed] (t)--node[lab,right] {$(\alpha)$}(v);
+    \draw[tauedge,dashed] (u)--node[lab,below] {$=$ or $\tau_T$}(v);
+  \end{tikzpicture}
+
+ \end{minipage}
+  \begin{minipage}[t]{0.4\textwidth}
+    \vspace{0pt} \small
+  \Takeaway{A $T$-step can be moved before a competing action
+  without changing the resulting observable behaviour.}
+  
+  \vspace{-0.3cm}
+  \Source{\cite[Section 2]{GP00}.}
+    \end{minipage}
+    
+  \end{frame}
+
+  
+
+% ----------------------------------------------------------------------
+\begin{frame}{Confluent internal transitions are inert}
+  \begin{block}{Theorem}
+    If the LTS is $T$-confluent, then
+    \[
+        s\step{\tau}_T t
+        \quad\Longrightarrow\quad
+        s\approx_{\mathrm b}t.
+    \]
+  \end{block}
+
+  Such a transition is called \textbf{inert}:
+  crossing it does not change the branching behaviour of the process.
+
+  \begin{block}{Why?}
+    Every transition competing with
+    \[
+        s\step{\tau}_T t
+    \]
+    can be moved across the $T$-transition using the confluence square.
+    Hence the states before and after the internal transition can match
+    each other's observable moves.
+  \end{block}
+
+  \[
+      \boxed{
+      \text{local commutation}
+      \quad\Longrightarrow\quad
+      \text{behavioural equivalence}
+      }
+  \]
+
+  % \Takeaway{Confluence gives a structural criterion for recognising
+  % internal transitions that may be abstracted away.}
+  % \Source{\cite[Section 2]{GP00}.}
+\end{frame}
+
+% ----------------------------------------------------------------------
+\begin{frame}{From inertness to state-space reduction}
+  If an internal transition is confluent, it is tempting to perform it
+  immediately and ignore the competing transitions.
+
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm,st/.append style={minimum size=6.5mm}]
+    \node[st] (s) at (0,1.0) {$s$};
+    \node[st] (t) at (2,1.0) {$t$};
+    \node[st] (u) at (0,-.6) {$u$};
+    \node[st] (v) at (2,-.6) {$v$};
+
+    \draw[tauedge] (s)--node[lab,above] {$\tau_T$}(t);
+    \draw[trans] (s)--node[lab,left] {$a$}(u);
+    \draw[trans] (t)--node[lab,right] {$a$}(v);
+    \draw[tauedge] (u)--node[lab,below] {$\tau_T$}(v);
+
+    \node[font=\Large,text=Muted] at (3.4,.2) {$\Longrightarrow$};
+
+    \node[st] (s2) at (4.7,1.0) {$s$};
+    \node[st] (t2) at (6.7,1.0) {$t$};
+    \node[st] (v2) at (6.7,-.6) {$v$};
+
+    \draw[tauedge] (s2)--node[lab,above] {$\tau_T$}(t2);
+    \draw[trans] (t2)--node[lab,right] {$a$}(v2);
+  \end{tikzpicture}
+  \end{center}
+
+  \begin{block}{But one more condition is needed}
+    If internal transitions can continue forever, always giving them
+    priority may prevent observable behaviour forever.
+  \end{block}
+
+  Therefore, under $T$-confluence and suitable $\tau$-convergence,
+  confluent internal transitions can be prioritised soundly.
+
+  \Takeaway{Confluence explains why an alternative is redundant;
+  convergence ensures that prioritising internal work does not trap
+  the execution forever.}
+\end{frame}
+
+% ----------------------------------------------------------------------
+\begin{frame}{Why convergence still matters}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[st] (s) at (0,0) {$s$};
+    \node[terminal] (z) at (2.4,0) {$0$};
+
+    \draw[tauedge] (s) edge[loop above] node[lab] {$\tau_T$} (s);
+    \draw[trans] (s)--node[lab,above] {$a$}(z);
+
+    \node[font=\Large,text=Muted] at (4,0) {$\Longrightarrow$};
+
+    \node[st] (s2) at (6,0) {$s$};
+    \draw[tauedge] (s2) edge[loop above] node[lab] {$\tau_T$} (s2);
+  \end{tikzpicture}
+
+  \vspace{4mm}
+
+  \begin{alertblock}{The internal transition is inert, but naive priority is unsound}
+    The $\tau$-loop does not change the state, so it is trivially confluent.
+
+    But if the scheduler always chooses it, the visible action $a$
+    disappears from the reduced system.
+  \end{alertblock}
+
+  \[
+      \text{inert transition}
+      \;\not\Rightarrow\;
+      \text{arbitrary deletion of competing transitions}.
+  \]
+
+  \Takeaway{Confluence deals with finite reordering.
+  Divergence is a separate issue.}
+\end{frame}
+
+% ----------------------------------------------------------------------
+\begin{frame}{From confluence to non-interleaving semantics}
+  Confluence has repeatedly produced diagrams of the form
+  \[
+  \begin{tikzpicture}[baseline=-2mm,x=1.4cm,y=.85cm]
+    \node[st] (s) at (0,1) {$s$};
+    \node[st] (u) at (-1.5,0) {$u$};
+    \node[st] (v) at (1.5,0) {$v$};
+    \node[st] (w) at (0,-1.1) {$w$};
+
+    \draw[trans] (s)--node[lab,above left] {$a$}(u);
+    \draw[trans] (s)--node[lab,above right] {$b$}(v);
+    \draw[trans] (u)--node[lab,below left] {$b$}(w);
+    \draw[trans] (v)--node[lab,below right] {$a$}(w);
+  \end{tikzpicture}
+  \]
+
+  Interleaving semantics records two executions:
+  \[
+      ab
+      \qquad\text{and}\qquad
+      ba.
+  \]
+
+  But if $a$ and $b$ are independent, these words differ only by
+  an arbitrary scheduling decision.
+
+  \begin{block}{Next step}
+    Mazurkiewicz traces identify words that differ only by exchanging
+    adjacent independent actions:
+    \[
+        uabv \equiv_I ubav
+        \qquad\text{whenever }(a,b)\in I.
+    \]
+    Partial-order semantics goes further and records the causal order
+    directly, instead of choosing one linearisation.
+  \end{block}
+
+  \begin{alertblock}{Confluence is only the motivation}
+    A commuting diamond does not by itself define independence.
+    In the next lecture we introduce an explicit independence relation
+    and distinguish causality from mere joinability.
+  \end{alertblock}
+
+  \Takeaway{Interleaving semantics records an order even when the
+  system may not impose one.}
+\end{frame}
+
+
+% ----------------------------------------------------------------------
+\section{Summary}
+
+\begin{frame}{What did internal actions force us to distinguish?}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabular}{@{}p{.31\textwidth}p{.63\textwidth}@{}}
+    \textbf{Observation}
+      & Traces record executions; bisimulation also records available
+        continuations.\\
+
+    \textbf{Finite silence}
+      & Weak bisimulation hides finite internal work; branching
+        bisimulation additionally preserves branching during it.\\
+
+    \textbf{Infinite silence}
+      & Divergence-sensitive variants distinguish infinite internal
+        computation from finite stuttering.\\
+
+    \textbf{Composition}
+      & Rooted refinements restore substitution in contexts such as
+        nondeterministic choice.\\
+
+    \textbf{Confluence}
+      & Some nondeterministic choices commute and can be treated as
+        behaviourally irrelevant.\\
+  \end{tabular}
+
+  \vspace{3mm}
+
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+
+  \begin{center}
+{\huge Optional material: weak bisimulation game and saturation.}
+    
+  \end{center}
+
+\end{frame}
 \section{Optional material}
 
 % A1 ----------------------------------------------------------------
