@@ -1,0 +1,806 @@
+\documentclass[t,11pt]{beamer}
+
+% Lecture 6 follows the 4:3 Beamer style of the earlier course lectures.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\usepackage{array,booktabs}
+
+\definecolor{LectureBlue}{RGB}{46,52,175}
+\definecolor{BlockTitleLav}{RGB}{195,194,231}
+\definecolor{BlockBodyLav}{RGB}{225,226,246}
+\definecolor{SoftGray}{RGB}{115,115,115}
+\useinnertheme[shadow=true]{rounded}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=LectureBlue}
+\setbeamercolor{frametitle}{fg=LectureBlue,bg=white}
+\setbeamercolor{block title}{fg=LectureBlue,bg=BlockTitleLav}
+\setbeamercolor{block body}{fg=black,bg=BlockBodyLav}
+\setbeamercolor{alerted text}{fg=LectureBlue}
+\setbeamerfont{frametitle}{size=\Large,series=\mdseries}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamersize{text margin left=8pt,text margin right=8pt}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[circle]
+\setlength{\parskip}{2pt}
+
+\tikzset{
+  state/.style={circle,draw=LectureBlue,thick,minimum size=9mm,inner sep=1pt,fill=white},
+  event/.style={circle,draw=LectureBlue,thick,minimum size=10mm,inner sep=1pt,fill=white},
+  flowarrow/.style={-{Latex[length=2mm]},thick,draw=black},
+  dependency/.style={-{Latex[length=2mm]},thick,draw=LectureBlue},
+  localbox/.style={draw=LectureBlue,rounded corners=2pt,inner sep=5pt},
+  tag/.style={font=\small,fill=white,inner sep=1.4pt}
+}
+\newcommand{\domn}{\operatorname{dom}}
+\newcommand{\Pref}{\operatorname{Pref}}
+\newcommand{\lin}{\operatorname{Lin}}
+\newcommand{\Sig}{\Sigma}
+\newcommand{\wi}{\equiv_I}
+\newcommand{\ind}{\mathrel{I}}
+\newcommand{\dep}{\mathrel{D}}
+
+\begin{document}
+
+% =========================================================
+\begin{frame}[plain]
+  \vspace{1.10cm}
+  \begin{center}
+    {\huge\color{LectureBlue} Theory of Concurrency\par}
+    \vspace{0.55cm}
+    {\Large Lecture 6: Mazurkiewicz traces\par}
+    \vspace{0.17cm}
+    {\Large and Zielonka automata\par}
+    \vspace{0.94cm}
+    {\large Piotr Hofman\par}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Plan}
+  \begin{enumerate}
+    \item Why interleaving semantics duplicates concurrent executions.
+    \item Independence relations and Mazurkiewicz traces.
+    \item Dependence graphs, partial orders and Foata normal form.
+    \item Trace-closed languages and their specifications.
+    \item Zielonka automata and the distributed realisation theorem.
+    \item Connection to partial-order reduction and earlier semantics.
+  \end{enumerate}
+  \vspace{0.4cm}
+  \begin{block}{Central question}
+    How can we describe and implement concurrent behaviour without fixing an arbitrary order between independent events?
+  \end{block}
+\end{frame}
+
+% =========================================================
+\section{Interleaving versus concurrency}
+
+\begin{frame}{Two independent actions in an LTS}
+  \begin{block}{Two local variables}
+    Initially $(x,y)=(0,0)$. Action $a$ sets $x:=1$ and action $b$ sets $y:=1$.
+  \end{block}
+  \vspace{0.1cm}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[state] (s0) at (-3,0) {$(0,0)$};
+    \node[state] (sa) at (0,1.1) {$(1,0)$};
+    \node[state] (sb) at (0,-1.1) {$(0,1)$};
+    \node[state] (sf) at (3,0) {$(1,1)$};
+    \draw[flowarrow] (s0) -- node[tag,above] {$a$} (sa);
+    \draw[flowarrow] (s0) -- node[tag,below] {$b$} (sb);
+    \draw[flowarrow] (sa) -- node[tag,above] {$b$} (sf);
+    \draw[flowarrow] (sb) -- node[tag,below] {$a$} (sf);
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Two paths, the same result}
+    Both $ab$ and $ba$ are executions, and both end in $(1,1)$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{What does an ordinary trace record?}
+  \begin{block}{Interleaving semantics}
+    A run of an LTS produces a word: a \emph{total order} of the actions executed.
+    \[
+      ab\neq ba \qquad \text{as words in }\Sigma^*.
+    \]
+  \end{block}
+  \begin{block}{But in the preceding example}
+    Neither action affects the other one's enabledness or result. The difference between $ab$ and $ba$ is only their scheduling order.
+  \end{block}
+  \vspace{0.12cm}
+  \centering\large We want to retain necessary order, but forget irrelevant order.
+\end{frame}
+
+\begin{frame}{Interleaving explosion}
+  \begin{block}{Two sequential processes}
+    One process performs $a_1,a_2,\ldots,a_m$ in order; another performs $b_1,b_2,\ldots,b_n$ in order. Cross-process actions are independent.
+  \end{block}
+  \[
+    \text{number of interleavings}=\binom{m+n}{m}.
+  \]
+  \begin{center}
+  \begin{tabular}{c|c|c}
+  First process & Second process & Interleavings\\ \hline
+  $m=2$ & $n=2$ & $6$\\
+  $m=4$ & $n=4$ & $70$\\
+  $m=10$ & $n=10$ & $184\,756$
+  \end{tabular}
+  \end{center}
+  \begin{block}{Observation}
+    All these words preserve the same two local causal orders.
+  \end{block}
+\end{frame}
+
+\begin{frame}{When is swapping actions incorrect?}
+  \begin{block}{Shared variable}
+    Let $a$ assign $x:=1$ and $b$ assign $x:=2$.
+  \end{block}
+  \[
+  \begin{aligned}
+    x=0&\xrightarrow{a}x=1\xrightarrow{b}x=2,\\[5pt]
+    x=0&\xrightarrow{b}x=2\xrightarrow{a}x=1.
+  \end{aligned}
+  \]
+  \begin{block}{Dependence matters}
+    The order of $a$ and $b$ changes the outcome. They cannot be declared independent.
+  \end{block}
+  \vspace{0.25cm}
+  The independence relation must be justified by the model of the system.
+\end{frame}
+
+% =========================================================
+\section{Mazurkiewicz traces}
+
+\begin{frame}{Independence and dependence alphabets}
+  \begin{block}{Definition}
+    A \emph{concurrent alphabet} is $(\Sigma,I)$, where $\Sigma$ is finite and
+    \[
+       I\subseteq\Sigma\times\Sigma
+    \]
+    is a \textbf{symmetric, irreflexive} independence relation.
+  \end{block}
+  \begin{block}{Dependence relation}
+    \[
+      D=(\Sigma\times\Sigma)\setminus I.
+    \]
+    Dependence is symmetric and reflexive.
+  \end{block}
+  \vspace{0.1cm}
+  We read $a\ind b$ as ``$a$ and $b$ may commute'', and $a\dep b$ as ``their order must be retained''.
+\end{frame}
+
+\begin{frame}{A running dependence alphabet}
+  \[
+    \Sigma=\{a,b,c\},\qquad I=\{(a,b),(b,a)\}.
+  \]
+  \begin{center}
+  \begin{tikzpicture}[scale=1]
+    \node[event] (a) at (-2,0) {$a$};
+    \node[event] (b) at (2,0) {$b$};
+    \node[event] (c) at (0,-1.7) {$c$};
+    \draw[LectureBlue,thick,dashed] (a) -- node[tag,above] {independent} (b);
+    \draw[thick] (a) -- (c);
+    \draw[thick] (b) -- (c);
+    \node[font=\small] at (0,-2.25) {solid edges: dependence between distinct actions};
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Important distinction}
+    $a\ind b$, while $a\dep c$ and $b\dep c$. Dependence need not be transitive; every action also depends on itself.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Swapping independent neighbours}
+  \begin{block}{Elementary equivalence}
+    If $a\ind b$, then for every $u,v\in\Sigma^*$,
+    \[
+      uabv \;\longleftrightarrow\; ubav.
+    \]
+    Let $\equiv_I$ be the equivalence relation generated by these swaps.
+  \end{block}
+  \begin{block}{Example: $I=\{(a,b),(b,a)\}$}
+    \[
+    \underbrace{abc\equiv_I bac}_{\text{swap }a,b},
+    \qquad
+    \underbrace{abc\not\equiv_I acb}_{\text{cannot swap }b,c}.
+    \]
+  \end{block}
+  Swaps act on \emph{adjacent} positions; a sequence of swaps may be needed.
+\end{frame}
+
+\begin{frame}{Mazurkiewicz traces}
+  \begin{block}{Definition}
+    A \emph{Mazurkiewicz trace} is an equivalence class of words under $\equiv_I$:
+    \[
+      [w]_I=\{v\in\Sigma^*:v\equiv_I w\}.
+    \]
+  \end{block}
+  \begin{block}{Our example}
+    For $I=\{(a,b),(b,a)\}$,
+    \[
+      [abc]_I=\{abc,bac\},\qquad [acb]_I=\{acb\}.
+    \]
+  \end{block}
+  \vspace{0.25cm}
+  A trace represents an execution \emph{up to permutations of independent actions}.
+\end{frame}
+
+\begin{frame}{Why traces form a monoid}
+  \begin{block}{Congruence property}
+    Swapping independent neighbours remains valid inside larger words:
+    \[
+      u\equiv_Iu',\quad v\equiv_Iv'
+      \quad\Longrightarrow\quad uv\equiv_Iu'v'.
+    \]
+  \end{block}
+  \begin{block}{Trace monoid}
+    \[
+      M(\Sigma,I)=\Sigma^*/{\equiv_I},\qquad
+      [u]_I\cdot[v]_I=[uv]_I.
+    \]
+    The empty word $\varepsilon$ induces the identity element $[\varepsilon]_I$.
+  \end{block}
+  \vspace{0.15cm}
+  Concatenation of traces is well-defined, independently of the chosen word representatives.
+\end{frame}
+
+\begin{frame}{Two extreme forms of independence}
+  \begin{block}{No independent distinct actions: $I=\varnothing$}
+    No swaps are allowed. Every trace consists of one word:
+    \[
+      M(\Sigma,\varnothing)=\Sigma^*.
+    \]
+  \end{block}
+  \begin{block}{All distinct actions independent}
+    $I=\{(a,b):a\neq b\}$. Words are equivalent exactly when each letter occurs equally often.
+    \[
+      abc\equiv_I bca\equiv_I cab.
+    \]
+    The trace remembers only the numbers of occurrences of actions.
+  \end{block}
+  Most concurrent alphabets lie between these extremes.
+\end{frame}
+
+\begin{frame}{Two chains give one trace}
+  \begin{block}{Local orders}
+    $a_1$ must precede $a_2$, and $b_1$ must precede $b_2$; every $a_i$ is independent of every $b_j$.
+  \end{block}
+  \begin{columns}[T]
+  \begin{column}{0.49\textwidth}
+    \[\begin{gathered}
+      a_1a_2b_1b_2\\[-2pt]
+      a_1b_1a_2b_2\\[-2pt]
+      a_1b_1b_2a_2
+    \end{gathered}\]
+  \end{column}
+  \begin{column}{0.49\textwidth}
+    \[\begin{gathered}
+      b_1a_1a_2b_2\\[-2pt]
+      b_1a_1b_2a_2\\[-2pt]
+      b_1b_2a_1a_2
+    \end{gathered}\]
+  \end{column}
+  \end{columns}
+  \begin{block}{One concurrent execution}
+    All $\binom{4}{2}=6$ interleavings belong to one Mazurkiewicz trace.
+  \end{block}
+\end{frame}
+
+% =========================================================
+\section{Partial-order representation}
+
+\begin{frame}{From total orders to partial orders}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[font=\small,anchor=east] at (-2.5,0.6) {Word $abc$:};
+    \node[event] (wa) at (-1.7,.6) {$a$};
+    \node[event] (wb) at (-.4,.6) {$b$};
+    \node[event] (wc) at (.9,.6) {$c$};
+    \draw[dependency] (wa) -- (wb);
+    \draw[dependency] (wb) -- (wc);
+    \node[font=\small,anchor=east] at (-2.5,-1.55) {Required order:};
+    \node[event] (pa) at (-1.6,-1.8) {$a$};
+    \node[event] (pb) at (.4,-1.8) {$b$};
+    \node[event] (pc) at (-.6,-.45) {$c$};
+    \draw[dependency] (pa) -- (pc);
+    \draw[dependency] (pb) -- (pc);
+    \node[font=\small,align=left,anchor=west] at (1.55,-1.2) {$a,b$ unordered\\$a,b$ before $c$};
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Idea}
+    A word imposes an order on \emph{all} positions. A dependence graph keeps only the order forced by dependent actions.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Dependence graph of a word}
+  \begin{block}{Construction}
+    Let $w=a_1a_2\cdots a_n$. Create a distinct event for each position:
+    \[
+       E_w=\{1,\ldots,n\},\qquad \lambda(i)=a_i.
+    \]
+    Add an edge $i\to j$ whenever
+    \[
+       i<j\quad\text{and}\quad (a_i,a_j)\in D.
+    \]
+    Take the reflexive transitive closure to obtain the order $\leq_w$.
+  \end{block}
+  \begin{block}{Important}
+    Vertices are \textbf{occurrences}, not action names. In particular, two occurrences of the same action are ordered because $(a,a)\in D$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Dependence graph: $abc$}
+  \[
+      I=\{(a,b),(b,a)\},\qquad w=abc.
+  \]
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[event] (a) at (-1.3,-1.4) {$a$};
+    \node[event] (b) at (1.3,-1.4) {$b$};
+    \node[event] (c) at (0,0.55) {$c$};
+    \draw[dependency] (a) -- (c);
+    \draw[dependency] (b) -- (c);
+    \node[font=\small] at (0,-2.0) {The Hasse diagram of the dependence order};
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Linearizations}
+    The labelled partial order has exactly two linearizations:
+    \[
+       \lin(E_w,\leq_w,\lambda)=\{abc,bac\}.
+    \]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Independent labels can still be ordered}
+  \[
+     I=\{(a,b),(b,a)\},\qquad w=acb.
+  \]
+  \begin{center}
+  \begin{tikzpicture}
+    \node[event] (a) at (-2,0) {$a$};
+    \node[event] (c) at (0,0) {$c$};
+    \node[event] (b) at (2,0) {$b$};
+    \draw[dependency] (a) -- (c);
+    \draw[dependency] (c) -- (b);
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Transitive causality}
+    Although $a\ind b$, the order contains $a<c<b$ because both actions depend on $c$.
+  \end{block}
+  \vspace{0.2cm}
+  Independence of \emph{action labels} does not guarantee that two particular \emph{occurrences} are unordered.
+\end{frame}
+
+\begin{frame}{Fundamental characterisation of traces}
+  \begin{block}{Theorem}
+    For finite words $u,v\in\Sigma^*$,
+    \[
+       u\equiv_Iv
+       \quad\Longleftrightarrow\quad
+       \text{their labelled dependence posets are isomorphic}.
+    \]
+  \end{block}
+  \begin{block}{Proof idea: $\Rightarrow$}
+    Swapping adjacent independent events preserves every order constraint between dependent occurrences.
+  \end{block}
+  \begin{block}{Proof idea: $\Leftarrow$}
+    Any two linear extensions of a finite poset are connected by adjacent swaps of incomparable events. In a dependence poset, incomparable events have independent labels.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Six linearizations of one partial order}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[event] (a1) at (-1.5,-1.2) {$a_1$};
+    \node[event] (a2) at (-1.5,0.5) {$a_2$};
+    \node[event] (b1) at (1.5,-1.2) {$b_1$};
+    \node[event] (b2) at (1.5,0.5) {$b_2$};
+    \draw[dependency] (a1) -- (a2);
+    \draw[dependency] (b1) -- (b2);
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Partial order versus linearizations}
+    The poset states only $a_1<a_2$ and $b_1<b_2$. Its $6$ linearizations are the words listed earlier.
+  \end{block}
+  \[
+      \#\lin=\binom{4}{2}=6.
+  \]
+  One partial order replaces six schedules without forgetting either local order.
+\end{frame}
+
+\begin{frame}{Foata normal form: concurrent layers}
+  \begin{block}{Canonical representation}
+    Repeatedly take all minimal events of the dependence poset, record them as one layer, and remove them. Every layer consists of pairwise independent actions.
+  \end{block}
+  \[
+      w=abcabc,\qquad I=\{(a,b),(b,a)\}.
+  \]
+  \begin{center}
+  \begin{tikzpicture}[x=1.45cm,y=.75cm]
+    \node[draw=LectureBlue,rounded corners=3pt,fill=BlockBodyLav,minimum width=1.2cm,minimum height=.75cm] (k0) at (0,0) {$\{a,b\}$};
+    \node[draw=LectureBlue,rounded corners=3pt,fill=BlockBodyLav,minimum width=1.2cm,minimum height=.75cm] (k1) at (1,0) {$\{c\}$};
+    \node[draw=LectureBlue,rounded corners=3pt,fill=BlockBodyLav,minimum width=1.2cm,minimum height=.75cm] (k2) at (2,0) {$\{a,b\}$};
+    \node[draw=LectureBlue,rounded corners=3pt,fill=BlockBodyLav,minimum width=1.2cm,minimum height=.75cm] (k3) at (3,0) {$\{c\}$};
+    \draw[flowarrow] (k0) -- (k1);
+    \draw[flowarrow] (k1) -- (k2);
+    \draw[flowarrow] (k2) -- (k3);
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Foata normal form}
+    \[
+       \{a,b\}\;\{c\}\;\{a,b\}\;\{c\}.
+    \]
+    These layers are uniquely determined by a finite trace.
+  \end{block}
+\end{frame}
+
+\begin{frame}{What information does a trace preserve?}
+  \begin{block}{Preserved}
+    Event occurrences, action labels, and the ordering constraints induced by dependence.
+  \end{block}
+  \begin{block}{Forgotten}
+    The chosen interleaving of incomparable events. A trace does not record physical durations or a schedule.
+  \end{block}
+  \begin{block}{Not represented by one trace}
+    Branching choices between different possible executions of an entire system.
+  \end{block}
+\end{frame}
+
+% =========================================================
+\section{Trace languages}
+
+\begin{frame}{From word languages to trace languages}
+  \begin{block}{Quotient map}
+    \[
+       q:\Sigma^*\longrightarrow M(\Sigma,I),\qquad q(w)=[w]_I.
+    \]
+    A word language $L\subseteq\Sigma^*$ induces the trace language
+    \[
+       q(L)=\{[w]_I:w\in L\}.
+    \]
+  \end{block}
+  \begin{block}{What can go wrong?}
+    If $L$ contains only some linearizations of a trace, the quotient forgets which representatives belonged to $L$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Trace-closed languages}
+  \begin{block}{Definition}
+    A language $L\subseteq\Sigma^*$ is \emph{$I$-closed} (or \emph{trace-closed}) if
+    \[
+      u\in L\ \text{and}\ u\equiv_Iv
+      \quad\Longrightarrow\quad v\in L.
+    \]
+    Equivalently, $uabv\in L$ iff $ubav\in L$ whenever $a\ind b$.
+  \end{block}
+  \begin{block}{Example}
+    With $a\ind b$ and both dependent on $c$, a requirement such as
+    ``each $c$ is preceded by both $a$ and $b$ since the last $c$'' is insensitive to exchanges of neighbouring $a,b$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{A requirement that is not trace-closed}
+  \[
+     \Sigma=\{a,b\},\qquad a\ind b,\qquad L=\{ab\}.
+  \]
+  \begin{block}{Problem}
+    $ab\in L$, but $ba\notin L$, although $ab\equiv_Iba$.
+  \end{block}
+  \[
+    q^{-1}\bigl(q(L)\bigr)=\{ab,ba\}\neq L.
+  \]
+  \begin{block}{Interpretation}
+    The specification explicitly requires $a$ before $b$, so these two actions cannot simultaneously be treated as independent for this requirement.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Why an LTS should satisfy diamonds}
+  \begin{block}{Commutation property}
+    For independent $a,b$, whenever
+    $s\xrightarrow{a}s_1\xrightarrow{b}t$,
+    there must be some $s_2$ with
+    $s\xrightarrow{b}s_2\xrightarrow{a}t$.
+  \end{block}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=.62cm]
+    \node[state] (s) at (-2.25,0) {$s$};
+    \node[state] (sa) at (0,1.2) {$s_1$};
+    \node[state] (sb) at (0,-1.2) {$s_2$};
+    \node[state] (t) at (2.25,0) {$t$};
+    \draw[flowarrow] (s) -- node[tag,above] {$a$} (sa);
+    \draw[flowarrow] (s) -- node[tag,below] {$b$} (sb);
+    \draw[flowarrow] (sa) -- node[tag,above] {$b$} (t);
+    \draw[flowarrow] (sb) -- node[tag,below] {$a$} (t);
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Consequence}
+    If this replacement is always possible along runs, the finite trace language of the LTS is $I$-closed.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Regularity and a new question}
+  \begin{block}{Centralised description}
+    A finite automaton can recognise a regular word language
+    \[
+       L\subseteq\Sigma^*.
+    \]
+    If $L$ is $I$-closed, it specifies behaviours modulo independent swaps.
+  \end{block}
+  \begin{block}{Distributed realisation}
+    Can we recognise the same language using separate local states, where each action accesses only the processes that participate in it?
+  \end{block}
+  \vspace{0.30cm}
+  This is answered by \textbf{Zielonka automata}.
+\end{frame}
+
+% =========================================================
+\section{Zielonka automata}
+
+\begin{frame}{Distributed alphabets}
+  \begin{block}{Definition}
+    Let $P$ be a finite set of processes. A \emph{distributed alphabet} provides
+    \[
+       \domn:\Sigma\longrightarrow 2^P\setminus\{\varnothing\}.
+    \]
+    The set $\domn(a)$ contains exactly the processes that participate in $a$.
+  \end{block}
+  \begin{center}
+    \begin{tabular}{c|c|l}
+      action & domain & meaning\\ \hline
+      $a$ & $\{p\}$ & local action of $p$\\
+      $b$ & $\{q\}$ & local action of $q$\\
+      $c$ & $\{p,q\}$ & synchronization of $p$ and $q$
+    \end{tabular}
+  \end{center}
+  \[
+      a\ind b\quad\Longleftrightarrow\quad \domn(a)\cap\domn(b)=\varnothing.
+  \]
+\end{frame}
+
+\begin{frame}{Why process domains explain independence}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[draw=LectureBlue,rounded corners,fill=BlockBodyLav,minimum width=2.35cm,minimum height=1.6cm,align=center] (p) at (-2.1,0) {Process $p$\\[3pt]local $a$};
+    \node[draw=LectureBlue,rounded corners,fill=BlockBodyLav,minimum width=2.35cm,minimum height=1.6cm,align=center] (q) at (2.1,0) {Process $q$\\[3pt]local $b$};
+    \draw[LectureBlue,thick,<->] (p.north east) to[out=45,in=135] node[tag,above] {$c$} (q.north west);
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Local and shared actions}
+    $a$ changes only the state of $p$, while $b$ changes only the state of $q$. Action $c$ involves both processes and can coordinate their states.
+  \end{block}
+  \vspace{0.15cm}
+  Disjoint process domains give a structural reason for the commutation of actions.
+\end{frame}
+
+\begin{frame}{Zielonka automata: local states}
+  \begin{block}{Global configuration}
+    Each process $p\in P$ has a finite local state space $Q_p$ and initial state $q_p^0$. A global configuration is a tuple
+    \[
+        (q_p)_{p\in P}\in\prod_{p\in P}Q_p.
+    \]
+  \end{block}
+  \begin{block}{Action semantics}
+    An action $a$ reads and updates \emph{only} the states of processes in $\domn(a)$. All other local states remain unchanged.
+  \end{block}
+  \vspace{0.18cm}
+  A shared action is one atomic synchronization step of all its participating processes.
+\end{frame}
+
+\begin{frame}{Formal definition of a Zielonka automaton}
+  \begin{block}{Deterministic finite asynchronous automaton}
+    A Zielonka automaton consists of finite local state sets $(Q_p)_{p\in P}$, an initial tuple $q^0$, a set of accepting global states
+    \[
+      F\subseteq\prod_{p\in P}Q_p,
+    \]
+    and, for each $a\in\Sigma$, a \emph{partial} local update function
+    \[
+      \delta_a:\prod_{p\in\domn(a)}Q_p
+      \rightharpoonup\prod_{p\in\domn(a)}Q_p.
+    \]
+  \end{block}
+  \begin{block}{Reading a word}
+    Execute its actions from $q^0$ when their local updates are defined. A word is accepted if the final global tuple belongs to $F$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Example: two local steps}
+  \begin{block}{Local states}
+    Let $Q_p=Q_q=\{0,1\}$. State $0$ means ``not ready'' and $1$ means ``ready''.
+  \end{block}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[font=\small,anchor=west] at (-4.1,1.2) {Process $p$:};
+    \node[state] (p0) at (-2.45,1.2) {$0$};
+    \node[state] (p1) at (-.7,1.2) {$1$};
+    \draw[flowarrow] (p0) -- node[tag,above] {$a$} (p1);
+    \node[font=\small,anchor=west] at (.55,1.2) {$\domn(a)=\{p\}$};
+    \node[font=\small,anchor=west] at (-4.1,-.3) {Process $q$:};
+    \node[state] (q0) at (-2.45,-.3) {$0$};
+    \node[state] (q1) at (-.7,-.3) {$1$};
+    \draw[flowarrow] (q0) -- node[tag,above] {$b$} (q1);
+    \node[font=\small,anchor=west] at (.55,-.3) {$\domn(b)=\{q\}$};
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Enabledness}
+    Each local action can happen once per round. The other process is unaffected and can perform its action in either order.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Example: a synchronization action}
+  \begin{block}{Shared action $c$}
+    The next round may begin only when \emph{both} processes are ready:
+    \[
+       \domn(c)=\{p,q\},\qquad
+       \delta_c(1,1)=(0,0).
+    \]
+    The update is undefined for $(0,0)$, $(1,0)$ and $(0,1)$.
+  \end{block}
+  \begin{center}
+  \begin{tikzpicture}
+    \node[draw=LectureBlue,rounded corners,fill=BlockBodyLav,minimum width=2.15cm,minimum height=.85cm] (ready) at (-2,0) {$(1,1)$};
+    \node[draw=LectureBlue,rounded corners,fill=BlockBodyLav,minimum width=2.15cm,minimum height=.85cm] (reset) at (2,0) {$(0,0)$};
+    \draw[flowarrow] (ready) -- node[tag,above] {$c$} (reset);
+  \end{tikzpicture}
+  \end{center}
+  This is a barrier: $c$ requires completion of both independent local actions.
+\end{frame}
+
+\begin{frame}{Global LTS of the Zielonka automaton}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[state] (s0) at (-3,0) {$(0,0)$};
+    \node[state] (sa) at (-.4,1.45) {$(1,0)$};
+    \node[state] (sb) at (-.4,-1.45) {$(0,1)$};
+    \node[state] (sf) at (2.45,0) {$(1,1)$};
+    \draw[flowarrow] (s0) -- node[tag,above] {$a$} (sa);
+    \draw[flowarrow] (s0) -- node[tag,below] {$b$} (sb);
+    \draw[flowarrow] (sa) -- node[tag,above] {$b$} (sf);
+    \draw[flowarrow] (sb) -- node[tag,below] {$a$} (sf);
+    \draw[flowarrow] (sf.north) to[out=83,in=97,looseness=1.2] node[tag,above] {$c$} (s0.north);
+  \end{tikzpicture}
+  \end{center}
+  \begin{block}{Global view, local implementation}
+    The diagram is an ordinary LTS, but its transitions are generated from local updates and one shared synchronization.
+  \end{block}
+\end{frame}
+
+\begin{frame}{The language recognised by the example}
+  \begin{block}{Accept all reachable global states}
+    Take $F=Q_p\times Q_q$. Then the accepted language consists of valid prefixes of rounds with one $a$, one $b$, and a closing $c$:
+    \[
+       L=\Pref\bigl(((ab+ba)c)^*\bigr).
+    \]
+  \end{block}
+  \begin{center}
+  \begin{tabular}{l|l}
+    accepted & not accepted\\ \hline
+    $\varepsilon,\ a,\ b,\ ab,\ ba$ & $c$\\
+    $abc,\ bac,\ abcabc$ & $acb,\ aabc$
+  \end{tabular}
+  \end{center}
+  \begin{block}{Trace closure}
+    Every exchange of adjacent $a,b$ preserves acceptance: $abc$ and $bac$ are two linearizations of one accepted trace.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Independence is built into the automaton}
+  \begin{block}{Disjoint local updates commute}
+    If $\domn(a)\cap\domn(b)=\varnothing$, the two updates read and modify disjoint coordinates.
+    \[
+       q\xrightarrow{a}q_1\xrightarrow{b}q'
+       \quad\Longleftrightarrow\quad
+       q\xrightarrow{b}q_2\xrightarrow{a}q'.
+    \]
+  \end{block}
+  \begin{block}{Consequence}
+    Every word accepted by a Zielonka automaton can be replaced by any $I$-equivalent word without changing the final global state. Its language is $I$-closed.
+  \end{block}
+  \vspace{0.15cm}
+  This follows from the architecture, not from a separately imposed commutation axiom.
+\end{frame}
+
+\begin{frame}{Zielonka's theorem}
+  \begin{block}{Theorem (Zielonka, 1987)}
+    Fix a finite distributed alphabet $(\Sigma,\domn)$ and its induced independence relation $I$.
+
+    If a language $L\subseteq\Sigma^*$ is
+    \begin{itemize}
+      \item regular, and
+      \item $I$-closed,
+    \end{itemize}
+    then $L$ is recognised by a \textbf{finite deterministic Zielonka automaton} over this distributed alphabet.
+  \end{block}
+  \begin{block}{Conversely}
+    Every language recognised by a finite Zielonka automaton (with global final states) is regular and $I$-closed.
+  \end{block}
+\end{frame}
+
+\begin{frame}{What does Zielonka's theorem say?}
+  \begin{block}{Specification}
+    A centralised finite automaton can specify a global behaviour language, provided it is closed under the independence relation.
+  \end{block}
+  \begin{block}{Implementation}
+    There exists a finite automaton with separate local states: every action uses only the local states of its participating processes.
+  \end{block}
+  \begin{block}{Limit of the result}
+    The theorem is an expressiveness result. It does \emph{not} promise a small distributed implementation. The construction and its size bounds are nontrivial.
+  \end{block}
+\end{frame}
+
+% =========================================================
+\section{Implications and summary}
+
+\begin{frame}{Connection with partial-order reduction}
+  \begin{block}{Redundant interleavings}
+    If $n$ distinct actions are pairwise independent, they admit $n!$ different linear orders but form a single Mazurkiewicz trace.
+  \end{block}
+  \begin{block}{Verification idea}
+    When verifying a property insensitive to independent swaps, it may suffice to explore representatives of trace classes instead of every schedule.
+  \end{block}
+  \begin{block}{Caution}
+    Partial-order reduction needs conditions ensuring preservation of the chosen property. Trace equivalence alone does not preserve arbitrary ordering-sensitive or branching properties.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Three views of the same system}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabular}{p{.29\textwidth}|p{.61\textwidth}}
+    \textbf{View} & \textbf{Information retained}\\ \hline
+    Word traces & One total order of observed actions\\
+    Mazurkiewicz traces & Occurrences and their necessary dependence order\\
+    Bisimulation & Branching alternatives and one-step matching
+  \end{tabular}
+  \end{center}
+  \begin{block}{Distinctions}
+    Bisimulation addresses branching. Mazurkiewicz traces address artificial ordering between independent events. These are different kinds of abstraction.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Scope: finite versus infinite executions}
+  \begin{block}{In this lecture}
+    Mazurkiewicz traces are equivalence classes of \emph{finite} words, so the trace monoid and finite dependence posets suffice.
+  \end{block}
+  \begin{block}{Earlier lectures}
+    LTL specifications often concern \emph{infinite} executions. Extensions to infinite traces require appropriate notions of infinite partial orders and careful treatment of properties such as fairness.
+  \end{block}
+  \vspace{0.25cm}
+  A finite trace is an abstraction of a finite execution prefix, not a claim that the system eventually terminates.
+\end{frame}
+
+\begin{frame}{Summary}
+  \begin{block}{Mazurkiewicz traces}
+    \[
+       a\ind b\ \Longrightarrow\ uabv\equiv_Iubav,
+       \qquad [w]_I\in M(\Sigma,I).
+    \]
+    A trace is represented by a labelled dependence partial order; its words are the linearizations of that order.
+  \end{block}
+  \begin{block}{Distributed automata}
+    In a Zielonka automaton, $a$ accesses only $\domn(a)$, so disjoint actions commute. Every regular $I$-closed language admits a finite deterministic Zielonka implementation.
+  \end{block}
+  \vspace{0.1cm}
+  \centering\textbf{Concurrency appears as the absence of unnecessary ordering.}
+\end{frame}
+
+\begin{frame}{References}
+  \begin{thebibliography}{10}
+    \bibitem{Zielonka87}
+    W. Zielonka.
+    \newblock \emph{Notes on finite asynchronous automata}.
+    \newblock RAIRO -- Theoretical Informatics and Applications, 21(2):99--135, 1987.
+
+    \bibitem{BookTraces}
+    V. Diekert and G. Rozenberg (eds.).
+    \newblock \emph{The Book of Traces}.
+    \newblock World Scientific, 1995.
+
+    \bibitem{BaierKatoen}
+    C. Baier and J.-P. Katoen.
+    \newblock \emph{Principles of Model Checking}.
+    \newblock MIT Press, 2008.
+  \end{thebibliography}
+\end{frame}
+
+\end{document}
