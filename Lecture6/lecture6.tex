@@ -315,10 +315,7 @@
 
 \begin{frame}{Dependence graph of a word}
   \begin{block}{Construction}
-    Let $w=a_1a_2\cdots a_n$. Create a distinct event for each position:
-    \[
-       E_w=\{1,\ldots,n\},\qquad \lambda(i)=a_i.
-    \]
+    Let $w=a_1a_2\cdots a_n$. Create a distinct event vertex for each position:
     Add an edge $i\to j$ whenever
     \[
        i<j\quad\text{and}\quad (a_i,a_j)\in D.
