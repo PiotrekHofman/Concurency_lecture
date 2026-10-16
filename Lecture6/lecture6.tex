@@ -262,30 +262,7 @@
   Most concurrent alphabets lie between these extremes.
 \end{frame}
 
-\begin{frame}{Two chains give one trace}
-  \begin{block}{Local orders}
-    $a_1$ must precede $a_2$, and $b_1$ must precede $b_2$; every $a_i$ is independent of every $b_j$.
-  \end{block}
-  \begin{columns}[T]
-  \begin{column}{0.49\textwidth}
-    \[\begin{gathered}
-      a_1a_2b_1b_2\\[-2pt]
-      a_1b_1a_2b_2\\[-2pt]
-      a_1b_1b_2a_2
-    \end{gathered}\]
-  \end{column}
-  \begin{column}{0.49\textwidth}
-    \[\begin{gathered}
-      b_1a_1a_2b_2\\[-2pt]
-      b_1a_1b_2a_2\\[-2pt]
-      b_1b_2a_1a_2
-    \end{gathered}\]
-  \end{column}
-  \end{columns}
-  \begin{block}{One concurrent execution}
-    All $\binom{4}{2}=6$ interleavings belong to one Mazurkiewicz trace.
-  \end{block}
-\end{frame}
+
 
 % =========================================================
 \section{Partial-order representation}
@@ -338,7 +315,8 @@
     \node[event] (c) at (0,0.55) {$c$};
     \draw[dependency] (a) -- (c);
     \draw[dependency] (b) -- (c);
-    \node[font=\small] at (0,-2.0) {The Hasse diagram of the dependence order};
+    \node[font=\small] at (0,-2.0) {%The Hasse diagram of the dependence order
+    };
   \end{tikzpicture}
   \end{center}
   \begin{block}{Linearizations}
@@ -386,24 +364,22 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Six linearizations of one partial order}
-  \begin{center}
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \node[event] (a1) at (-1.5,-1.2) {$a_1$};
-    \node[event] (a2) at (-1.5,0.5) {$a_2$};
-    \node[event] (b1) at (1.5,-1.2) {$b_1$};
-    \node[event] (b2) at (1.5,0.5) {$b_2$};
-    \draw[dependency] (a1) -- (a2);
-    \draw[dependency] (b1) -- (b2);
-  \end{tikzpicture}
-  \end{center}
-  \begin{block}{Partial order versus linearizations}
-    The poset states only $a_1<a_2$ and $b_1<b_2$. Its $6$ linearizations are the words listed earlier.
+\begin{frame}{Lexicographic normal form}
+  \begin{block}{Choose an order on the alphabet}
+    Fix a total order, for example $a<b<c$. Each trace contains finitely many words, so it has a unique lexicographically least representative.
+    \[
+      \operatorname{lexmin}([w]_I)
+      =\min_{\mathrm{lex}}\{v\in\Sigma^*:v\equiv_Iw\}.
+    \]
   \end{block}
-  \[
-      \#\lin=\binom{4}{2}=6.
-  \]
-  One partial order replaces six schedules without forgetting either local order.
+  \begin{block}{Example}
+    With $I=\{(a,b),(b,a)\}$,
+    \[
+       [abc]_I=\{abc,bac\},\qquad
+       \operatorname{lexmin}([abc]_I)=abc.
+    \]
+  \end{block}
+  The chosen word is canonical, but it is still a \emph{total order}: it does not display which events could have happened concurrently.
 \end{frame}
 
 \begin{frame}{Foata normal form: concurrent layers}
@@ -431,6 +407,22 @@
     These layers are uniquely determined by a finite trace.
   \end{block}
 \end{frame}
+
+\begin{frame}{Foata form and lexicographic form}
+  \begin{center}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{.27\textwidth}|>{\raggedright\arraybackslash}p{.30\textwidth}|>{\raggedright\arraybackslash}p{.30\textwidth}}
+    & \textbf{Lexicographic} & \textbf{Foata}\\ \hline
+    Representation & One chosen word & A sequence of concurrent layers\\
+    Captures concurrency & No; serialises a trace & Yes; independent events can share a layer\\
+    Canonical? & Yes, after fixing an alphabet order & Yes, from the dependence order\\
+    Useful for & Comparing or storing traces as words & Seeing causal depth and available parallelism
+  \end{tabular}
+  \end{center}
+  \begin{block}{Same trace, different emphasis}
+    For $[abc]_I=\{abc,bac\}$ with $a\ind b$, the lexicographic form is $abc$, while the Foata form is $\{a,b\}\{c\}$.
+  \end{block}
+\end{frame}
+
 
 \begin{frame}{What information does a trace preserve?}
   \begin{block}{Preserved}
@@ -472,8 +464,11 @@
     Equivalently, $uabv\in L$ iff $ubav\in L$ whenever $a\ind b$.
   \end{block}
   \begin{block}{Example}
-    With $a\ind b$ and both dependent on $c$, a requirement such as
-    ``each $c$ is preceded by both $a$ and $b$ since the last $c$'' is insensitive to exchanges of neighbouring $a,b$.
+    Let $\Sigma=\{a,b,c\}$, with $a\ind b$ and both dependent on $c$. Let
+    \[
+      A=(a+b)^*,\qquad R=AaAbA+AbAaA,\qquad L=(Rc)^*A.
+    \]
+    $R$ consists of words containing both letters; each $c$ closes one such block. Swapping neighbouring $a,b$ preserves membership in $L$.
   \end{block}
 \end{frame}
 
@@ -516,19 +511,17 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Regularity and a new question}
-  \begin{block}{Centralised description}
-    A finite automaton can recognise a regular word language
-    \[
-       L\subseteq\Sigma^*.
-    \]
-    If $L$ is $I$-closed, it specifies behaviours modulo independent swaps.
+\begin{frame}{From regular specifications to distributed machines}
+  \begin{block}{Finite-state specification}
+    Regularity means that a finite automaton can recognise the word language $L\subseteq\Sigma^*$. This is a finite-state description of the allowed executions.
   \end{block}
-  \begin{block}{Distributed realisation}
-    Can we recognise the same language using separate local states, where each action accesses only the processes that participate in it?
+  \begin{block}{Concurrency-respecting specification}
+    If $L$ is $I$-closed, acceptance depends on the trace, not on which order independent actions happened to take.
   \end{block}
-  \vspace{0.30cm}
-  This is answered by \textbf{Zielonka automata}.
+  \begin{block}{Implementation question}
+    Can such a specification be implemented with finite local states, so each action accesses only the processes that participate in it?
+  \end{block}
+  \centering\textbf{Zielonka's theorem says yes for every regular, $I$-closed language.}
 \end{frame}
 
 % =========================================================
