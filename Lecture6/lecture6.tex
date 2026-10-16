@@ -408,6 +408,28 @@
   \end{block}
 \end{frame}
 
+\begin{frame}{Foata layers are not time slots}
+  \[
+    \Sigma=\{a,b,c\},\qquad I=\{(a,b),(b,a),(b,c),(c,b)\}.
+  \]
+  Thus $a\dep c$, while $b$ is independent of both $a$ and $c$.
+  \begin{block}{One trace, two linearizations}
+    The words $abc$ and $acb$ differ only by swapping the independent actions $b,c$.
+    Their dependence order has just one constraint: $a<c$.
+  \end{block}
+  \begin{center}
+    \[
+      \operatorname{Foata}(abc)=\operatorname{Foata}(acb)
+      =\{a,b\}\;\{c\}.
+    \]
+  \end{center}
+  \begin{block}{How to read the layers}
+    The layers give events their dependence depth; they are not strict time slots.
+    Here $b$ is in the first layer but may occur after $c$, as the linearization $acb$ shows.
+  \end{block}
+\end{frame}
+
+
 \begin{frame}{Foata form and lexicographic form}
   \begin{center}
   \begin{tabular}{>{\raggedright\arraybackslash}p{.27\textwidth}|>{\raggedright\arraybackslash}p{.30\textwidth}|>{\raggedright\arraybackslash}p{.30\textwidth}}
