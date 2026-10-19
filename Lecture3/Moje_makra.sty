@@ -1,0 +1,94 @@
+\newcommand{\mojBlock}[4]{  %%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{minipage}[t]{#1\textwidth}
+ \begin{#2}{#3}
+  #4
+ \end{#2}
+\end{minipage}
+}
+
+
+\newcommand{\tytul}[1]{
+    \begin{center}
+	{\huge #1}
+    \end{center}
+}
+
+\newcommand{\podzialDwa}[4]{ %%%%%%%%%%%%%%%%%%%%%%%%
+\begin{minipage}[t][#1cm]{\textwidth}
+#3
+\end{minipage}
+
+\begin{minipage}[t][#2cm]{\textwidth}
+#4
+\end{minipage}
+}
+
+\newcommand{\DwieKol}[4]{ %%%%%%%%%%%%%%%%%%
+\noindent
+\begin{minipage}[t]{\textwidth}
+\begin{center}
+  \begin{minipage}[t]{#1\textwidth}
+  #3
+    \end{minipage}
+   \begin{minipage}[t]{#2\textwidth}
+   #4
+    \end{minipage}  
+ \end{center}
+\end{minipage}
+}
+
+
+\newcommand{\Margines}[1]{ %%%%%%%%%%%%%%%%%%
+\noindent
+\begin{center}  
+ \begin{minipage}[t][9.5cm]{0.93\textwidth}
+  #1
+    \end{minipage}
+ \end{center}
+}
+
+
+
+
+\newcommand{\samToken}[1]{
+\begin{minipage}{0.3cm}
+ \begin{tikzpicture}
+  \node[token] (p1) at (0,0) {#1};
+ \end{tikzpicture}
+\end{minipage}
+}
+
+
+\newcommand{\rownosc}[4]{
+    \node (x1#1#2) at (#1,#2) {$#3=$};
+    \node [token] (x2#1#2) at ($(#1,#2)+(0.5,0)$) {$#4$};
+    }
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+\newcommand{\podkreslenie}[2]{
+	\alt<#1>{\red{#2}}{#2}
+}
+
+\newcommand{\podkreslenieBlue}[2]{
+	\alt<#1>{\blue{#2}}{#2}
+}
+
+
+\newcommand{\DefinicjaProblemu}[2]{
+
+\medskip
+\noindent
+\framebox[\textwidth]{
+%\framebox[\textwidth-1em]{
+\parbox{\textwidth}{
+  \hfill\vspace*{-1em}
+\begin{description}
+    \item[Input:] #1
+    \item[Question:] #2
+  \end{description}
+\hfill\vspace*{-1.5em}
+%}
+}
+}
+}
