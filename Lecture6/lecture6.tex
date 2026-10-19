@@ -706,6 +706,8 @@
   \end{block}
 \end{frame}
 
+
+
 \begin{frame}{What does Zielonka's theorem say?}
   \begin{block}{Specification}
     A centralised finite automaton can specify a global behaviour language, provided it is closed under the independence relation.
@@ -716,6 +718,46 @@
   \begin{block}{Limit of the result}
     The theorem is an expressiveness result. It does \emph{not} promise a small distributed implementation. The construction and its size bounds are nontrivial.
   \end{block}
+\end{frame}
+
+\begin{frame}{Why local projections are not enough}
+  \begin{block}{Two processes and a trace-closed language}
+    Let $\domn(a)=\{p\}$, $\domn(b)=\{q\}$, and $\domn(c)=\{p,q\}$, so $a\ind b$. Consider
+    \[
+      L=\{acb,\ bca\}.
+    \]
+    This language is $I$-closed: the independent actions $a,b$ are never adjacent in either word.
+  \end{block}
+  \begin{block}{Project onto each process}
+    \[
+      \pi_p(L)=\{ac,ca\},\qquad \pi_q(L)=\{cb,bc\}.
+    \]
+    A construction accepting whenever both local projections are accepted also accepts $w=abc$, since
+    \[
+      \pi_p(w)=ac\in\pi_p(L),\qquad \pi_q(w)=bc\in\pi_q(L).
+    \]
+    But $abc\notin L$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{The missing information: correlation}
+  \begin{block}{What the projections forget}
+    In $acb$, process $p$ performs $ac$ while $q$ performs $cb$. In $bca$, they perform $ca$ and $bc$. Separate projections also allow the mixed combination $ac$ with $bc$, producing the spurious word $abc$.
+  \end{block}
+  \begin{block}{Scope of the counterexample}
+    This refutes the rule ``accept iff every process accepts its projection,'' not Zielonka's theorem. In this example, local states can retain which projected word occurred, and a suitable set of \emph{global} accepting tuples can accept the two intended combinations while rejecting the mixed one.
+  \end{block}
+  \begin{block}{Why the theorem is nontrivial}
+    A distributed automaton must preserve enough information about which local behaviours can occur together. The theorem guarantees a finite construction that does so; simply recognising each projection independently does not.
+  \end{block}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+empty slide
 \end{frame}
 
 % =========================================================
