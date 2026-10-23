@@ -301,6 +301,20 @@ LTL formulas define \(\omega\)-regular languages. Therefore, LTL verification ca
 
 
 
+\begin{frame}{LTL $\rightarrow$ \Buchi\ automaton: construction idea}
+\Margines{
+\begin{itemize}
+  \item For a formula $\varphi$, build an automaton $\mathcal A_\varphi$ that accepts exactly the infinite words satisfying $\varphi$.
+  \item Think about labelling word with states of the automaton: 
+  each state corresponds to a set of subformulas of $\varphi$ that are currently satisfied.
+  \item Initial state labels first position of the word with the formula.
+  \item Transitions and accepting state are resposible for verifing that labelling is correct.
+  \item On reading a letter $a\in 2^{\AProp}$, we check whether the current atomic propositions match the formula's Boolean requirements.
+  \item Temporal obligations are propagated to the next state: $X\psi$ becomes a requirement for the successor, and $\psi_1 U \psi_2$ is either satisfied now or carried forward.
+  \item Acceptance is defined by a \Buchi\ condition: runs are accepted only if every pending eventuality is eventually fulfilled, never postponed forever.
+\end{itemize}
+}
+\end{frame}
 
 \begin{frame}{LTL model checking}
 \Margines{
@@ -353,20 +367,6 @@ A nonempty intersection gives a counterexample trace:
 \end{frame}
 
 
-\begin{frame}{LTL $\rightarrow$ \Buchi\ automaton: construction idea}
-\Margines{
-\begin{itemize}
-  \item For a formula $\varphi$, build an automaton $\mathcal A_\varphi$ that accepts exactly the infinite words satisfying $\varphi$.
-  \item Think about labelling word with states of the automaton: 
-  each state corresponds to a set of subformulas of $\varphi$ that are currently satisfied.
-  \item Initial state labels first position of the word with the formula.
-  \item Transitions and accepting state are resposible for verifing that labelling is correct.
-  \item On reading a letter $a\in 2^{\AProp}$, we check whether the current atomic propositions match the formula's Boolean requirements.
-  \item Temporal obligations are propagated to the next state: $X\psi$ becomes a requirement for the successor, and $\psi_1 U \psi_2$ is either satisfied now or carried forward.
-  \item Acceptance is defined by a \Buchi\ condition: runs are accepted only if every pending eventuality is eventually fulfilled, never postponed forever.
-\end{itemize}
-}
-\end{frame}
 
 
 
@@ -466,6 +466,15 @@ iff for every path \(s=s_0s_1s_2\ldots\) there is an index \(j\geq0\) such that:
   \item \(M,s_i\models\Phi\) for every \(0\leq i<j\).
 \end{itemize}
 \end{block}
+
+
+}
+\end{frame}
+
+
+\begin{frame}{CTL: semantics}
+\Margines{
+
 
 \begin{block}{Model satisfaction}
 \(M\models\Phi\) iff \(M,s\models\Phi\) for every \(s\in I\).
@@ -576,6 +585,8 @@ X = \Sat(\Phi)\cap\PreStates(X).
 \begin{block}{Algorithmic view}
 A state satisfies \(EG\Phi\) iff it can reach a cycle that stays inside \(\Sat(\Phi)\), while staying inside \(\Sat(\Phi)\) on the way.
 \end{block}
+
+\vspace{-0.3cm}
 
 \begin{block}{Complexity}
 For finite explicit Kripke structures, CTL model checking is linear in the size of the structure times the size of the formula:
