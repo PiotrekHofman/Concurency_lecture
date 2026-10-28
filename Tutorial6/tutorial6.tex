@@ -185,5 +185,49 @@ to be reordered into a concatenation using only independent swaps.
 For the non-closure questions, consider whether the construction in
 Exercise~5 can be adapted.
 
+\section*{Exercise 8. Recognition without communication}
+Consider the distributed alphabet with two processes $P=\{p,q\}$,
+$\Sigma=\{a,b\}$, and
+\[
+    \dom(a)=\{p\},\qquad \dom(b)=\{q\}.
+\]
+Thus $aIb$, and the processes never synchronize. Assume that a
+Zielonka automaton has finite local state sets and an arbitrary set
+of \emph{global} accepting states.
+\begin{enumerate}
+\item Construct a deterministic Zielonka automaton recognizing
+      \[
+          L_{\mathrm{par}}=
+          \{w\in\Sigma^*: |w|_a\equiv |w|_b\pmod 2\}.
+      \]
+      Specify its local states, local transitions, initial state,
+      and global accepting set.
+\item Can $L_{\mathrm{par}}$ be recognized if the accepting set
+      is required to have the form $F=F_p\times F_q$?
+      Prove your answer.
+\item Prove that a language $L\subseteq\Sigma^*$ is recognizable
+      by a finite Zielonka automaton over this distributed alphabet
+      if and only if
+      \[
+          L=\bigcup_{i=1}^{k}\bigl(K_i\mathbin{\amalg} H_i\bigr)
+      \]
+      for some finite $k$, where $K_i\subseteq\{a\}^*$ and
+      $H_i\subseteq\{b\}^*$ are regular languages, and $\mathbin{\amalg}$
+      denotes the shuffle operation.
+\item Use part (c), or give a direct finite-state argument, to prove
+      that no finite Zielonka automaton recognizes
+      \[
+          L_{=}=\{w\in\Sigma^*:|w|_a=|w|_b\}.
+      \]
+\item \extra Characterize all relations $R\subseteq\mathbb N^2$
+      for which the language
+      \[
+          L_R=\{w\in\Sigma^*:(|w|_a,|w|_b)\in R\}
+      \]
+      is Zielonka-recognizable. Express your answer using finite
+      unions of Cartesian products of \emph{ultimately periodic}
+      subsets of $\mathbb N$ (sets whose membership is periodic
+      beyond some threshold).
+\end{enumerate}
 
 \end{document}
