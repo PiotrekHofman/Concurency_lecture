@@ -1,0 +1,233 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\geometry{margin=22mm}
+\hypersetup{hidelinks}
+\setlist[enumerate]{label=(\alph*),leftmargin=*,itemsep=0.16em,topsep=0.2em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.23em}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\occ}{\operatorname{occ}}
+\newcommand{\extra}{\textbf{Optional.}\ }
+
+\begin{document}
+
+\begin{center}
+  {\large \textbf{Theory of Concurrency}}\\[0.25em]
+  {\LARGE \textbf{Exercise sheet 6}}\\[0.2em]
+  {\large Mazurkiewicz traces and distributed alphabets}
+\end{center}
+\vspace{0.25em}
+
+\textbf{Notation.}
+Throughout, $\Sigma$ is a finite alphabet and $I\subseteq\Sigma\times\Sigma$
+is a symmetric, irreflexive independence relation. Let
+$D=(\Sigma\times\Sigma)\setminus I$ and let $[w]_I$ denote the
+Mazurkiewicz trace of a word $w\in\Sigma^*$.
+For the pattern-matching problems, a \emph{factor} (or contiguous subword)
+of a word $w$ is a word $v$ such that $w=xvy$ for some $x,y\in\Sigma^*$;
+a \emph{scattered subword} is a subsequence.
+For algorithmic exercises, give a correctness argument and an upper bound
+on running time; the algorithm need not be optimal.
+
+\section*{Exercise 1. Independence of state-transforming actions}
+Consider two Boolean variables $x,y\in\{0,1\}$ and three actions,
+all enabled in every state:
+\[
+ a:\ x\leftarrow 1-x,\qquad
+ b:\ y\leftarrow 1-y,\qquad
+ c:\ x\leftarrow y.
+\]
+\begin{enumerate}
+\item Determine the largest independence relation $I$ for which the
+      actions commute from \emph{every} state.
+\item For every pair of distinct dependent actions, exhibit a state in
+      which exchanging their order changes the result.
+
+\item \extra Replace $c$ by $c':x\leftarrow x\oplus y$, where
+      $\oplus$ is Boolean exclusive-or. Recompute the largest
+      independence relation.
+\end{enumerate}
+
+\section*{Exercise 2. Finding a trace in a fixed word}
+\label{ex:word}
+A trace $t=[u]_I$ \emph{occurs in a word} $w$ if $w$ has a
+contiguous factor $v$ with $[v]_I=t$. The input consists of $I$ and
+representative words $u,w$.
+\begin{enumerate}
+\item Design an algorithm deciding whether $t$ occurs in $w$.
+      You may use dependence graphs or a canonical normal form for traces.
+\item Prove correctness and analyze the running time in terms of
+      $|u|$, $|w|$ and $|\Sigma|$.
+\end{enumerate}
+
+\section*{Exercise 3. Finding a trace inside another trace}
+Let $t=[u]_I$ and $s=[w]_I$. Say that $t$ is a \emph{factor of $s$} if
+\[
+  \exists x,y\in\Sigma^*\colon\quad w\equiv_I xuy.
+  \tag{$*$}
+\]
+Equivalently, $s=[x]_I\,t\,[y]_I$ in the trace monoid.
+\begin{enumerate}
+\item Design a decision algorithm for the trace-factor problem. One
+\item Show that the two pattern-matching problems in Exercises 2 and 3
+      are different. In particular, consider $I=\{(a,b),(b,a)\}$,
+      $t=[ac]_I$ and $s=[abc]_I$.
+\item \extra Define a \emph{scattered subtrace} relation $t\preceq s$ by
+      requiring that \emph{some} representative of $s$ contain
+      \emph{some} representative of $t$ as a subsequence.
+      Design a decision algorithm for $t\preceq s$.
+      Determine which implications hold between:
+      \[
+          t\text{ is a factor of }s,
+          \qquad t\preceq s,
+          \qquad |u|_a\le |w|_a\ \text{for every }a\in\Sigma.
+      \]
+      Give counterexamples to any reverse implications that fail.
+\end{enumerate}
+
+\section*{Exercise 4. Checking trace closure of a DFA}
+Let $A=(Q,\Sigma,\delta,q_0,F)$ be a \emph{complete minimal DFA},
+with the usual extension of $\delta$ to words.
+\begin{enumerate}
+\item Prove that $L(A)$ is $I$-closed if and only if
+      \[
+          \delta(q,ab)=\delta(q,ba)
+          \qquad\text{for every }q\in Q\text{ and }(a,b)\in I.
+      \]
+\item Design an algorithm for checking $I$-closure and analyze its
+      running time as a function of $|Q|$, $|\Sigma|$, and $|I|$.
+\item Does the equivalence in part (a) remain valid for an arbitrary
+      complete DFA that is not minimal? If not, give a counterexample
+      and formulate the appropriate condition for general DFAs.
+\end{enumerate}
+
+\section*{Exercise 5. Trace closure and regularity}
+Let $\Sigma=\{a,b\}$, let $aIb$, and consider the regular language
+$L=(ab)^*$. Define its $I$-closure by
+\[
+    \cl_I(L)=\{v\in\Sigma^*:\exists u\in L\text{ with }v\equiv_I u\}.
+\]
+\begin{enumerate}
+\item Characterize $\cl_I(L)$ using the numbers of occurrences of $a$
+      and $b$.
+\item Prove that $\cl_I(L)$ is not regular.
+\item Explain why regularity of a word language does not guarantee
+      that its trace closure admits a finite Zielonka automaton.
+\end{enumerate}
+
+\section*{Exercise 6. How many processes are needed?}
+Let $\Sigma=\{a,b,c,d\}$. Suppose that the distinct dependent pairs are
+precisely the edges of the undirected cycle
+\[
+              a\;\text{---}\;b\;\text{---}\;c\;\text{---}\;d\;\text{---}\;a.
+\]
+A distributed alphabet consists of a finite set of processes $P$ and a map
+$\dom:\Sigma\to 2^P\setminus\{\varnothing\}$ inducing the relation
+\[
+       xIy \quad\Longleftrightarrow\quad
+       \dom(x)\cap\dom(y)=\varnothing
+       \qquad(x\ne y).
+\]
+\begin{enumerate}
+\item Construct such a distributed alphabet inducing exactly the
+      specified independence relation.
+\item Find the minimum possible number of processes, and prove
+      optimality.
+\item For an arbitrary dependence graph $G$ on $\Sigma$ (ignoring
+      reflexive pairs), show that the letters assigned to a single
+      process form a clique of $G$. Explain the relation between
+      minimizing $|P|$ and covering the edges of $G$ by cliques.
+      What additional condition is needed for isolated vertices?
+\end{enumerate}
+
+\section*{Exercise 7. Closure properties of Zielonka automata}
+Fix a distributed alphabet $(\Sigma,P,\dom)$. Consider complete,
+deterministic Zielonka automata with arbitrary sets of \emph{global}
+accepting states. In this exercise $K,L$ denote languages of traces over
+$(\Sigma,I)$ recognized by such automata.
+
+For each operation below, determine whether this class is closed under the
+operation. \emph{If it is closed, give an effective construction and prove
+correctness. If it is not, give recognizable input languages for which the
+result is not recognizable, and prove this claim.} You may invoke Zielonka's
+theorem and standard results about finite word automata.
+\begin{enumerate}
+\item Boolean operations: $K\cup L$, $K\cap L$, $\overline K$, and $K\setminus L$.
+\item \emph{Word concatenation}:
+      $K\cdot L=\{st:s\in Lang_{word}(K),\ t\in Lang_{word}(L)\}$,
+      where the multiplication is concatenation of words.
+\item \emph{Trace concatenation}:
+      $K\cdot L=\{st:s\in K,\ t\in L\}$,
+      where the multiplication is in the trace monoid.
+\item Kleene star in the trace monoid: $K^*=\bigcup_{n\geq 0}K^n$.
+\item Reversal: $K^{\mathrm{rev}}=\{[w^{\mathrm{rev}}]_I:[w]_I\in K\}$.
+\item \extra Erasing projection $\pi_\Gamma(K)$ onto a subalphabet
+      $\Gamma\subseteq\Sigma$, with the restricted independence relation.
+\item \extra Suppose accepting states must have the form
+      $F=\prod_{p\in P}F_p$, rather than being an arbitrary subset of
+      $\prod_{p\in P}Q_p$. Is this restricted class closed under union?
+\end{enumerate}
+\textbf{Hints.}
+For concatenation, guess for each occurrence whether it belongs to the
+first or the second factor; characterize when the guesses allow the word
+to be reordered into a concatenation using only independent swaps.
+For the non-closure questions, consider whether the construction in
+Exercise~5 can be adapted.
+
+\section*{Exercise 8. Recognition without communication}
+Consider the distributed alphabet with two processes $P=\{p,q\}$,
+$\Sigma=\{a,b\}$, and
+\[
+    \dom(a)=\{p\},\qquad \dom(b)=\{q\}.
+\]
+Thus $aIb$, and the processes never synchronize. Assume that a
+Zielonka automaton has finite local state sets and an arbitrary set
+of \emph{global} accepting states.
+\begin{enumerate}
+\item Construct a deterministic Zielonka automaton recognizing
+      \[
+          L_{\mathrm{par}}=
+          \{w\in\Sigma^*: |w|_a\equiv |w|_b\pmod 2\}.
+      \]
+      Specify its local states, local transitions, initial state,
+      and global accepting set.
+\item Can $L_{\mathrm{par}}$ be recognized if the accepting set
+      is required to have the form $F=F_p\times F_q$?
+      Prove your answer.
+\item Prove that a language $L\subseteq\Sigma^*$ is recognizable
+      by a finite Zielonka automaton over this distributed alphabet
+      if and only if
+      \[
+          L=\bigcup_{i=1}^{k}\bigl(K_i\mathbin{\amalg} H_i\bigr)
+      \]
+      for some finite $k$, where $K_i\subseteq\{a\}^*$ and
+      $H_i\subseteq\{b\}^*$ are regular languages, and $\mathbin{\amalg}$
+      denotes the shuffle operation.
+\item Use part (c), or give a direct finite-state argument, to prove
+      that no finite Zielonka automaton recognizes
+      \[
+          L_{=}=\{w\in\Sigma^*:|w|_a=|w|_b\}.
+      \]
+\item \extra Characterize all relations $R\subseteq\mathbb N^2$
+      for which the language
+      \[
+          L_R=\{w\in\Sigma^*:(|w|_a,|w|_b)\in R\}
+      \]
+      is Zielonka-recognizable. Express your answer using finite
+      unions of Cartesian products of \emph{ultimately periodic}
+      subsets of $\mathbb N$ (sets whose membership is periodic
+      beyond some threshold).
+\end{enumerate}
+
+\end{document}
