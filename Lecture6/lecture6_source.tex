@@ -107,7 +107,7 @@
   \vfill
   \begin{beamercolorbox}[sep=3mm,wd=\textwidth]{block body}
     How do we justify replacing one program fragment with another?\\[1mm]
-    \textbf{Define behaviour}\quad $\to$\quad \textbf{prove equivalence}\quad $\to$\quad \textbf{use congruence}.
+    What should be preserved? Find a proper congruence? Use it to prove your replacement.
   \end{beamercolorbox}
   \vspace{3mm}
 \end{frame}
@@ -118,7 +118,7 @@
   \begin{columns}[T,onlytextwidth]
     \begin{column}{.47\textwidth}
       \begin{block}{Semantics}
-        SOS rules define an LTS for every process expression.\\[2mm]
+        SOS (small-step operational semantics) rules define an LTS for every process expression.\\[2mm]
         Strong and weak bisimulations compare transition systems.
       \end{block}
     \end{column}
@@ -174,6 +174,92 @@
   \end{tabular}
   \Source{Same notation as Lecture 5; standard CCS restriction of a channel corresponds to blocking both $a$ and $\bar a$.}
   \note{This is recursion-free CCS with explicit action-blocking notation retained from L5. No fairness assumption.}
+\end{frame}
+
+% Recursive process definitions
+\begin{frame}{Recursive process definitions}
+  \begin{block}{Defining a process constant}
+    \[
+      X \;=\; a.X+b.\nil
+    \]
+    This equation defines $X$: it can do $a$ and return to $X$, or do $b$ and stop.
+  \end{block}
+  \begin{exampleblock}{Reading definitions as transitions}
+    Unfold the right-hand side to find the transitions:
+    \[
+      X\step{a}X
+      \qquad
+      X\step{b}\nil.
+    \]
+    More generally, $X=P$ gives $X$ the transitions of $P$, with occurrences of $X$ retained as process states.
+  \end{exampleblock}
+  \Takeaway{Here $=$ introduces a recursive definition; it does not mean bisimilarity.}
+  \note{The recursion is guarded: every recursive occurrence lies beneath an action prefix. We extend the recursion-free syntax with process constants and guarded defining equations.}
+\end{frame}
+
+% Basic SOS rules
+\begin{frame}{SOS rules: prefix, choice, and blocking}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.55\textwidth}
+      \begin{block}{Prefix and choice}
+        \[
+          \frac{}{\alpha.P\step{\alpha}P}
+          \qquad
+          \frac{P\step{\alpha}P'}{P+Q\step{\alpha}P'}
+          \qquad
+          \frac{Q\step{\alpha}Q'}{P+Q\step{\alpha}Q'}
+        \]
+      \end{block}
+      \begin{exampleblock}{No transition from $\nil$}
+        The process $\nil$ has no outgoing transitions.
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{.42\textwidth}
+      \begin{block}{Blocking}
+        For $H\subseteq\Sigma$:
+        \[
+          \frac{P\step{\alpha}P'\qquad \alpha\notin H}
+          {\blockact{H}{P}\step{\alpha}\blockact{H}{P'}}
+        \]
+      \end{block}
+      \begin{exampleblock}{Effect of $H$}
+        A visible action in $H$ is suppressed; $\tau$ is never blocked.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \Takeaway{Choice inherits either branch's transitions; blocking removes selected visible transitions without relabelling the rest.}
+  \note{The two choice rules are symmetric. Since $H$ contains only visible labels, the blocking rule also passes $\tau$ transitions.}
+\end{frame}
+
+% Finite-state transition systems as processes
+\begin{frame}{Encoding a finite automaton as a process}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.43\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=16mm and 18mm]
+        \node[st] (q0) {$q_0$};
+        \node[st,right=of q0] (q1) {$q_1$};
+        \node[terminal,below=of q0] (end) {$\nil$};
+        \draw[trans] (q0) to[bend left=12] node[lab,above] {$a$} (q1);
+        \draw[trans] (q1) to[bend left=12] node[lab,below] {$b$} (q0);
+        \draw[trans] (q1) -- node[lab,right] {$c$} (end);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{.55\textwidth}
+      \begin{block}{One equation per state}
+        \[
+          Q_0=a.Q_1
+          \qquad
+          Q_1=b.Q_0+c.\nil
+        \]
+        The start state is $Q_0$. Each automaton edge becomes a prefixed summand; no outgoing edges means $\nil$.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{2mm}
+  \Takeaway{The process LTS reproduces the automaton's labelled transitions.}
+  \Source{This encoding preserves transition structure; accepting/final-state status is not represented by this CCS fragment.}
+  \note{Stress the correspondence state-by-state: a state equation lists exactly its outgoing edges. To preserve language acceptance, the process language needs an explicit success observation in addition to these transitions.}
 \end{frame}
 
 % 5
@@ -236,19 +322,66 @@
   \note{Assume all visible names a,b,c are distinct and b,c do not form a complementary pair. This avoids unnecessary handshake complications in T.}
 \end{frame}
 
-% 8
-\begin{frame}{When may we write $P=Q$ in CCS calculations?}
-  \begin{block}{Sound reading of an equation}
-    Write $P\equiv Q$ for a proved equation; interpret it as
+
+\begin{frame}{A VASS-style counter from parallel processes}
+  \begin{block}{Counter components}
+    For each counter $i\in\{x,y\}$, use a generator and indistinguishable tokens:
     \[
-      P\equiv Q \quad\Longrightarrow\quad P\sim Q.
+      G_i = u_i.(G_i\parallel T_i)
+      \qquad
+      T_i = d_i.\nil.
     \]
+    The generator creates one token on $u_i$; a token disappears on $d_i$.
   \end{block}
-  \begin{exampleblock}{Why use strong bisimilarity here?}
-    It preserves the branching structure and is a congruence for all constructors in our fragment.
+  \begin{exampleblock}{Control states request one update}
+    A control-state prefix $\bar u_i$ synchronises with $G_i$ to increment
+    counter $i$; $\bar d_i$ synchronises with one $T_i$ to decrement it.
+    The decrement is unavailable when there are no tokens.
   \end{exampleblock}
-  \Takeaway{Equational proofs are compressed bisimulation proofs.}
-  \note{One may write P\sim Q in calculations directly; distinguish syntactic equality from a sound equational proof system.}
+  \Takeaway{Parallel composition represents the counter value as the number of token processes.}
+  \note{These are finite recursive equations, but unfolding G_i can create unboundedly many parallel T_i components. This is how the example avoids being finite-state.}
+\end{frame}
+
+\begin{frame}{Two VASS transitions, each changing one counter}
+  \begin{block}{Finite control}
+    \[
+      Q_0=\bar u_x.Q_1
+      \qquad
+      Q_1=\bar d_y.Q_0
+    \]
+    From $Q_0$, increment $x$; from $Q_1$, decrement $y$ and return to $Q_0$.
+  \end{block}
+  \begin{exampleblock}{Compose and restrict}
+    Let $H$ contain each $u_i,\bar u_i,d_i,\bar d_i$ for $i=x,y$.
+    The system is
+    \[
+      \blockact{H}{Q_0\parallel G_x\parallel G_y
+        \parallel T_x^{\,m}\parallel T_y^{\,n}}.
+    \]
+    Only the requested handshake can occur; it becomes $\tau$. In particular,
+    the decrement step is disabled when $n=0$.
+  \end{exampleblock}
+  \Takeaway{This illustrates VASS-style counter updates, not a full machine encoding.}
+  \Source{Here $\blockact{H}{\cdot}$ is CCS restriction (blocking visible actions in $H$); some presentations call this hiding.}
+  \note{Each transition changes exactly one counter and the finite control state. T_i^k denotes k parallel copies, with T_i^0=\nil.}
+\end{frame}
+
+% 8
+\begin{frame}{When may we write that $P,$ $Q$ are the same in CCS calculations?}
+  \begin{block}{Equations}
+\begin{itemize}
+  \item Set of equations. 
+  \item We transform $P$ into $Q$ using equations.
+  \item Equations preserve congruence (rooted weak bisimulation).
+\end{itemize}    
+  \end{block}
+  Example: 
+  $P+P = P$
+
+  We can prove that: 
+  $P+P+P = P$
+  
+
 \end{frame}
 
 % 9
@@ -260,8 +393,7 @@
     P+\nil &\sim P &&\text{(zero)}
   \end{align*}
   \vspace{3mm}
-  \Takeaway{The same four equations hold for all $P,Q,R$, including processes with $\tau$.}
-  \Source{A complete axiomatisation of strong bisimilarity for finite Basic CCS ($\nil$, prefix, choice). See van Glabbeek, \emph{Modelling Concurrent Systems}.}
+  \Source{These choice laws are part of the equational axiomatisation for the recursion-free CCS fragment used in this lecture.}
   \note{One can justify idempotence by relating P+P to P and their derivatives. No law a.(P+Q)=a.P+a.Q is included!}
 \end{frame}
 
@@ -269,6 +401,7 @@
 \begin{frame}{Useful laws for parallelism and blocking}
   \begin{align*}
     P\parallel\nil &\sim P,\\[3mm]
+    \blockact{H}{\nil}&\sim\nil,\\[3mm]
     \blockact{H}{P+Q}&\sim \blockact{H}{P}+\blockact{H}{Q}.
   \end{align*}
   \begin{block}{Blocking a prefix}
@@ -515,19 +648,189 @@
   \note{Answer: A false (after a, the left offers both b and c simultaneously; the right commits to one derivative); B true by idempotence and associativity. The A counterexample appeared in Lecture 5 as trace-vs-bisim motivation; here it shows an invalid algebraic rewriting law.}
 \end{frame}
 
+% Axiomatization and rooted weak equivalence
+\begin{frame}{Strong bisimulation for recursion-free CCS}
+  \begin{block}{The language}
+    Processes use the operators from our syntax slide:
+    $\nil$, $\alpha.P$, $P+Q$, $P\parallel Q$, and $\blockact{H}{P}$,
+    with no recursive definitions.
+  \end{block}
+  \begin{exampleblock}{A sound and complete equational theory}
+    Strong bisimilarity is characterized by the equations introduced here,
+    used together and inside process contexts:
+    \begin{itemize}
+      \item the four choice laws;
+      \item the expansion theorem for parallel composition (and
+            $P\parallel\nil\sim P$);
+      \item $\blockact{H}{\nil}\sim\nil$, blocking distribution over choice,
+            and the blocking-prefix laws.
+    \end{itemize}
+  \end{exampleblock}
+  \Takeaway{For recursion-free CCS in this syntax, $P\sim Q$ exactly when the displayed laws derive $P=Q$.}
+  \note{Completeness is for the recursion-free language defined on the syntax slide, including parallel and blocking, not for recursive CCS. Expansion reduces parallel terms to choice and prefix; the blocking laws handle restriction. Equational reasoning is closed under the language's operators.}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Adding guarded recursion to the proof system}
+  \begin{block}{RDP: unfold a recursive definition}
+    If $P$ is defined by $P\coloneqq F(P)$, then
+    \[
+      P\sim F(P).
+    \]
+  \end{block}
+  \begin{exampleblock}{RSP: use uniqueness of guarded solutions}
+    \[
+      \frac{P\sim F(P)\qquad Q\sim F(Q)}
+           {P\sim Q}
+      \qquad\text{if every recursive occurrence in $F$ is action-guarded.}
+    \]
+  \end{exampleblock}
+  \Takeaway{RDP unfolds; RSP proves two solutions of the same guarded specification equivalent.}
+  \note{These principles extend equational reasoning with guarded recursive specifications. The relation symbol in the premises and conclusion is strong bisimilarity here. RSP is an inference rule justified by uniqueness, not an ordinary unconditional equation.}
+\end{frame}
+
+\begin{frame}{Example: uniqueness proves a recursive equivalence}
+  Suppose the recursive definitions are
+  \[
+    P\coloneqq a.P
+    \qquad\qquad
+    Q\coloneqq a.Q.
+  \]
+  \begin{block}{Apply RDP and RSP}
+    \[
+      P\sim a.P,\qquad Q\sim a.Q
+      \quad\Longrightarrow_{\mathrm{RSP}}\quad
+      P\sim Q.
+    \]
+  \end{block}
+  \begin{exampleblock}{Why the guard condition matters}
+    For strong bisimilarity, a $\tau$-prefix can guard recursion. For weak
+    bisimilarity, $\tau$ alone is not enough:
+    \[
+      \nil\wb\tau.\nil,\qquad
+      a.\nil\wb\tau.a.\nil,\qquad
+      \nil\not\wb a.\nil.
+    \]
+    Thus $X=\tau.X$ has inequivalent weak solutions; weak uniqueness results
+    require stronger guarding conditions.
+  \end{exampleblock}
+  \note{RSP applies to the shared guarded equation $X=a.X$, giving the result immediately. For the weak example, both $\nil$ and $a.\nil$ satisfy $X\wb\tau.X$, but they are not weakly bisimilar to one another; visible guarding is therefore needed for the corresponding weak uniqueness principles.}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\begin{center}
+  \huge $\tau$ - silent steps and weak bisimulation
+\end{center}
+\end{frame}
+
+
+
+
+
+
+
+
+\begin{frame}{Weak equations are not automatically rooted-weak laws}
+  \begin{block}{A weak law that fails when rooted}
+    \[
+      \tau.P\wb P
+      \qquad\text{but, for }P=a.\nil,\qquad
+      \tau.a.\nil\not\rwb a.\nil.
+    \]
+    The initial silent step is abstracted by weak bisimilarity, but not by
+    rooted weak bisimilarity.
+  \end{block}
+  \begin{exampleblock}{Weak bisimilarity is not a congruence for choice}
+    Let $X=\tau.a.\nil$, $Y=a.\nil$, and $R=b.\nil$. Then
+    \[
+      X\wb Y
+      \qquad\text{but}\qquad
+      X+R\not\wb Y+R.
+    \]
+    After $X+R$ takes its $\tau$-step, matching would require
+    $a.\nil\wb a.\nil+b.\nil$, which fails because of the unmatched $b$-move.
+  \end{exampleblock}
+  \note{The equations for choice on the earlier slide remain sound for rooted weak bisimilarity. It is the weak abstraction law $\tau.P=P$, not those strong choice laws, that fails for rooted weak equivalence.}
+\end{frame}
+
+\begin{frame}{A finite axiomatization has limits}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.48\textwidth}
+      \begin{alertblock}{With parallel composition}
+        Rooted weak bisimilarity on recursion-free CCS with parallel composition
+        has no finite complete equational axiomatisation.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{.48\textwidth}
+      \begin{exampleblock}{A restricted fragment}
+        With one visible action and only prefix and choice, finite processes
+        do admit a finite equational axiomatisation.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{2mm}
+  \begin{block}{What about the expansion theorem?}
+    It is sound for strong bisimilarity, and therefore also sound for rooted
+    weak bisimilarity. Its limitation here is not soundness: by itself it is
+    not a complete axiomatisation of rooted weak equivalence.
+  \end{block}
+  \Takeaway{Strongly sound equations remain rooted-weak sound; completeness is the harder issue.}
+  \note{The finite-basis result depends on the action alphabet and the CCS operators under consideration. Do not claim that the expansion theorem fails for rooted weak bisimilarity: strong bisimilarity is finer and implies rooted weak bisimilarity.}
+\end{frame}
+
+
+\begin{frame}{Hennessy--Milner laws for silent steps}
+  \begin{block}{Three laws for rooted weak bisimilarity}
+    \small
+    \[
+      \begin{aligned}
+        \text{(A5)}\quad
+          &X+\tau.X \;\rwb\; \tau.X,\\[1mm]
+        \text{(A6.1)}\quad
+          &\mu.(X+\tau.Y)
+            \;\rwb\; \mu.(X+\tau.Y)+\mu.Y,\\[1mm]
+        \text{(A6.2)}\quad
+          &\mu.\tau.X \;\rwb\; \mu.X,
+          \qquad \mu\in\Sigma\cup\{\tau\}.
+      \end{aligned}
+    \]
+  \end{block}
+  \Takeaway{These laws abstract internal steps without identifying $\tau.P$ with $P$ at the root.}
+  \Source{M. Hennessy and R. Milner, \emph{Algebraic Laws for Nondeterminism and Concurrency} (1985).}
+  \note{Present these as the three tau-laws A5, A6.1, and A6.2. The action parameter mu ranges over visible actions and tau. They are sound equations for rooted weak (observational) bisimilarity; do not replace them with the unrestricted law tau.P=P.}
+\end{frame}
+
 % 21
-\begin{frame}{Three distinct notions of a valid rewrite}
-  \renewcommand{\arraystretch}{1.5}
-  \begin{tabular}{@{}p{.27\textwidth}p{.63\textwidth}@{}}
-    \textbf{Strong equation} & $P\sim Q$: direct step-by-step matching.\\
-    \textbf{Weak equation} & $P\wb Q$: internal steps may be ignored, but substitution can fail under choice.\\
-    \textbf{Context-safe equation} & $P\rwb Q$ (or a suitable congruence): valid for replacement in our language.
-  \end{tabular}
-  \vspace{3mm}
-  \begin{alertblock}{A familiar counterexample}
-    $\tau.a.\nil\wb a.\nil$, but $\tau.a.\nil\not\rwb a.\nil$.
-  \end{alertblock}
-  \note{Recall only: rooted weak bisimilarity repairs congruence for CCS choice. In the later toy compiler, both programs have an initial internal assignment; verify rootedness separately.}
+\begin{frame}{Finite processes still need infinitely many laws}
+  \small
+  \begin{block}{A family of closed CCS equations}
+    Let $A_n=\sum_{i=1}^{n}a^i$, where $a^i$ is $i$ consecutive $a$-prefixes
+    followed by $\nil$. For every $n\geq1$:
+    \[
+      \begin{aligned}
+        &(a+a.a)\parallel A_n
+          +\sum_{i=1}^{n}\bigl(a\parallel a^i+a.a\parallel a^i\bigr)\\
+        &\quad\rwb\quad
+          a\parallel A_n+a.a\parallel A_n
+          +\sum_{i=1}^{n}\bigl((a+a.a)\parallel a^i\bigr).
+      \end{aligned}
+    \]
+  \end{block}
+  \begin{exampleblock}{Why the $\tau$-laws are not enough}
+    Each equation relates finite, recursion-free processes and is valid even
+    for strong bisimilarity. Yet no finite sound equational theory for CCS with
+    parallel composition derives every equation in this family.
+  \end{exampleblock}
+  \Source{Moller’s family; rooted-weak result: Aceto et al., \emph{In search of lost time} (2021).}
+  \note{This family gives closed instances of Moller’s equations. Each instance is strongly bisimilar, hence rooted weakly bisimilar. The non-finite-basis theorem says that for any finite sound equational axiom system, at least one instance is not derivable; it does not identify a fixed n that every finite system misses.}
 \end{frame}
 
 \section{A verified optimisation: dead stores}
@@ -1034,6 +1337,11 @@
       R. J. van Glabbeek.
       \emph{Modelling Concurrent Systems: Course Notes}.
       \newblock\href{https://homepages.inf.ed.ac.uk/rvangla/MCS/notes.html}{CCS expansion theorem and equational laws}.
+    \bibitem[Aceto et al.]{Aceto2021}
+      L. Aceto et al.
+      \emph{In search of lost time: Axiomatising parallel composition in process algebras}.
+      2021.
+      \newblock\href{https://arxiv.org/abs/2105.00735}{arXiv:2105.00735}.
     \bibitem[Milner]{Milner}
       R. Milner. \emph{Communication and Concurrency}.
       Prentice Hall, 1989.
