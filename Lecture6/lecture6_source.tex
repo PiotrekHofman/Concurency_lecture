@@ -372,7 +372,7 @@
 \begin{itemize}
   \item Set of equations. 
   \item We transform $P$ into $Q$ using equations.
-  \item Equations preserve congruence (rooted weak bisimulation).
+  \item Equations preserve congruence (bisimulation).
 \end{itemize}    
   \end{block}
   Example: 
@@ -380,8 +380,13 @@
 
   We can prove that: 
   $P+P+P = P$
-  
-
+\visible<2->{
+\begin{block}{Why equations?}
+\begin{itemize}
+  \item Algebraic proofs are often simpler than bisimulation proofs.
+  \item Equations are parametric in $P$, so they can be applied to any process.
+\end{itemize}
+\end{block}}
 \end{frame}
 
 % 9
@@ -729,9 +734,31 @@
 \begin{center}
   \huge $\tau$ - silent steps and weak bisimulation
 \end{center}
+
+\begin{center}
+ How to abstract from internal computation steps in process equivalence? 
+\end{center}
+
 \end{frame}
 
+\begin{frame}{congruence abstracting from $\tau$}
+  \begin{block}{Equations define a congruence.}
+    Thus they define congruence and we can not define 
+    weak bisimulation.
+  \end{block}
 
+  \begin{block}{Rooted weak bisimulation}
+    A relation $R$ is a rooted weak bisimulation if, whenever $P\,R\,Q$:
+    \begin{itemize}
+      \item for every $P\step{\alpha}P'$, there exists $Q'$ such that
+            $Q\step{\alpha}Q'$ and $P'\,R\,Q'$;
+      \item for every $Q\step{\alpha}Q'$, there exists $P'$ such that
+            $P\step{\alpha}P'$ and $P'\,R\,Q'$.
+    \end{itemize}
+  \end{block}
+ 
+
+\end{frame}
 
 
 
