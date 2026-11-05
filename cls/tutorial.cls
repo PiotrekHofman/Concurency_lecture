@@ -70,7 +70,10 @@
 \RequirePackage[hidelinks]{hyperref}
 \RequirePackage{datetime}
 \RequirePackage{cleveref}
-\RequirePackage{xparse}
+\RequirePackage{multicol}
+\RequirePackage{booktabs}
+\RequirePackage{xcolor,xparse,xspace}
+\RequirePackage{environ}
 
 
 % 4. List Spacing Setup
@@ -123,7 +126,6 @@
 }
 \makeatother
 
-\RequirePackage{xcolor}
 \renewcommand{\thefootnote}{\color{red}(\arabic{footnote})}
 
 \DeclareMathOperator{\Pre}{Pre}
@@ -152,3 +154,32 @@
 
 \crefname{exercise}{exercise}{exercises}
 \Crefname{exercise}{Exercise}{Exercises}
+
+
+
+
+%%%%%%%% TWO MORE CUSTOM ENVIRONMENTS
+\newif\ifincludeunfinished
+%\includeunfinishedtrue 
+%% Change to 
+%\includeunfinishedfalse 
+%to hide.
+
+\NewEnviron{unfinished}{%
+    \ifincludeunfinished
+        \BODY
+    \else
+        \textcolor{red}{More material here next time.}%
+    \fi
+}
+
+\newenvironment{hint}
+	{%
+		\begingroup {[\textit{Hint}:}\xspace%
+	}
+	{%
+		\unskip]\endgroup%
+	}
+
+\def\remark{\par\noindent\textit{Remark}.\hskip 3pt}
+\def\inhint#1{[\textit{Hint}: #1]}

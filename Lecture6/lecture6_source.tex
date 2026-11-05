@@ -1,0 +1,1736 @@
+% Theory of Concurrency -- Lecture 6
+% CCS, equational reasoning, bisimulation, and compiler optimisation.
+% Based on the terminology, notation and visual language of lecture5.tex.
+% Every diagram is editable TikZ. Speaker prompts are in \note{...}.
+% Build slides: pdflatex -interaction=nonstopmode lecture6.tex (twice)
+% Handout: pdflatex -jobname=lecture6_handout '\def\HANDOUT{1}\input{lecture6.tex}'
+\ifdefined\HANDOUT
+  \documentclass[handout,aspectratio=169,11pt]{beamer}
+\else
+  \documentclass[aspectratio=169,11pt]{beamer}
+\fi
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools,booktabs,array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\usepackage{appendixnumberbeamer}
+\usefonttheme{professionalfonts}
+\definecolor{Ink}{HTML}{20283A}
+\definecolor{Indigo}{HTML}{43458A}
+\definecolor{Pale}{HTML}{F0F0F8}
+\definecolor{Teal}{HTML}{167B79}
+\definecolor{PaleTeal}{HTML}{EAF5F3}
+\definecolor{Warn}{HTML}{A4433C}
+\definecolor{PaleWarn}{HTML}{FBF0EE}
+\definecolor{Muted}{HTML}{626B7C}
+\setbeamercolor{normal text}{fg=Ink,bg=white}
+\setbeamercolor{structure}{fg=Indigo}
+\setbeamercolor{frametitle}{fg=Indigo}
+\setbeamercolor{title}{fg=Indigo}
+\setbeamercolor{block title}{fg=Indigo,bg=Pale}
+\setbeamercolor{block body}{fg=Ink,bg=Pale}
+\setbeamercolor{block title example}{fg=Teal,bg=PaleTeal}
+\setbeamercolor{block body example}{fg=Ink,bg=PaleTeal}
+\setbeamercolor{block title alerted}{fg=Warn,bg=PaleWarn}
+\setbeamercolor{block body alerted}{fg=Ink,bg=PaleWarn}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{bibliography item}[text]
+\setbeamersize{text margin left=8mm,text margin right=8mm}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{block title}{size=\normalsize,series=\bfseries}
+\setbeamerfont{footnote}{size=\scriptsize}
+\setbeamertemplate{itemize item}{\small\raise0.2ex\hbox{\textbullet}}
+\setbeamertemplate{itemize subitem}{\tiny\raise0.2ex\hbox{\textbullet}}
+\setbeamercovered{invisible}
+\setbeameroption{hide notes}
+\newif\ifinbackup
+\inbackupfalse
+\setbeamertemplate{headline}{\color{Indigo}\rule{\paperwidth}{0.5mm}}
+\setbeamertemplate{footline}{%
+  \leavevmode\hbox{%
+    \begin{beamercolorbox}[wd=.79\paperwidth,ht=3.5mm,dp=2mm,leftskip=8mm]{normal text}%
+      \color{Muted}\scriptsize Theory of Concurrency\enspace/\enspace Lecture 6\enspace/\enspace\insertsectionhead
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.21\paperwidth,ht=3.5mm,dp=2mm,rightskip=8mm plus1fil]{normal text}%
+      \hfill\color{Muted}\scriptsize\ifinbackup Backup\enspace\fi\insertframenumber\,/\,\inserttotalframenumber
+    \end{beamercolorbox}%
+  }}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\newcommand{\step}[1]{\xrightarrow{#1}}
+\newcommand{\wstep}[1]{\xRightarrow{#1}}
+\newcommand{\wb}{\mathrel{\approx_{\mathrm w}}}
+\newcommand{\rwb}{\mathrel{\approx_{\mathrm{rw}}}}
+\newcommand{\nil}{\mathbf 0}
+\newcommand{\blockact}[2]{\operatorname{block}_{#1}(#2)}
+\newcommand{\Source}[1]{\par\vspace{2mm}{\scriptsize\color{Muted}#1\par}}
+\newcommand{\Takeaway}[1]{\begin{exampleblock}{}#1\end{exampleblock}}
+\newcommand{\optional}{\textcolor{Muted}{\scriptsize OPTIONAL}\quad}
+\newcommand{\Store}[2]{\langle #1,\,#2\rangle}
+\newcommand{\state}[1]{\mathsf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\smallrule}{\color{Pale}\rule{\textwidth}{0.45pt}}
+\tikzset{
+  >=Latex,
+  st/.style={circle,draw=Indigo,line width=.7pt,fill=white,minimum size=7.5mm,inner sep=1pt,font=\small},
+  terminal/.style={st,draw=Muted},
+  trans/.style={->,line width=.85pt,draw=Ink},
+  tauedge/.style={trans,draw=Teal},
+  newedge/.style={trans,draw=Warn,line width=1.1pt},
+  rel/.style={dashed,draw=Teal,line width=.9pt},
+  lab/.style={font=\small,fill=white,inner sep=1.2pt},
+  tinylabel/.style={font=\scriptsize,fill=white,inner sep=1pt},
+  panel/.style={rounded corners=2mm,fill=Pale,draw=none,inner sep=4mm}
+}
+\title{CCS and algebraic proofs}
+\subtitle{From bisimulation to compiler optimisation}
+\author{Piotr Hofman}
+\institute{Theory of Concurrency}
+\date{}
+
+\begin{document}
+
+\section{A proof-oriented perspective}
+% 1
+\begin{frame}[plain]
+  \vspace{9mm}
+  {\color{Muted}\large THEORY OF CONCURRENCY\par}
+  \vspace{6mm}
+  {\color{Indigo}\LARGE\bfseries CCS and algebraic proofs\par}
+  \vspace{3mm}
+  {\Large From bisimulation to compiler optimisation\par}
+  \vspace{8mm}
+  {\large Lecture 6\quad\textcolor{Muted}{Piotr Hofman}\par}
+  \vfill
+  \begin{beamercolorbox}[sep=3mm,wd=\textwidth]{block body}
+    How do we justify replacing one program fragment with another?\\[1mm]
+    What should be preserved? Find a proper congruence? Use it to prove your replacement.
+  \end{beamercolorbox}
+  \vspace{3mm}
+\end{frame}
+\note{90 min. Previous lecture introduced bisimulation and rooted congruence; this lecture uses them as tools rather than redefining them.}
+
+% 2
+\begin{frame}{What we already know from Lecture 5}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.47\textwidth}
+      \begin{block}{Semantics}
+        SOS (small-step operational semantics) rules define an LTS for every process expression.\\[2mm]
+        Strong and weak bisimulations compare transition systems.
+      \end{block}
+    \end{column}
+    \begin{column}{.47\textwidth}
+      \begin{block}{Composition}
+        A congruence permits substitution inside a context.\\[2mm]
+        Rootedness matters when internal steps meet choice.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{4mm}
+  \Takeaway{Today: make the relation \emph{useful} for calculations and correctness proofs.}
+  \note{Ask: Is weak bisimilarity alone a congruence for choice? No. Do not spend time re-proving it.}
+\end{frame}
+
+% 3
+\begin{frame}{Two ways to prove a transformation correct}
+  \begin{center}
+  \begin{tikzpicture}[node distance=7mm and 10mm, every node/.style={font=\small}]
+    \node[draw=Indigo,rounded corners,minimum width=3.0cm,minimum height=1.0cm,align=center] (a) {original\\process $P$};
+    \node[draw=Indigo,rounded corners,minimum width=3.0cm,minimum height=1.0cm,align=center,right=3.0cm of a] (b) {transformed\\process $Q$};
+    \draw[<->,line width=1.1pt,draw=Teal] (a)--node[above,font=\normalsize] {$P\sim Q$} (b);
+    \node[below=14mm of a,draw=Indigo,rounded corners,minimum width=3.0cm,minimum height=1.0cm,align=center] (ac) {$C[P]$};
+    \node[below=14mm of b,draw=Indigo,rounded corners,minimum width=3.0cm,minimum height=1.0cm,align=center] (bc) {$C[Q]$};
+    \draw[->,line width=.8pt] (a)--node[left] {context} (ac);
+    \draw[->,line width=.8pt] (b)--node[right] {context} (bc);
+    \draw[<->,line width=1.1pt,draw=Teal] (ac)--node[above,font=\normalsize] {$\sim$} (bc);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{2mm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.48\textwidth}\textbf{Equational method:} rewrite $P$ using sound algebraic laws.\end{column}
+    \begin{column}{.48\textwidth}\textbf{Relational method:} exhibit a bisimulation between $P$ and $Q$.\end{column}
+  \end{columns}
+  \note{The diagram uses strong bisim, a congruence for our CCS constructors. Later replace it by rooted weak bisim for hidden internal work.}
+\end{frame}
+
+\section{CCS as an algebra}
+% 4
+\begin{frame}{A fragment of CCS}
+  \begin{block}{Syntax}
+  \[
+    P ::= \nil \mid \alpha.P \mid P+P \mid P\parallel P
+       \mid \blockact{H}{P},\qquad \alpha\in\Sigma\cup\{\tau\}.
+  \]
+  \end{block}
+  \renewcommand{\arraystretch}{1.35}
+  \begin{tabular}{@{}p{.25\textwidth}p{.67\textwidth}@{}}
+    $\alpha.P$ & Prefix: first $\alpha$, then $P$.\\
+    $P+Q$ & Alternative initial transitions (nondeterministic choice).\\
+    $P\parallel Q$ & Interleaving plus synchronisation of $a$ with $\bar a$.\\
+    $\blockact{H}{P}$ & Block labels in $H$; $\tau$ is never blocked.
+  \end{tabular}
+  \Source{Same notation as Lecture 5; standard CCS restriction of a channel corresponds to blocking both $a$ and $\bar a$.}
+  \note{This is recursion-free CCS with explicit action-blocking notation retained from L5. No fairness assumption.}
+\end{frame}
+
+% Recursive process definitions
+\begin{frame}{Recursive process definitions}
+  \begin{block}{Defining a process constant}
+    \[
+      X \;=\; a.X+b.\nil
+    \]
+    This equation defines $X$: it can do $a$ and return to $X$, or do $b$ and stop.
+  \end{block}
+  \begin{exampleblock}{Reading definitions as transitions}
+    Unfold the right-hand side to find the transitions:
+    \[
+      X\step{a}X
+      \qquad
+      X\step{b}\nil.
+    \]
+    More generally, $X=P$ gives $X$ the transitions of $P$, with occurrences of $X$ retained as process states.
+  \end{exampleblock}
+  \Takeaway{Here $=$ introduces a recursive definition; it does not mean bisimilarity.}
+  \note{The recursion is guarded: every recursive occurrence lies beneath an action prefix. We extend the recursion-free syntax with process constants and guarded defining equations.}
+\end{frame}
+
+% Basic SOS rules
+\begin{frame}{SOS rules: prefix, choice, and blocking}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.55\textwidth}
+      \begin{block}{Prefix and choice}
+        \[
+          \frac{}{\alpha.P\step{\alpha}P}
+          \qquad
+          \frac{P\step{\alpha}P'}{P+Q\step{\alpha}P'}
+          \qquad
+          \frac{Q\step{\alpha}Q'}{P+Q\step{\alpha}Q'}
+        \]
+      \end{block}
+      \begin{exampleblock}{No transition from $\nil$}
+        The process $\nil$ has no outgoing transitions.
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{.42\textwidth}
+      \begin{block}{Blocking}
+        For $H\subseteq\Sigma$:
+        \[
+          \frac{P\step{\alpha}P'\qquad \alpha\notin H}
+          {\blockact{H}{P}\step{\alpha}\blockact{H}{P'}}
+        \]
+      \end{block}
+      \begin{exampleblock}{Effect of $H$}
+        A visible action in $H$ is suppressed; $\tau$ is never blocked.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \Takeaway{Choice inherits either branch's transitions; blocking removes selected visible transitions without relabelling the rest.}
+  \note{The two choice rules are symmetric. Since $H$ contains only visible labels, the blocking rule also passes $\tau$ transitions.}
+\end{frame}
+
+% Finite-state transition systems as processes
+\begin{frame}{Encoding a finite automaton as a process}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.43\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=16mm and 18mm]
+        \node[st] (q0) {$q_0$};
+        \node[st,right=of q0] (q1) {$q_1$};
+        \node[terminal,below=of q0] (end) {$\nil$};
+        \draw[trans] (q0) to[bend left=12] node[lab,above] {$a$} (q1);
+        \draw[trans] (q1) to[bend left=12] node[lab,below] {$b$} (q0);
+        \draw[trans] (q1) -- node[lab,right] {$c$} (end);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{.55\textwidth}
+      \begin{block}{One equation per state}
+        \[
+          Q_0=a.Q_1
+          \qquad
+          Q_1=b.Q_0+c.\nil
+        \]
+        The start state is $Q_0$. Each automaton edge becomes a prefixed summand; no outgoing edges means $\nil$.
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{2mm}
+  \Takeaway{The process LTS reproduces the automaton's labelled transitions.}
+  \Source{This encoding preserves transition structure; accepting/final-state status is not represented by this CCS fragment.}
+  \note{Stress the correspondence state-by-state: a state equation lists exactly its outgoing edges. To preserve language acceptance, the process language needs an explicit success observation in addition to these transitions.}
+\end{frame}
+
+% 5
+\begin{frame}{One rule, three kinds of transitions}
+  \begin{block}{Interleaving}
+    \[
+      \frac{P\step{\alpha}P'}{P\parallel Q\step{\alpha}P'\parallel Q}
+      \qquad
+      \frac{Q\step{\beta}Q'}{P\parallel Q\step{\beta}P\parallel Q'}
+    \]
+  \end{block}
+  \begin{exampleblock}{Communication}
+    \[
+      \frac{P\step{a}P'\quad Q\step{\bar a}Q'}
+      {P\parallel Q\step{\tau}P'\parallel Q'}
+    \]
+  \end{exampleblock}
+  \Takeaway{A handshake is \emph{possible}, not compulsory, until exposed actions are blocked.}
+  \note{The three derivations are exactly the new parallel SOS rules of Lecture 5. Emphasise that prefix, choice and blocking were already introduced.}
+\end{frame}
+
+% 6
+\begin{frame}{Parallel composition: three initial moves}
+  \[
+     P=a.\nil\parallel\bar a.\nil
+  \]
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[st] (p) at (0,1.2) {$P$};
+    \node[st] (l) at (-3,-.5) {$\nil\parallel\bar a.\nil$};
+    \node[st] (r) at (3,-.5) {$a.\nil\parallel\nil$};
+    \node[terminal] (d) at (0,-.9) {$\nil\parallel\nil$};
+    \draw[trans] (p) -- node[lab,above left] {$a$} (l);
+    \draw[trans] (p) -- node[lab,above right] {$\bar a$} (r);
+    \draw[tauedge] (p) -- node[lab,left] {$\tau$} (d);
+  \end{tikzpicture}
+  \par\vspace{2mm}
+  \Takeaway{The system exposes $a$, exposes $\bar a$, \emph{or} communicates internally.}
+  \note{Make students name the three transitions. The diagram deliberately omits later transitions from the left and right derivatives.}
+\end{frame}
+
+% 7
+\begin{frame}{Blocking forces an internal handshake}
+  \[
+     S=\blockact{H}{a.b.\nil\parallel\bar a.c.\nil},
+     \qquad H=\{a,\bar a\}.
+  \]
+  \vspace{2mm}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[st,minimum size=9mm] (s) at (0,0) {$S$};
+    \node[st,minimum size=9mm] (t) at (4,0) {$T$};
+    \draw[tauedge] (s)--node[lab,above] {$\tau$}(t);
+    \node[font=\small,text=Muted,below=5mm of t,align=center] {$T=\blockact{H}{b.\nil\parallel c.\nil}$};
+  \end{tikzpicture}
+  \vspace{3mm}
+  \begin{block}{Why only one transition?}
+    $a$ and $\bar a$ are blocked individually; their synchronisation produces $\tau$, which survives.
+  \end{block}
+  \note{Assume all visible names a,b,c are distinct and b,c do not form a complementary pair. This avoids unnecessary handshake complications in T.}
+\end{frame}
+
+
+\begin{frame}{A VASS-style counter from parallel processes}
+  \begin{block}{Counter components}
+    For each counter $i\in\{x,y\}$, use a generator and indistinguishable tokens:
+    \[
+      G_i = u_i.(G_i\parallel T_i)
+      \qquad
+      T_i = d_i.\nil.
+    \]
+    The generator creates one token on $u_i$; a token disappears on $d_i$.
+  \end{block}
+  \begin{exampleblock}{Control states request one update}
+    A control-state prefix $\bar u_i$ synchronises with $G_i$ to increment
+    counter $i$; $\bar d_i$ synchronises with one $T_i$ to decrement it.
+    The decrement is unavailable when there are no tokens.
+  \end{exampleblock}
+  \Takeaway{Parallel composition represents the counter value as the number of token processes.}
+  \note{These are finite recursive equations, but unfolding G_i can create unboundedly many parallel T_i components. This is how the example avoids being finite-state.}
+\end{frame}
+
+\begin{frame}{Two VASS transitions, each changing one counter}
+  \begin{block}{Finite control}
+    \[
+      Q_0=\bar u_x.Q_1
+      \qquad
+      Q_1=\bar d_y.Q_0
+    \]
+    From $Q_0$, increment $x$; from $Q_1$, decrement $y$ and return to $Q_0$.
+  \end{block}
+  \begin{exampleblock}{Compose and restrict}
+    Let $H$ contain each $u_i,\bar u_i,d_i,\bar d_i$ for $i=x,y$.
+    The system is
+    \[
+      \blockact{H}{Q_0\parallel G_x\parallel G_y
+        \parallel T_x^{\,m}\parallel T_y^{\,n}}.
+    \]
+    Only the requested handshake can occur; it becomes $\tau$. In particular,
+    the decrement step is disabled when $n=0$.
+  \end{exampleblock}
+  \Takeaway{This illustrates VASS-style counter updates, not a full machine encoding.}
+  \Source{Here $\blockact{H}{\cdot}$ is CCS restriction (blocking visible actions in $H$); some presentations call this hiding.}
+  \note{Each transition changes exactly one counter and the finite control state. T_i^k denotes k parallel copies, with T_i^0=\nil.}
+\end{frame}
+
+% 8
+\begin{frame}{When may we write that $P,$ $Q$ are the same in CCS calculations?}
+  \begin{block}{Equations}
+\begin{itemize}
+  \item Set of equations. 
+  \item We transform $P$ into $Q$ using equations.
+  \item Equations preserve (bisimulation, weak bisimulation).
+\end{itemize}    
+  \end{block}
+  Example: 
+  $P+P \equiv P$
+
+  We can prove that: 
+  $P+P+P \equiv P$
+\visible<2->{
+\begin{block}{Why equations?}
+\begin{itemize}
+  \item Algebraic proofs are often simpler than bisimulation proofs.
+  \item Equations are parametric in $P$, so they can be applied to any process.
+\end{itemize}
+\end{block}}
+\end{frame}
+
+% 9
+\begin{frame}{Four basic equations for choice}
+  \begin{align*}
+    P+Q &\equiv Q+P &&\text{(commutativity)}\\[2mm]
+    (P+Q)+R &\equiv P+(Q+R) &&\text{(associativity)}\\[2mm]
+    P+P &\equiv P &&\text{(idempotence)}\\[2mm]
+    P+\nil &\equiv P &&\text{(zero)}
+  \end{align*}
+  \vspace{3mm}
+  \Source{These choice laws are part of the equational axiomatisation for the recursion-free CCS fragment used in this lecture.}
+  \note{One can justify idempotence by relating P+P to P and their derivatives. No law a.(P+Q)=a.P+a.Q is included!}
+\end{frame}
+
+% 10
+\begin{frame}{Useful laws for parallelism and blocking}
+  \begin{align*}
+    P\parallel\nil &\equiv P,\\[3mm]
+    \blockact{H}{\nil}&\equiv\nil,\\[3mm]
+    \blockact{H}{P+Q}&\equiv \blockact{H}{P}+\blockact{H}{Q}.
+  \end{align*}
+  \begin{block}{Blocking a prefix}
+    \[
+      \blockact{H}{\alpha.P}\equiv
+      \begin{cases}
+        \alpha.\blockact{H}{P},&\alpha\notin H,\\
+        \nil,&\alpha\in H.
+      \end{cases}
+    \]
+  \end{block}
+  \Takeaway{All equations preserve \emph{strong} bisimilarity.}
+  \note{H is a set of visible labels, not containing tau; so tau always takes the first branch. The P||0 law follows from a simple coinductive relation.}
+\end{frame}
+
+% 11
+\begin{frame}{A tempting \emph{false} law}
+  \[
+  \blockact{H}{P\parallel Q}
+  \quad\not\sim\quad
+  \blockact{H}{P}\parallel\blockact{H}{Q}.
+  \]
+  \vspace{2mm}
+  \begin{block}{Counterexample}
+    \[
+      P=a.\nil,\quad Q=\bar a.\nil,\quad H=\{a,\bar a\}.
+    \]
+    \[
+      \underbrace{\blockact{H}{a.\nil\parallel\bar a.\nil}}_{\step{\tau}\text{ enabled}}
+      \qquad\qquad
+      \underbrace{\blockact{H}{a.\nil}\parallel\blockact{H}{\bar a.\nil}}_{\text{deadlocked}}.
+    \]
+  \end{block}
+  \Takeaway{Blocking \emph{after} composing preserves the possibility of synchronisation.}
+  \note{This is the central anti-law. Students often expect restriction to distribute over every constructor.}
+\end{frame}
+
+% 12
+\begin{frame}{The CCS expansion theorem}
+  \vspace{1mm}
+  Suppose $P=\sum_{i\in I}\alpha_i.P_i$ and $Q=\sum_{j\in J}\beta_j.Q_j$.
+  \begin{block}{Expand the initial moves of $P\parallel Q$}
+    \vspace{-2mm}
+    \begin{align*}
+    P\parallel Q\ \equiv\ {}&
+      \sum_{i\in I}\alpha_i.(P_i\parallel Q)\\[-.5mm]
+      &+\sum_{j\in J}\beta_j.(P\parallel Q_j)\\[-.5mm]
+      &+\sum_{\substack{i\in I,\,j\in J\\\alpha_i=\bar\beta_j}}
+           \tau.(P_i\parallel Q_j).
+    \end{align*}
+  \end{block}
+  \centering
+  \small \textcolor{Teal}{left moves}\qquad +\qquad
+  \textcolor{Indigo}{right moves}\qquad +\qquad
+  \textcolor{Warn}{synchronisations}
+  \Source{CCS expansion theorem; the equation denotes strong bisimilarity under standard interleaving SOS.}
+  \note{For finite sums, the formula follows by comparing the initial-transition sets. Sum over empty set means 0. Do not extend a fairness interpretation without qualification.}
+\end{frame}
+
+% 13
+\begin{frame}{Expansion without communication: first step}
+  Let $a$ and $b$ be distinct, non-complementary actions.
+  \[
+     P=a.\nil\parallel b.\nil.
+  \]
+  \begin{block}{Apply the expansion theorem}
+    \[
+      P\equiv
+        a.(\nil\parallel b.\nil)
+        +b.(a.\nil\parallel\nil).
+    \]
+  \end{block}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[st] (p) at (0,1.2) {$P$};
+    \node[st] (l) at (-2.2,-.35) {$\nil\parallel b.\nil$};
+    \node[st] (r) at (2.2,-.35) {$a.\nil\parallel\nil$};
+    \draw[trans] (p)--node[lab,left] {$a$}(l);
+    \draw[trans] (p)--node[lab,right] {$b$}(r);
+  \end{tikzpicture}
+  \note{There is no communication term: neither a nor b is the co-action of the other.}
+\end{frame}
+
+% 14
+\begin{frame}{Expansion without communication: normal form}
+  \begin{align*}
+     a.\nil\parallel b.\nil
+       &\equiv a.(\nil\parallel b.\nil)
+             +b.(a.\nil\parallel\nil)\\[2mm]
+       &\equiv \boxed{a.b.\nil+b.a.\nil}.
+  \end{align*}
+  \vspace{2mm}
+  \begin{exampleblock}{Interpretation}
+    Two independent single actions admit precisely two sequential schedules, $ab$ and $ba$.
+  \end{exampleblock}
+  \Takeaway{For finite recursion-free CCS, expansion eliminates parallel composition in favour of prefix and choice.}
+  \note{Distinguish expressing the same interleaving LTS from claiming causality/independence is preserved by the syntax: later true-concurrency semantics can make this distinction observable.}
+\end{frame}
+
+% 15
+\begin{frame}{Check the equation by bisimulation}
+  \[
+    P=a.\nil\parallel b.\nil,
+    \qquad Q=a.b.\nil+b.a.\nil.
+  \]
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.48\textwidth}
+      \centering
+      \begin{tikzpicture}[x=1cm,y=.82cm]
+        \node[st] (p0) at (0,1.75) {$P$};
+        \node[st] (p1) at (-1.25,.3) {$\nil\parallel b.\nil$};
+        \node[st] (p2) at (1.25,.3) {$a.\nil\parallel\nil$};
+        \node[terminal] (p3) at (0,-1.15) {$\nil\parallel\nil$};
+        \draw[trans] (p0)--node[lab,left] {$a$}(p1);
+        \draw[trans] (p0)--node[lab,right] {$b$}(p2);
+        \draw[trans] (p1)--node[lab,left] {$b$}(p3);
+        \draw[trans] (p2)--node[lab,right] {$a$}(p3);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{.48\textwidth}
+      \centering
+      \begin{tikzpicture}[x=1cm,y=.82cm]
+        \node[st] (q0) at (0,1.75) {$Q$};
+        \node[st] (q1) at (-1.25,.3) {$b.\nil$};
+        \node[st] (q2) at (1.25,.3) {$a.\nil$};
+        \node[terminal] (q3) at (0,-1.15) {$\nil$};
+        \draw[trans] (q0)--node[lab,left] {$a$}(q1);
+        \draw[trans] (q0)--node[lab,right] {$b$}(q2);
+        \draw[trans] (q1)--node[lab,left] {$b$}(q3);
+        \draw[trans] (q2)--node[lab,right] {$a$}(q3);
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vspace{2mm}
+  \[
+    R=\{(P,Q),\;(\nil\parallel b.\nil,b.\nil),\;
+       (a.\nil\parallel\nil,a.\nil),\;(\nil\parallel\nil,\nil)\}.
+  \]
+  \note{Each row of the two branching diagrams is related. The four displayed pairs constitute a strong bisimulation; check both matching action labels and matching derivatives.}
+\end{frame}
+
+% 16
+\begin{frame}{Expansion with synchronisation}
+  \[
+     P=a.b.\nil\parallel\bar a.c.\nil.
+  \]
+  \begin{block}{Three summands, corresponding to three initial transitions}
+    \begin{align*}
+      P\equiv\ {}&a.(b.\nil\parallel\bar a.c.\nil)\\
+             &+\bar a.(a.b.\nil\parallel c.\nil)\\
+             &+\tau.(b.\nil\parallel c.\nil).
+    \end{align*}
+  \end{block}
+  \Takeaway{The $\tau$-summand describes a handshake, not an arbitrary extra internal step.}
+  \note{This is the expansion theorem with one i and one j; assume b,c are distinct and non-complementary to avoid later synchronisation.}
+\end{frame}
+
+% 17
+\begin{frame}{Block the channel; simplify the result}
+  Put $H=\{a,\bar a\}$. Then
+  \begin{align*}
+  &\blockact{H}{a.b.\nil\parallel\bar a.c.\nil}\\[2mm]
+  &\qquad\equiv \blockact{H}{\tau.(b.\nil\parallel c.\nil)}\\[2mm]
+  &\qquad\equiv \tau.\blockact{H}{b.\nil\parallel c.\nil}\\[2mm]
+  &\qquad\equiv \boxed{\tau.(b.c.\nil+c.b.\nil)}.
+  \end{align*}
+  \vspace{1mm}
+  \Takeaway{Communication can be calculated away, while retaining its effect on future behaviour.}
+  \note{The first two summands of previous slide disappear because their first labels are blocked. Then expand b.0||c.0. Importantly the two results are strongly bisimilar; no need for weak abstraction here.}
+\end{frame}
+
+% 18
+\begin{frame}{Why is the expansion theorem sound?}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.52\textwidth}
+      \begin{block}{Every initial move of $P\parallel Q$}
+        \begin{enumerate}
+          \item comes from $P$ alone,
+          \item comes from $Q$ alone, or
+          \item is a complementary handshake.
+        \end{enumerate}
+      \end{block}
+    \end{column}
+    \begin{column}{.44\textwidth}
+      \begin{exampleblock}{On the right-hand side}
+        There is exactly one summand for every such derivation; the derivative is the same composite state.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{4mm}
+  \[
+    R=\operatorname{Id}\cup
+      \{(P\parallel Q,\operatorname{Expansion}(P,Q))\}
+  \]
+  \Takeaway{Together with the identity pairs, this is a strong bisimulation.}
+  \note{The displayed relation is for a particular pair P,Q; the initial moves from the expansion target the same derivatives. No need to relate every residual process to an expansion in this proof.}
+\end{frame}
+
+\section{Equational proofs and contexts}
+% 19
+\begin{frame}{What is the role of congruence now?}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[draw=Indigo,rounded corners,align=center,minimum width=4cm,minimum height=1.25cm] (p) at (0,1.2) {$a.\nil\parallel b.\nil$};
+    \node[draw=Indigo,rounded corners,align=center,minimum width=4cm,minimum height=1.25cm] (q) at (7,1.2) {$a.b.\nil+b.a.\nil$};
+    \draw[<->,draw=Teal,line width=1.2pt] (p)--node[above,lab] {$\sim$}(q);
+    \node[draw=Teal,rounded corners,align=center,minimum width=4cm,minimum height=1.25cm] (cp) at (0,-1.1) {$C[a.\nil\parallel b.\nil]$};
+    \node[draw=Teal,rounded corners,align=center,minimum width=4cm,minimum height=1.25cm] (cq) at (7,-1.1) {$C[a.b.\nil+b.a.\nil]$};
+    \draw[->] (p)--(cp);\draw[->] (q)--(cq);
+    \draw[<->,draw=Teal,line width=1.2pt] (cp)--node[above,lab] {$\sim$}(cq);
+  \end{tikzpicture}
+  \end{center}
+  \Takeaway{A single local derivation justifies replacement inside \emph{every finite CCS context}.}
+  \note{This uses the congruence of strong bisimilarity. The context may contain choice, prefix, further parallel composition and blocking, but not arbitrary data-sharing operations outside the CCS semantics.}
+\end{frame}
+
+% 20
+\begin{frame}{A quick test: which equation is sound?}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.48\textwidth}
+      \begin{block}{Candidate A}
+        \[
+          a.(b.\nil+c.\nil)
+          \stackrel{?}{\sim}
+          a.b.\nil+a.c.\nil
+        \]
+      \end{block}
+    \end{column}
+    \begin{column}{.48\textwidth}
+      \begin{block}{Candidate B}
+        \[
+          (a.\nil+b.\nil)+a.\nil
+          \stackrel{?}{\sim}
+          a.\nil+b.\nil
+        \]
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{4mm}
+  \begin{exampleblock}{Student task (2 minutes)}
+    Decide which equation is valid under strong bisimulation.\
+    Give a bisimulation or a distinguishing transition.
+  \end{exampleblock}
+  \note{Answer: A false (after a, the left offers both b and c simultaneously; the right commits to one derivative); B true by idempotence and associativity. The A counterexample appeared in Lecture 5 as trace-vs-bisim motivation; here it shows an invalid algebraic rewriting law.}
+\end{frame}
+
+% Axiomatization and rooted weak equivalence
+\begin{frame}{Strong bisimulation for recursion-free CCS}
+  \begin{block}{The language}
+    Processes use the operators from our syntax slide:
+    $\nil$, $\alpha.P$, $P+Q$, $P\parallel Q$, and $\blockact{H}{P}$,
+    with no recursive definitions.
+  \end{block}
+  \begin{exampleblock}{A sound and complete equational theory}
+    Strong bisimilarity is characterized by the equations introduced here,
+    used together and inside process contexts:
+    \begin{itemize}
+      \item the four choice laws;
+      \item the expansion theorem for parallel composition (and
+            $P\parallel\nil\equiv P$);
+      \item $\blockact{H}{\nil}\equiv\nil$, blocking distribution over choice,
+            and the blocking-prefix laws.
+    \end{itemize}
+  \end{exampleblock}
+  \Takeaway{For recursion-free CCS in this syntax, $P\equiv Q$ exactly when the displayed laws derive $P\equiv Q$.}
+  \note{Completeness is for the recursion-free language defined on the syntax slide, including parallel and blocking, not for recursive CCS. Expansion reduces parallel terms to choice and prefix; the blocking laws handle restriction. Equational reasoning is closed under the language's operators.}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Adding guarded recursion to the proof system}
+  \begin{block}{RDP: unfold a recursive definition}
+    If $P$ is defined by $P\coloneqq F(P)$, then
+    \[
+      P\equiv F(P).
+    \]
+  \end{block}
+  \begin{exampleblock}{RSP: use uniqueness of guarded solutions}
+    \[
+      \frac{P:= F(P)\qquad Q:= F(Q)}
+           {P\sim Q}
+      \qquad\text{if every recursive occurrence in $F$ is action-guarded.}
+    \]
+  \end{exampleblock}
+  \Takeaway{RDP unfolds; RSP proves two solutions of the same guarded specification equivalent.}
+  \note{These principles extend equational reasoning with guarded recursive specifications. The relation symbol in the premises and conclusion is strong bisimilarity here. RSP is an inference rule justified by uniqueness, not an ordinary unconditional equation.}
+\end{frame}
+
+\begin{frame}{Example: uniqueness proves a recursive equivalence}
+  Suppose the recursive definitions are
+  \[
+    P\coloneqq a.P
+    \qquad\qquad
+    Q\coloneqq a.Q.
+  \]
+  \begin{block}{Apply RDP and RSP}
+    \[
+      P:= a.P,\qquad Q:= a.Q
+      \quad\Longrightarrow_{\mathrm{RSP}}\quad
+      P\sim Q.
+    \]
+  \end{block}
+  \begin{exampleblock}{Why the guard condition matters}
+    For strong bisimilarity, a $\tau$-prefix can guard recursion. For weak
+    bisimilarity, $\tau$ alone is not enough:
+    \[
+      \nil\wb\tau.\nil,\qquad
+      a.\nil\wb\tau.a.\nil,\qquad
+      \nil\not\wb a.\nil.
+    \]
+    Thus, $X=\tau.X$ has unequivalent weak solutions; weak uniqueness results
+    require stronger guarding conditions.
+  \end{exampleblock}
+  \note{RSP applies to the shared guarded equation $X=a.X$, giving the result immediately. For the weak example, both $\nil$ and $a.\nil$ satisfy $X\wb\tau.X$, but they are not weakly bisimilar to one another; visible guarding is therefore needed for the corresponding weak uniqueness principles.}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\begin{center}
+  \huge $\tau$-silent steps and weak bisimulation
+\end{center}
+
+\begin{center}
+ How to abstract from internal computation steps in process equivalence? 
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Congruence abstracting from $\tau$}
+  \begin{block}{Equations define a congruence.}
+    Thus they define congruence and can not define 
+    weak bisimulation.
+  \end{block}
+
+  
+  \begin{exampleblock}{Weak bisimilarity is not a congruence for choice}
+    Let $X=\tau.a.\nil$, $Y=a.\nil$, and $R=b.\nil$. Then
+    \[
+      X\wb Y
+      \qquad\text{but}\qquad
+      X+R\not\wb Y+R.
+    \]
+    After $X+R$ takes its $\tau$-step, matching would require
+    $a.\nil\wb a.\nil+b.\nil$, which fails because of the unmatched $b$-move.
+  \end{exampleblock}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}{Rooted weak bisimilarity: the root condition}
+  \small
+  \begin{block}{Matching an initial transition}
+    For visible $a$ and the silent action $\tau$, write
+    \[
+      \xRightarrow{a}_{\!r} \;=\;
+        \xrightarrow{\tau *}\xrightarrow{a}\xrightarrow{\tau *},
+      \qquad
+      \xRightarrow{\tau}_{\!r} \;=\;
+        \xrightarrow{\tau +}.
+    \]
+    In particular, an initial $\tau$ must be matched by
+    \emph{at least one} $\tau$-step.
+  \end{block}
+  \begin{block}{Definition (observation congruence)}
+    $P\rwb Q$ iff, for each $\alpha\in\Sigma\cup\{\tau\}$,
+    \[
+       P\step{\alpha}P'
+       \ \Longrightarrow\
+       \exists Q':\ Q\xRightarrow{\alpha}_{\!r}Q'
+                     \ \land\ P'\wb Q',
+    \]
+    and symmetrically for every initial move of $Q$.
+  \end{block}
+  \vspace{-1mm}
+  \Takeaway{$\tau.a.\nil\not\rwb a.\nil$,
+    but $\tau.\tau.a.\nil\rwb\tau.a.\nil$.
+    The successors need only be \emph{weakly} bisimilar.}
+  \note{Replace the old slide: it required a matching single step and
+    used R on successors, effectively stating strong bisimulation.
+    Explain that the root is special. For an observable a, allow
+    tau-star before and after a. For initial tau, demand tau-plus;
+    after matching, ordinary weak bisimilarity suffices.
+    Source: van Glabbeek, A Characterisation of Weak Bisimulation
+    Congruence, Section 2.}
+\end{frame}
+
+
+
+\begin{frame}{Hennessy--Milner laws for silent steps}
+  \begin{block}{Three laws for rooted weak bisimilarity}
+    \small
+    \[
+      \begin{aligned}
+        \text{(A5)}\quad
+          &X+\tau.X \;\equiv\; \tau.X,\\[1mm]
+        \text{(A6.1)}\quad
+          &\mu.(X+\tau.Y)
+            \;\equiv\; \mu.(X+\tau.Y)+\mu.Y,\\[1mm]
+        \text{(A6.2)}\quad
+          &\mu.\tau.X \;\equiv\; \mu.X,
+          \qquad \mu\in\Sigma\cup\{\tau\}.
+      \end{aligned}
+    \]
+  \end{block}
+  \Takeaway{These laws abstract internal steps without identifying $\tau.P$ with $P$ at the root.}
+  \Source{M. Hennessy and R. Milner, \emph{Algebraic Laws for Nondeterminism and Concurrency} (1985).}
+  \note{Present these as the three tau-laws A5, A6.1, and A6.2. The action parameter mu ranges over visible actions and tau. They are sound equations for rooted weak (observational) bisimilarity; do not replace them with the unrestricted law tau.P=P.}
+\end{frame}
+
+
+
+
+\begin{frame}{Recursion: uniqueness of solutions}
+  \footnotesize
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.48\textwidth}
+      \begin{block}{Strong bisimilarity}
+        Guarded recursion is sufficient.
+
+        Every recursive variable occurs under
+        an action prefix $\mu$, including $\tau$.
+      \end{block}
+    \end{column}
+
+    \begin{column}{.48\textwidth}
+      \begin{block}{Rooted weak bisimilarity}
+        Classical sufficient conditions:
+        \begin{itemize}
+          \item \textbf{Strongly guarded:}
+            recursive variables occur under
+            visible action prefixes ($a\neq\tau$).
+          \item \textbf{Sequential:}
+            no parallel composition or restriction
+            on paths to recursive variables.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \begin{block}{Recursive Specification Principle (RSP)}
+    If $F$ is strongly guarded and sequential, then
+    \[
+      \boxed{
+        \frac{
+          P := F(P)
+          \qquad
+          Q := F(Q)
+        }{
+          P \approx_{\mathrm{rw}} Q
+        }
+      }
+    \]
+    Example: $P := a.P$ and
+    $Q := a.Q$
+    imply $P \approx_{\mathrm{rw}} Q$.
+  \end{block}
+
+
+
+  \note{
+    Contrast with strong bisimilarity, where
+    guarding by tau is sufficient.
+    For rooted weak bisimilarity, consider X = tau.X.
+    Both P = tau.0 and Q = tau.a.0 satisfy this equation
+    up to rooted weak bisimilarity, but P and Q
+    are not equivalent.
+    Strong guarding and sequentiality are
+    sufficient conditions, not necessary ones.
+  }
+\end{frame}
+
+\begin{frame}{Why both restrictions on recursion are needed}
+  \footnotesize
+  Let $P=\tau.0$ and $Q=\tau.b.0$, where
+  $b\notin\{a,\bar a\}$. Then $P\not\approx_{\mathrm{rw}}Q$.
+
+  \begin{block}{1. Guarded, but not strongly guarded}
+    \[
+      X=\tau.X
+    \]
+    Both $P$ and $Q$ are solutions, since
+    $R\approx_{\mathrm{rw}}\tau.R$ for $R\in\{P,Q\}$
+    (using $\tau.\tau.S\approx_{\mathrm{rw}}\tau.S$).
+  \end{block}
+
+  \begin{block}{2. Strongly guarded, but not sequential}
+    \[
+      X=F(X),\qquad
+      F(X)=(a.X\mid\bar a.0)\setminus\{a\}
+    \]
+    Synchronization turns the visible guard into $\tau$;
+    restriction blocks independent $a$ and $\bar a$.
+    For $R\in\{P,Q\}$:
+    \[
+       F(R)\sim\tau.R\approx_{\mathrm{rw}}R.
+    \]
+  \end{block}
+
+  \begin{alertblock}{Takeaway}
+    Neither ordinary guarding nor strong guarding alone
+    guarantees uniqueness up to rooted weak bisimilarity.
+  \end{alertblock}
+\end{frame}
+
+% 21
+% \begin{frame}{Finite processes still need infinitely many laws}
+%   \small
+%   \begin{block}{A family of closed CCS equations}
+%     Let $A_n=\sum_{i=1}^{n}a^i$, where $a^i$ is $i$ consecutive $a$-prefixes
+%     followed by $\nil$. For every $n\geq1$:
+%     \[
+%       \begin{aligned}
+%         &(a+a.a)\parallel A_n
+%           +\sum_{i=1}^{n}\bigl(a\parallel a^i+a.a\parallel a^i\bigr)\\
+%         &\quad\rwb\quad
+%           a\parallel A_n+a.a\parallel A_n
+%           +\sum_{i=1}^{n}\bigl((a+a.a)\parallel a^i\bigr).
+%       \end{aligned}
+%     \]
+%   \end{block}
+%   \begin{exampleblock}{Why the $\tau$-laws are not enough}
+%     Each equation relates finite, recursion-free processes and is valid even
+%     for strong bisimilarity. Yet no finite sound equational theory for CCS with
+%     parallel composition derives every equation in this family.
+%   \end{exampleblock}
+%   \Source{Moller’s family; rooted-weak result: Aceto et al., \emph{In search of lost time} (2021).}
+%   \note{This family gives closed instances of Moller’s equations. Each instance is strongly bisimilar, hence rooted weakly bisimilar. The non-finite-basis theorem says that for any finite sound equational axiom system, at least one instance is not derivable; it does not identify a fixed n that every finite system misses.}
+% \end{frame}
+
+\section{A verified optimisation: dead stores}
+% 22
+\begin{frame}{From CCS to an imperative program}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[draw=Indigo,rounded corners,minimum width=4.1cm,minimum height=.95cm,align=center] (sc) at (0,1.1) {source fragment $S$};
+    \node[draw=Indigo,rounded corners,minimum width=4.1cm,minimum height=.95cm,align=center] (tc) at (7,1.1) {optimised fragment $T$};
+    \node[draw=Teal,rounded corners,minimum width=4.1cm,minimum height=.95cm,align=center] (sl) at (0,-1.1) {$\operatorname{LTS}(S)$};
+    \node[draw=Teal,rounded corners,minimum width=4.1cm,minimum height=.95cm,align=center] (tl) at (7,-1.1) {$\operatorname{LTS}(T)$};
+    \draw[->] (sc)--node[left] {SOS} (sl);
+    \draw[->] (tc)--node[right] {SOS} (tl);
+    \draw[->,draw=Warn,line width=1pt] (sc)--node[above] {optimisation} (tc);
+    \draw[<->,draw=Teal,line width=1.15pt] (sl)--node[above] {bisimulation?} (tl);
+  \end{tikzpicture}
+  \end{center}
+  \Takeaway{The language changes; the proof technique does not.}
+  \note{A program is not literally a CCS expression: it has stores and commands. We give it an SOS semantics in the same LTS framework, then use bisimulation.}
+\end{frame}
+
+% 23
+\begin{frame}{What does the environment observe?}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.48\textwidth}
+      \begin{exampleblock}{Observable}
+        \begin{itemize}\setlength\itemsep{2mm}
+          \item output events $\operatorname{out}(v)$,
+          \item normal termination $\mathsf{halt}$,
+          \item possibly external calls, faults, volatile accesses.
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{.48\textwidth}
+      \begin{block}{Internal}
+        \begin{itemize}\setlength\itemsep{2mm}
+          \item assignment to a private variable,
+          \item internal bookkeeping,
+          \item changes to non-observable temporary states.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+  \vspace{3mm}
+  \Takeaway{Correctness depends on the \emph{observation model}, not only on final values.}
+  \note{This classifies operations for our toy language; realistic observable events depend on the language's semantics. CompCert explicitly treats volatile global stores as observable events.}
+\end{frame}
+
+% 24
+\begin{frame}{A tiny language with a mutable store}
+  \begin{block}{Syntax (one local variable $x$)}
+    \[
+      S ::= \mathsf{stop}\mid x:=n;S\mid \mathsf{out}(x);S.
+    \]
+  \end{block}
+  \begin{block}{Configurations}
+    \[
+      \Store{S}{\sigma}
+      \qquad \text{where }\sigma:\{x\}\to\mathbb Z.
+    \]
+  \end{block}
+  \vspace{1mm}
+  \textbf{Store update:}\quad $\sigma[x\mapsto n]$ is $\sigma$ with $x$ assigned $n$.
+  \Source{Here $x:=n;S$ and $\mathsf{out}(x);S$ are prefix constructors, \emph{not} uses of an operator $S;T$.}
+  \note{The language is deliberately restricted: no general sequential composition, exceptions, aliasing, concurrency, or volatile writes. The output statement has a continuation. Stop later emits halt.}
+\end{frame}
+
+% 25
+\begin{frame}{Three operational rules}
+  \begin{block}{Assignment is internal}
+    \[
+      \frac{}{
+       \Store{x:=n;S}{\sigma}\step{\tau}
+       \Store{S}{\sigma[x\mapsto n]}}
+    \]
+  \end{block}
+  \begin{block}{Output and termination are observable}
+    \[
+      \frac{}{\Store{\mathsf{out}(x);S}{\sigma}
+      \step{\operatorname{out}(\sigma(x))}\Store{S}{\sigma}}
+      \qquad
+      \frac{}{\Store{\mathsf{stop}}{\sigma}\step{\mathsf{halt}}\nil}.
+    \]
+  \end{block}
+  \Takeaway{Every program has an LTS; we can now compare the original and optimised code.}
+  \note{We explicitly label a successful stop with halt to avoid collapsing termination and deadlock. The final state 0 has no transitions. Before claiming local optimisation correctness, we prove congruence for precisely this language.}
+\end{frame}
+
+% 26: new frame
+\begin{frame}{The contexts of our tiny language}
+  \begin{block}{All legal one-hole program contexts}
+    \[
+       C[-] ::= [-]
+       \mid x:=n;C[-]
+       \mid \mathsf{out}(x);C[-].
+    \]
+  \end{block}
+  \begin{block}{Program equivalence is defined for \emph{all} initial stores}
+    \[
+      P\equiv_{\mathrm w}Q
+      \quad\Longleftrightarrow\quad
+      \forall\sigma:\ \Store{P}{\sigma}\wb\Store{Q}{\sigma}.
+    \]
+    Define $\equiv_{\mathrm s}$ and $\equiv_{\mathrm{rw}}$ analogously,
+    using strong and rooted weak bisimilarity.
+  \end{block}
+  \Takeaway{A context can add instructions \emph{before} the hole, but not after it. There is no general $S;T$ operator.}
+  \note{Program equivalence is pointwise over all initial stores. This matters: a prefix may change the store before the hole is reached. The context grammar is complete for our syntax: the hole cannot appear to the left of a general composition operator, because no such operator exists.}
+\end{frame}
+
+% 27: new frame
+\begin{frame}{Theorem: bisimulation is a congruence here}
+  \begin{block}{Congruence theorem}
+    For $\star\in\{\mathrm{s},\mathrm{w},\mathrm{rw}\}$,
+    \[
+      P\equiv_{\star}Q
+      \quad\Longrightarrow\quad
+      C[P]\equiv_{\star}C[Q]
+      \qquad \text{for every legal }C[-].
+    \]
+  \end{block}
+  \vspace{-1mm}
+  \textbf{Proof for weak bisimilarity.} Let $P\equiv_{\mathrm w}Q$ and fix $\sigma$.
+  \begin{enumerate}\setlength\itemsep{2.7mm}
+    \item \textbf{Assignment prefix.} Put $\sigma'=\sigma[x\mapsto n]$.
+      \[
+        \Store{x:=n;P}{\sigma}\step{\tau}\Store{P}{\sigma'},
+        \qquad
+        \Store{x:=n;Q}{\sigma}\step{\tau}\Store{Q}{\sigma'}.
+      \]
+    \item \textbf{Output prefix.} Both sides emit $\operatorname{out}(\sigma(x))$
+      and continue in $\Store{P}{\sigma}$ and $\Store{Q}{\sigma}$.
+  \end{enumerate}
+  \vspace{-1mm}
+  \Takeaway{The first moves match, and their targets are equivalent. Induct on $C[-]$.}
+  \note{For the assignment case, P equiv_w Q implies weak bisimilarity of continuations at sigma', because equivalence was quantified over every store. For output, first observable labels coincide and the successors are weakly bisimilar at sigma. The root step of either prefix is exactly the same label on each side, so the same proof also covers rooted weak bisimilarity (weak-equivalent derivatives), as well as strong bisimilarity (strong-equivalent derivatives). Induction on the grammar of C[-] gives the desired congruence.}
+\end{frame}
+
+% 30
+\begin{frame}{The optimisation: dead store elimination}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.46\textwidth}
+      \begin{block}{Before}
+        \vspace{2mm}
+        \ttfamily
+        x := 1;\\[2mm]
+        x := 2;\\[2mm]
+        out(x);\\[2mm]
+        stop
+        \vspace{2mm}
+      \end{block}
+    \end{column}
+    \begin{column}{.46\textwidth}
+      \begin{exampleblock}{After}
+        \vspace{2mm}
+        \ttfamily
+        x := 2;\\[2mm]
+        out(x);\\[2mm]
+        stop
+        \vspace{7mm}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{3mm}
+  \Takeaway{The first assignment is overwritten before any read of $x$. Is that enough to prove correctness?}
+  \note{Ask students which assumptions are needed. The next slides formally prove the claim rather than just noting that both print 2.}
+\end{frame}
+
+% 29
+\begin{frame}{The two executions have different lengths}
+  \vspace{1mm}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[font=\small\bfseries,anchor=east] at (-.8,1.4) {before};
+    \node[st] (s0) at (0,1.4) {$S_0$};
+    \node[st] (s1) at (2.15,1.4) {$S_1$};
+    \node[st] (s2) at (4.3,1.4) {$S_2$};
+    \node[st] (s3) at (6.75,1.4) {$S_3$};
+    \node[terminal] (s4) at (8.8,1.4) {$\nil$};
+    \draw[tauedge] (s0)--node[lab,above] {$\tau$}(s1);
+    \draw[tauedge] (s1)--node[lab,above] {$\tau$}(s2);
+    \draw[trans] (s2)--node[lab,above] {$\operatorname{out}(2)$}(s3);
+    \draw[trans] (s3)--node[lab,above] {$\mathsf{halt}$}(s4);
+    \node[font=\small\bfseries,anchor=east] at (-.8,-.7) {after};
+    \node[st] (t0) at (0,-.7) {$T_0$};
+    \node[st] (t1) at (4.3,-.7) {$T_1$};
+    \node[st] (t2) at (6.75,-.7) {$T_2$};
+    \node[terminal] (t3) at (8.8,-.7) {$\nil$};
+    \draw[tauedge] (t0)--node[lab,above] {$\tau$}(t1);
+    \draw[trans] (t1)--node[lab,above] {$\operatorname{out}(2)$}(t2);
+    \draw[trans] (t2)--node[lab,above] {$\mathsf{halt}$}(t3);
+  \end{tikzpicture}
+  \vspace{2mm}
+  \Takeaway{Strong bisimulation fails; a weak match may skip the extra internal step.}
+  \note{Labels show a path for any initial store sigma. S0, T0 have different numbers of silent transitions; no strong bisimulation can relate them because T1 has out(2) and S1 does not.}
+\end{frame}
+
+% 30
+\begin{frame}{The invariant: the last assignment wins}
+  Let $\sigma$ be an arbitrary initial store. Define
+  \[
+     \sigma_1=\sigma[x\mapsto 1],\qquad
+     \sigma_2=\sigma[x\mapsto 2].
+  \]
+  \begin{block}{The key identity}
+    \[
+       \underbrace{\sigma[x\mapsto 1][x\mapsto 2]}_{\text{two writes}}
+       =
+       \underbrace{\sigma[x\mapsto 2]}_{\text{one write}}.
+    \]
+  \end{block}
+  \Takeaway{The intermediate stores differ, but the stores at the next observation agree.}
+  \note{This is what the simulation relation must remember: the x=1 state is acceptable because its next transition is a write to x, not a read.}
+\end{frame}
+
+% % 31
+% \begin{frame}{Construct the candidate relation}
+%   \vspace{1mm}
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (s0) at (0,1.5) {$S_0$};
+%     \node[st] (s1) at (2.3,1.5) {$S_1$};
+%     \node[st] (s2) at (4.6,1.5) {$S_2$};
+%     \node[st] (s3) at (7.15,1.5) {$S_3$};
+%     \draw[tauedge] (s0)--node[lab,above] {$\tau$}(s1);
+%     \draw[tauedge] (s1)--node[lab,above] {$\tau$}(s2);
+%     \draw[trans] (s2)--node[lab,above] {$\operatorname{out}(2)$}(s3);
+%     \node[st] (t0) at (0,-.9) {$T_0$};
+%     \node[st] (t1) at (4.6,-.9) {$T_1$};
+%     \node[st] (t2) at (7.15,-.9) {$T_2$};
+%     \draw[tauedge] (t0)--node[lab,above] {$\tau$}(t1);
+%     \draw[trans] (t1)--node[lab,above] {$\operatorname{out}(2)$}(t2);
+%     \draw[rel] (s0)--(t0);
+%     \draw[rel] (s1)--(t1);
+%     \draw[rel] (s2)--(t1);
+%     \draw[rel] (s3)--(t2);
+%     \node[font=\scriptsize,text=Teal,anchor=west] at (7.95,.2) {\textbf{related}\ states};
+%   \end{tikzpicture}
+%   \vspace{2mm}
+%   \[
+%     \mathcal R=\{(S_0,T_0),(S_1,T_1),(S_2,T_1),(S_3,T_2),(\nil,\nil)\}.
+%   \]
+%   \Takeaway{A bisimulation relation need not be a one-to-one correspondence of states.}
+%   \note{Quantify universally over initial stores sigma. The state names refer to the concrete configurations shown earlier. S1 and T1 have different stores, yet weak behaviour will match.}
+% \end{frame}
+
+% % 32
+% \begin{frame}{Verification: matching internal steps}
+%   \begin{block}{Initial internal transitions}
+%     \[
+%        S_0\step{\tau}S_1,
+%        \qquad T_0\step{\tau}T_1,
+%        \qquad (S_1,T_1)\in\mathcal R.
+%     \]
+%   \end{block}
+%   \begin{exampleblock}{The extra write is stuttering}
+%     \[
+%        S_1\step{\tau}S_2,
+%        \qquad T_1\wstep{\tau}T_1,
+%        \qquad (S_2,T_1)\in\mathcal R.
+%     \]
+%   \end{exampleblock}
+%   \Takeaway{$\wstep{\tau}$ allows zero internal steps; the optimised side may remain still.}
+%   \note{The initial move is matched by an actual tau, so rooted weak equivalence may be possible. Check both directions: T0's initial tau is matched by S0's tau; S1's extra tau is matched by zero steps from T1.}
+% \end{frame}
+
+% % 33
+% \begin{frame}{Verification: visible output and termination}
+%   \begin{block}{Match the next observation}
+%     \[
+%       S_2\step{\operatorname{out}(2)}S_3,
+%       \qquad T_1\step{\operatorname{out}(2)}T_2.
+%     \]
+%     $S_1$ can first take its internal step to $S_2$, then emit $\operatorname{out}(2)$.
+%   \end{block}
+%   \begin{block}{Match successful termination}
+%     \[
+%        S_3\step{\mathsf{halt}}\nil,
+%        \qquad T_2\step{\mathsf{halt}}\nil.
+%     \]
+%   \end{block}
+%   \Takeaway{$\mathcal R$ is a weak bisimulation (together with its converse).}
+%   \note{All cases covered: initial tau pair, extra tau pair, visible out pair, halt pair, terminal pair. Use sigma2 equality to identify the emitted value and terminal stores.}
+% \end{frame}
+
+% % 34
+% \begin{frame}{The optimisation is even rooted-weak correct}
+%   \begin{block}{First steps match \emph{directly}}
+%     \[
+%       S_0\step{\tau}S_1,
+%       \qquad T_0\step{\tau}T_1,
+%       \qquad S_1\wb T_1.
+%     \]
+%   \end{block}
+%   Hence, for every initial store $\sigma$,
+%   \[
+%     \boxed{\Store{\text{before}}{\sigma}\ \rwb\ \Store{\text{after}}{\sigma}}.
+%   \]
+%   \vspace{2mm}
+%   \Takeaway{By our congruence theorem, this rewrite is sound in \emph{every legal context of the tiny language}.}
+%   \note{We have now proved the relevant congruence for the actual language grammar, not merely quoted a CCS result. Rootedness holds because both variants begin with an internal assignment. We do not claim substitution in arbitrary larger imperative languages, especially ones that can inspect the final store or execute code after a fragment terminates.}
+% \end{frame}
+
+% 35
+\begin{frame}{When the optimisation becomes incorrect}
+  Suppose each write is observable (e.g. a volatile shared location).
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.46\textwidth}
+      \begin{alertblock}{Before}
+        \[
+        \operatorname{wr}(x,1)\,\operatorname{wr}(x,2)\,\operatorname{out}(2)
+        \]
+      \end{alertblock}
+    \end{column}
+    \begin{column}{.46\textwidth}
+      \begin{exampleblock}{After}
+        \[
+         \operatorname{wr}(x,2)\,\operatorname{out}(2)
+        \]
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{5mm}
+  \[
+    \operatorname{Tr}(\text{before})\ne\operatorname{Tr}(\text{after}).
+  \]
+  \Takeaway{No weak bisimulation can justify this replacement with visible write labels.}
+  \Source{In CompCert, a volatile store to a global variable generates an observable event.}
+  \note{An observing concurrent thread is another issue (intermediate values could be exposed); the toy language did not include concurrency. Volatile accesses provide a direct label-level counterexample.}
+\end{frame}
+
+% 36
+\begin{frame}{What makes dead-store elimination sound?}
+  \begin{enumerate}\setlength\itemsep{5mm}
+    \item The removed write is \textbf{not observable}.
+    \item Its right-hand side has \textbf{no relevant side effect or fault}.
+    \item The old value is \textbf{not read before it is overwritten}.
+    \item The transformation respects \textbf{aliasing and the memory model}.
+  \end{enumerate}
+  \vspace{1mm}
+  \Takeaway{Real optimisers prove a \emph{general invariant}; our proof established one instance.}
+  \note{This is a local toy example, not a complete correctness proof for all DSE programs. In real intermediate representations liveness/neededness dataflow analysis and memory safety are essential.}
+\end{frame}
+
+\section{From bisimulation to verified compilers}
+% 37
+\begin{frame}{A compiler is a sequence of transformations}
+  \vspace{2mm}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[draw=Indigo,rounded corners,minimum width=2.3cm,minimum height=1.05cm] (l0) at (0,0) {$L_0$};
+    \node[draw=Indigo,rounded corners,minimum width=2.3cm,minimum height=1.05cm] (l1) at (3.1,0) {$L_1$};
+    \node[draw=Indigo,rounded corners,minimum width=2.3cm,minimum height=1.05cm] (l2) at (6.2,0) {$L_2$};
+    \node[draw=Indigo,rounded corners,minimum width=2.3cm,minimum height=1.05cm] (l3) at (9.3,0) {$L_3$};
+    \draw[->,line width=1pt] (l0)--node[above,lab] {$\mathsf{pass}_1$}(l1);
+    \draw[->,line width=1pt] (l1)--node[above,lab] {$\mathsf{pass}_2$}(l2);
+    \draw[->,line width=1pt] (l2)--node[above,lab] {$\mathsf{pass}_3$}(l3);
+    \node[font=\small,text=Muted] at (4.65,-1.1) {different languages and/or different representations};
+  \end{tikzpicture}
+  \vspace{5mm}
+  \begin{block}{Modular correctness proof}
+    Show semantic preservation for each pass; compose the guarantees to obtain correctness of the whole compiler.
+  \end{block}
+  \note{CompCert contains multiple intermediate languages and verified optimisation passes. Avoid implying they literally use CCS syntax; instead they use operational semantics and relations between machine states.}
+\end{frame}
+
+% 38
+\begin{frame}{Simulation: the compiler may change step counts}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[st] (s) at (0,1.35) {$s$};
+    \node[st] (sp) at (8,1.35) {$s'$};
+    \draw[trans] (s)--node[lab,above] {$\alpha$}(sp);
+    \node[st] (t) at (0,-1.0) {$t$};
+    \node[st] (t1) at (2.4,-1.0) {$t_1$};
+    \node[st] (t2) at (5.1,-1.0) {$t_2$};
+    \node[st] (tp) at (8,-1.0) {$t'$};
+    \draw[tauedge] (t)--node[lab,above] {$\tau$}(t1);
+    \draw[trans] (t1)--node[lab,above] {$\alpha$}(t2);
+    \draw[tauedge] (t2)--node[lab,above] {$\tau$}(tp);
+    \draw[rel] (s)--node[lab,left] {$R$}(t);
+    \draw[rel] (sp)--node[lab,right] {$R$}(tp);
+  \end{tikzpicture}
+  \vspace{4mm}
+  \begin{block}{Forward simulation, informally}
+    If $s\,R\,t$ and $s\step{\alpha}s'$, the target can perform a matching \emph{finite execution}, ending in $t'$ with $s'\,R\,t'$.
+  \end{block}
+  \Source{Precise compiler simulations handle traces, terminal states, progress and infinite executions; the picture shows only the central idea.}
+  \note{This is not a full formal definition. Stuttering alone can be unsound in the presence of infinite target/source tau loops; verified compilers use extra progress or well-founded measures, and preserve appropriate final behaviours.}
+\end{frame}
+
+% 39
+\begin{frame}{Why not require bisimulation for every pass?}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.47\textwidth}
+      \begin{block}{Source: nondeterministic}
+        \[
+          P=a.\nil+b.\nil
+        \]
+        \centering
+        Two possible behaviours: $a$ or $b$.
+      \end{block}
+    \end{column}
+    \begin{column}{.47\textwidth}
+      \begin{exampleblock}{Target: makes one choice}
+        \[
+          Q=a.\nil
+        \]
+        \centering
+        Only behaviour $a$ remains.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{4mm}
+  \[
+    \operatorname{Tr}(Q)\subsetneq\operatorname{Tr}(P),
+    \qquad P\not\sim Q.
+  \]
+  \Takeaway{Semantic \emph{refinement} may suffice even when equivalence is false.}
+  \note{Include empty trace in both finite trace sets. This is a schematic example, not a claim that arbitrary loss of behaviour is permitted by every language specification. For undefined or nondeterministic source behaviour, CompCert correctness uses a behavioural improvement/refinement relation.}
+\end{frame}
+
+% 40
+\begin{frame}{What CompCert actually proves}
+  \begin{block}{Whole-program semantic preservation}
+    If compilation succeeds, every observable behaviour of the compiled program corresponds to a permitted source behaviour (up to the defined ``improvement'' relation).
+  \end{block}
+  \begin{exampleblock}{For safe source programs}
+    \[
+      \mathsf{Beh}(\text{compiled program})
+      \subseteq
+      \mathsf{Beh}(\text{source program}).
+    \]
+  \end{exampleblock}
+  \Takeaway{Prove transformations using simulation relations, then compose the individual pass theorems.}
+  \Source{CompCert 3.18 manual, \href{https://compcert.org/man/manual001.html}{\color{Indigo}\underline{\smash{\texttt{compcert.org/man}}}}; \href{https://compcert.org/doc/html/compcert.driver.Complements.html}{\color{Indigo}\underline{semantic-preservation theorem}}.}
+  \note{The official theorem uses behaviour_improves to permit making undefined behaviour more defined. Inclusion for safe programs is the standard corollary. Many passes have forward simulations; an appropriate backward guarantee is obtained for the full pipeline.}
+\end{frame}
+
+% 41
+\begin{frame}{CompCert contains a verified dead-code pass}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.47\textwidth}
+      \begin{block}{Algorithm}
+        A static analysis decides which values and instructions are still needed.
+      \end{block}
+      \begin{block}{Correctness argument}
+        Related source/target states preserve the required values and observable events.
+      \end{block}
+    \end{column}
+    \begin{column}{.47\textwidth}
+      \begin{exampleblock}{Mechanised proof}
+        {\footnotesize\ttfamily Deadcodeproof.\\transf\_program\_correct}\\[2mm]
+        establishes a forward simulation between RTL semantics before and after the pass.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{2mm}
+  \Takeaway{The classroom bisimulation is a small instance of a general simulation-based verification pattern.}
+  \Source{\href{https://compcert.org/doc/html/compcert.backend.Deadcodeproof.html}{\color{Indigo}\underline{CompCert 3.18: Deadcodeproof}} and \href{https://compcert.org/doc/html/compcert.common.Events.html}{\color{Indigo}\underline{Events semantics}}.}
+  \note{Don't conflate dead code elimination and store elimination; the verified RTL deadcode pass removes or simplifies unneeded instructions. The link establishes the existence and form of the proof, not exact identity with our toy program.}
+\end{frame}
+
+% 42
+\begin{frame}{What should a correctness proof establish?}
+  \begin{enumerate}\setlength\itemsep{5mm}
+    \item \textbf{Semantics}: What do the source and target programs do?
+    \item \textbf{Observations}: Which changes are visible?
+    \item \textbf{Relation}: Which source and target configurations correspond?
+    \item \textbf{Preservation}: How are transitions and termination matched?
+    \item \textbf{Composition}: Does the result survive program contexts or compiler passes?
+  \end{enumerate}
+  \note{This slide is a reusable checklist for lecture exercises. Ask students to identify the five ingredients in the dead-store example.}
+\end{frame}
+
+% 43
+\begin{frame}{Take-home message}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \node[draw=Indigo,rounded corners,minimum width=2.45cm,minimum height=1.0cm] (sos) at (0,0) {SOS};
+    \node[draw=Indigo,rounded corners,minimum width=2.7cm,minimum height=1.0cm] (lts) at (3.25,0) {Bisimulation};
+    \node[draw=Indigo,rounded corners,minimum width=2.7cm,minimum height=1.0cm] (cong) at (6.65,0) {Congruence};
+    \node[draw=Teal,rounded corners,minimum width=2.85cm,minimum height=1.0cm,align=center] (corr) at (10.12,0) {Correctness of\\transformation};
+    \draw[->,line width=1.1pt] (sos)--(lts);
+    \draw[->,line width=1.1pt] (lts)--(cong);
+    \draw[->,line width=1.1pt] (cong)--(corr);
+  \end{tikzpicture}
+  \vspace{7mm}
+  \begin{exampleblock}{}
+    Algebraic equations make proofs compact.\\[2mm]
+    Bisimulations make them local.\\[2mm]
+    Congruences make them reusable.\\[2mm]
+    Simulations scale the idea to verified compilers.
+  \end{exampleblock}
+  \note{End with the distinction: process algebra was the training ground; realistic compiler proofs use state relations and one-way refinements.}
+\end{frame}
+
+\section{References}
+% 44
+\begin{frame}{References and suggested reading}
+  \small
+  \begin{thebibliography}{CompCert}
+    \bibitem[MCS]{MCS}
+      R. J. van Glabbeek.
+      \emph{Modelling Concurrent Systems: Course Notes}.
+      \newblock\href{https://homepages.inf.ed.ac.uk/rvangla/MCS/notes.html}{CCS expansion theorem and equational laws}.
+    \bibitem[Aceto et al.]{Aceto2021}
+      L. Aceto et al.
+      \emph{In search of lost time: Axiomatising parallel composition in process algebras}.
+      2021.
+      \newblock\href{https://arxiv.org/abs/2105.00735}{arXiv:2105.00735}.
+    \bibitem[Milner]{Milner}
+      R. Milner. \emph{Communication and Concurrency}.
+      Prentice Hall, 1989.
+    \bibitem[Leroy 2009]{Leroy}
+      X. Leroy. \emph{Formal Verification of a Realistic Compiler}.
+      Communications of the ACM 52(7), 2009.
+    \bibitem[CompCert]{CompCert}
+      \emph{CompCert 3.18 documentation}, August 2026.
+      \newblock\href{https://compcert.org/man/manual001.html}{Manual},
+      \href{https://compcert.org/doc/html/compcert.backend.Deadcodeproof.html}{dead-code proof},
+      \href{https://compcert.org/doc/html/compcert.driver.Compiler.html}{whole-compiler proof}.
+  \end{thebibliography}
+  \note{The notes and CompCert proofs are public; links refer to precise statements and SOS rules.}
+\end{frame}
+
+\appendix
+\inbackuptrue
+\section{Optional material}
+% A1
+% \begin{frame}{\optional State definitions for the optimisation proof}
+%   Let $\sigma_1=\sigma[x\mapsto1]$ and $\sigma_2=\sigma[x\mapsto2]$.
+%   \small
+%   \begin{align*}
+%   S_0&=\Store{x:=1;\,x:=2;\,\mathsf{out}(x);\,\mathsf{stop}}{\sigma},\\
+%   S_1&=\Store{x:=2;\,\mathsf{out}(x);\,\mathsf{stop}}{\sigma_1},\\
+%   S_2&=\Store{\mathsf{out}(x);\,\mathsf{stop}}{\sigma_2},\\
+%   S_3&=\Store{\mathsf{stop}}{\sigma_2},\\[1mm]
+%   T_0&=\Store{x:=2;\,\mathsf{out}(x);\,\mathsf{stop}}{\sigma},\\
+%   T_1&=\Store{\mathsf{out}(x);\,\mathsf{stop}}{\sigma_2},\\
+%   T_2&=\Store{\mathsf{stop}}{\sigma_2}.
+%   \end{align*}
+%   \note{Put this slide on the board or include it in the handout; it backs up the abbreviated state names on main proof slides.}
+% \end{frame}
+
+% % A2
+% \begin{frame}{\optional Complete bisimulation check}
+%   \small
+%   \renewcommand{\arraystretch}{1.35}
+%   \begin{tabular}{@{}p{.17\textwidth}p{.38\textwidth}p{.39\textwidth}@{}}
+%     \toprule
+%     Pair & Left transition & Right matching transition\\
+%     \midrule
+%     $(S_0,T_0)$ & $S_0\step{\tau}S_1$ & $T_0\step{\tau}T_1$\\
+%     $(S_1,T_1)$ & $S_1\step{\tau}S_2$ & $T_1\wstep{\tau}T_1$ (zero steps)\\
+%     $(S_2,T_1)$ & $S_2\step{\operatorname{out}(2)}S_3$ & $T_1\step{\operatorname{out}(2)}T_2$\\
+%     $(S_3,T_2)$ & $S_3\step{\mathsf{halt}}\nil$ & $T_2\step{\mathsf{halt}}\nil$\\
+%     $(\nil,\nil)$ & none & none\\
+%     \bottomrule
+%   \end{tabular}
+%   \vspace{2mm}
+%   \begin{block}{Reverse-direction obligations}
+%     The only nontrivial case is $T_1\step{\operatorname{out}(2)}T_2$
+%     from $(S_1,T_1)$: match it by
+%     $S_1\step{\tau}S_2\step{\operatorname{out}(2)}S_3$.
+%   \end{block}
+%   \note{This table plus the reverse-direction check proves that R is a weak bisimulation, for all initial stores.}
+% \end{frame}
+
+% % A3
+% \begin{frame}{\optional A stuttering forward simulation needs progress}
+%   \begin{block}{A potential pitfall}
+%     If one source step may be matched by \emph{zero} target steps indefinitely, an infinite source execution could collapse to a finite target execution.
+%   \end{block}
+%   \begin{exampleblock}{Standard repair}
+%     Add a well-founded measure decreasing on stuttering cases, or prove another suitable progress/divergence condition.
+%   \end{exampleblock}
+%   \Takeaway{A picture of matching finite prefixes is not the entire compiler-correctness theorem.}
+%   \Source{CompCert, \href{https://compcert.org/doc/html/compcert.common.Smallstep.html}{Smallstep: simulation relations and conversion theorems}.}
+%   \note{Do not identify the simple relation in the toy proof with the full mechanised forward_simulation record.}
+% \end{frame}
+
+% % A4
+% \begin{frame}{\optional Additional exercise: is this rewrite safe?}
+%   Consider
+%   \[
+%     \blockact{\{a,\bar a\}}{a.b.\nil\parallel\bar a.c.\nil}.
+%   \]
+%   \begin{enumerate}\setlength\itemsep{3mm}
+%     \item Compute its normal form without $\parallel$ or $\operatorname{block}$.
+%     \item Give a bisimulation relating the original and resulting LTSs.
+%     \item Would the equation remain valid if we blocked each component \emph{before} composing?
+%   \end{enumerate}
+%   \vspace{2mm}
+%   \Takeaway{Answer: $\tau.(b.c.\nil+c.b.\nil)$; the alternative blocking order is unsound.}
+%   \note{An appropriate 10-minute tutorial exercise. Do not use during a tight 90-minute lecture unless time remains.}
+% \end{frame}
+
+
+
+
+% \begin{frame}{added}
+% a
+% \end{frame}
+
+\begin{frame}[fragile]{Optimization: shrink the critical section}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.49\textwidth}
+      \begin{alertblock}{Before: compute while holding the mutex}
+        \vspace{1mm}
+        \scriptsize
+\begin{verbatim}
+void record(const Job& j) {
+  std::lock_guard<std::mutex> g(mu);
+  auto k = slow_hash(j.id) % N;
+  ++counts[k];
+}
+\end{verbatim}
+        \vspace{-1mm}
+      \end{alertblock}
+    \end{column}
+    \begin{column}{.49\textwidth}
+      \begin{exampleblock}{After: compute before taking the mutex}
+        \vspace{1mm}
+        \scriptsize
+\begin{verbatim}
+void record(const Job& j) {
+  auto k = slow_hash(j.id) % N;
+  std::lock_guard<std::mutex> g(mu);
+  ++counts[k];
+}
+\end{verbatim}
+        \vspace{-1mm}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vspace{1mm}
+  \begin{block}{Cost of the protected region (schematic)}
+    \[
+      T_{\rm held}^{\rm before}\approx t_{\rm hash}+t_{\rm update},
+      \qquad
+      T_{\rm held}^{\rm after}\approx t_{\rm update}.
+    \]
+  \end{block}
+  \Takeaway{Move \emph{independent local work} out of the critical section;
+    keep the shared update under the mutex.}
+  \note{Job j has a stable, immutable id; slow_hash is deterministic,
+    terminating, pure and non-throwing. The counts array is shared and
+    is accessed under the mutex. This is a realistic lock-contention
+    optimization, not an optimization of total computational work.}
+\end{frame}
+
+\begin{frame}{CCS model and equational correctness}
+  \small
+  Let $k=h(j)$. Model request reception by a visible action
+  $\mathrm{req}(j)$; $\ell,u$ denote lock/unlock handshakes,
+  and $\tau$ denotes the local computation of $k$.
+  \begin{block}{The two implementations}
+    \vspace{-2mm}
+    \[
+      \begin{aligned}
+        P &= \mathrm{req}(j).\ell.\tau.\mathrm{inc}(k).u.\nil,\\[1mm]
+        Q &= \mathrm{req}(j).\tau.\ell.\mathrm{inc}(k).u.\nil.
+      \end{aligned}
+    \]
+    \vspace{-2mm}
+  \end{block}
+  \begin{exampleblock}{Derivation using A6.2: $\mu.\tau.X\rwb\mu.X$}
+    \vspace{-2mm}
+    \[
+      \begin{aligned}
+        P &\rwb \mathrm{req}(j).\ell.\mathrm{inc}(k).u.\nil
+          &&(\mu=\ell),\\[1mm]
+          &\rwb Q
+          &&(\mu=\mathrm{req}(j)).
+      \end{aligned}
+    \]
+    \vspace{-2mm}
+  \end{exampleblock}
+  {\footnotesize\color{Warn}
+    The common visible request is essential:
+    $\ell.\tau.R\not\rwb\tau.\ell.R$ in general.\par}
+  \vspace{2mm}
+  \Takeaway{$\boxed{P\rwb Q}$: the protected update is preserved,
+    while a silent calculation moves across lock acquisition.}
+  \note{The action req(j) represents the observable method invocation;
+    it is common to both processes. Without this common initial visible
+    prefix, ell.tau.R and tau.ell.R are weakly bisimilar but need not be
+    rooted weakly bisimilar. A6.2 eliminates the tau following ell
+    on the left and the tau following req(j) on the right. We have
+    abstracted a total pure function, not a computation that can throw
+    or diverge.}
+\end{frame}
+
+\begin{frame}{Correctness in a concurrent system}
+  \small
+  \begin{block}{An abstract mutex and arbitrary other workers}
+    \[
+      M=\bar\ell.\bar u.M,\qquad
+      H=\{\ell,\bar\ell,u,\bar u\},
+    \]
+    \[
+      \mathcal C[-]
+      =\blockact{H}{[-]\parallel M\parallel W}.
+    \]
+    $M$ permits one acquisition at a time; restriction blocks
+    unmatched lock/unlock actions.
+  \end{block}
+  \begin{exampleblock}{Use congruence instead of checking every schedule}
+    \[
+      P\rwb Q
+      \quad\Longrightarrow\quad
+      \boxed{\mathcal C[P]\rwb\mathcal C[Q]}.
+    \]
+    Rooted weak bisimilarity is preserved by CCS parallel composition
+    and restriction.
+  \end{exampleblock}
+  \Takeaway{The equation proves correctness in \emph{all CCS contexts}
+    of this form; lower lock-hold time is a separate cost claim.}
+  \note{W denotes other concurrent workers obeying the mutex protocol.
+    The protocol M is a simplified token mutex, not a formal account of
+    the C++ memory model, fairness, timed locking, or exceptions.
+    The congruence step is valid for arbitrary W in the modeled CCS
+    language. The model assumes each protected increment is an atomic
+    event inc(k) and that all requests use stable data.}
+\end{frame}
+
+\begin{frame}[fragile]{When is critical-section shrinking unsafe?}
+  \small
+  \begin{alertblock}{Unsafe transformation: move a shared read outside the mutex}
+    \vspace{1mm}
+    \scriptsize
+\begin{verbatim}
+// UNSAFE transformation:
+auto k = slow_hash(shared_key);  // read outside mu
+std::lock_guard<std::mutex> g(mu);
+++counts[k % N];
+\end{verbatim}
+    \vspace{-1mm}
+  \end{alertblock}
+
+  \begin{block}{What goes wrong?}
+    Another thread may update \texttt{shared\_key} while
+    \texttt{slow\_hash} reads it. Without additional synchronization,
+    this can introduce a \textbf{data race} (undefined behaviour in C++).
+  \end{block}
+
+  \Takeaway{The moved computation must be independent of mutable
+    shared state. A local computation is not necessarily a safe $\tau$-step.}
+
+  \note{The example breaks the assumption that the hash only reads
+    immutable or thread-local data. The original read was protected,
+    whereas the moved read can race with another writer.}
+\end{frame}
+
+\begin{frame}{When is critical-section shrinking correct?}
+  \small
+  \begin{block}{Assumptions required by the CCS proof}
+    \begin{itemize}\setlength\itemsep{3mm}
+      \item Input data are \textbf{immutable or thread-local}.
+      \item The hash is \textbf{pure, deterministic, terminating,
+            and non-throwing}.
+      \item The shared update remains protected by the
+            \textbf{same mutex}.
+      \item Timing, lock timeouts, and scheduler fairness are
+            \textbf{not observable} in this CCS model.
+    \end{itemize}
+  \end{block}
+  \begin{exampleblock}{What has been proved?}
+    Rooted weak bisimilarity establishes preservation of the
+    modelled observable behaviour. It does \emph{not} establish
+    a reduction in running time.
+  \end{exampleblock}
+  \Takeaway{Correctness is relative to the observation model;
+    performance improvement is a separate claim.}
+
+  \note{Pure means no shared-memory effects, I/O, or synchronization.
+    An operation that can throw or diverge cannot be replaced by the
+    local terminating tau-step used in our proof. The lock-hold time
+    decreases in the cost model; system speedup depends on contention.}
+\end{frame}
+
+
+
+\end{document}
