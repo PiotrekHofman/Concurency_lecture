@@ -1,0 +1,230 @@
+
+
+% One source, two editions. The default is the student sheet.
+% pdflatex tutorial5.tex
+% pdflatex -jobname=tutorial5-solutions '\def\Tutor{1}\input{tutorial5.tex}'
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,booktabs,array,enumitem}
+\usepackage[table]{xcolor}
+\usepackage[top=21mm,bottom=22mm,left=22mm,right=22mm,footskip=12mm]{geometry}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{ink}{HTML}{1C4054}
+\definecolor{soft}{HTML}{DFE8EC}
+\definecolor{rulegray}{HTML}{AAB9C0}
+\newcommand{\edition}{\ifdefined\Tutor Instructor solutions\else Student sheet\fi}
+\hypersetup{pdftitle={Tutorial 5 -- Computing the simulation preorder}}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[L]{\small\sffamily Concurrency Theory\enspace/\enspace Tutorial 5}
+\fancyfoot[R]{\small\sffamily\edition\enspace/\enspace\thepage}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\setlist[enumerate]{label=\textup{(\alph*)},leftmargin=7.8mm,labelsep=2mm,itemsep=3pt,topsep=3pt,parsep=0pt}
+\newcommand{\mast}[1]{\noindent{\sffamily\small\bfseries\color{ink} CONCURRENCY THEORY\enspace/\enspace TUTORIAL 5}\par
+  \vspace{1mm}{\sffamily\bfseries\fontsize{22}{25}\selectfont #1\par}\vspace{2mm}}
+\newcommand{\ex}[2]{\par\addvspace{11pt}{\sffamily\bfseries\large\color{ink}#1\quad #2\par}\nopagebreak}
+\newcommand{\step}[1]{\xrightarrow{#1}}
+\newcommand{\simu}{\preceq}
+\newcommand{\En}{\mathsf{En}}
+\newcommand{\Pre}{\mathsf{Pre}}
+\newcommand{\Post}{\mathsf{Post}}
+\newcommand{\nil}{\text{--}}
+
+\begin{document}
+\ifdefined\Tutor
+\mast{Computing the simulation preorder}
+{\sffamily\bfseries INSTRUCTOR SOLUTIONS}
+
+\ex{1}{The greatest simulation}
+Let $\mathcal{S}$ be the set of all simulations on the state set $S$, and put
+$G=\bigcup_{D\in\mathcal{S}}D$. If $(s,t)\in G$, then $(s,t)\in D$ for some
+simulation $D$. Every move $s\step{a}u$ therefore has a matching move
+$t\step{a}v$ with $(u,v)\in D\subseteq G$. Thus $G$ is a simulation.
+By construction it contains every simulation, so it is the greatest one
+under inclusion.
+
+\ex{2}{The simulation game}
+At position $(s,t)$, Spoiler chooses a move $s\step{a}u$, and Duplicator
+must answer with a move $t\step{a}v$. If there is no such answer, Spoiler
+wins; otherwise the next position is $(u,v)$. Duplicator wins an infinite
+play. A position with no move for Spoiler is also winning for Duplicator.
+
+If $(s,t)$ belongs to a simulation $D$, Duplicator can maintain the
+invariant that the current pair belongs to $D$: the simulation condition
+always supplies a response. Hence Duplicator has a winning strategy.
+Conversely, let $W$ be the set of positions from which Duplicator has a
+winning strategy. From any $(s,t)\in W$, for every move $s\step{a}u$,
+that strategy must prescribe a matching move $t\step{a}v$; otherwise
+Spoiler wins immediately. The strategy that continues after this response
+is winning from $(u,v)$, so $(u,v)\in W$. Thus $W$ is a simulation.
+It follows that Duplicator has a winning strategy from $(s,t)$ exactly
+when $(s,t)$ belongs to the greatest simulation.
+
+\ex{3}{Simulation approximants and game depth}
+Let $R_0=S\times S$ and define
+\[
+ R_{i+1}=F(R_i),\qquad
+ F(R)=\{(s,t)\mid \forall\,s\step{a}u\ \exists\,t\step{a}v
+                       \text{ with }(u,v)\in R\}.
+\]
+For every $i\geq 0$, $(s,t)\in R_i$ exactly when Duplicator can survive
+the first $i$ rounds of the simulation game from $(s,t)$. This is
+immediate for $i=0$. For the induction step, surviving $i+1$ rounds
+requires a matching response to every first move, with a resulting pair
+from which Duplicator can survive another $i$ rounds; by induction this
+is precisely the condition $(s,t)\in F(R_i)=R_{i+1}$. Thus a pair first
+removed in round $i+1$ admits a Spoiler strategy forcing a loss within
+$i+1$ rounds, while pairs in the stable relation cannot be forced to lose
+in any finite number of rounds.
+
+\ex{4}{Compute the relation by hand}
+For LTSs $A$ and $B$ with state sets $S_A$ and $S_B$, let $R_0=S_A\times S_B$ and set
+\[
+ R_{i+1}=F(R_i),\qquad F(R)=
+ \{(s,t)\mid \forall\, s\step{a}u\ \exists\, t\step{a}v\ \text{with }(u,v)\in R\}.
+\]
+Only moves from $s$ create obligations. In the first round, $(s,t)$ survives exactly when $\En(s)\subseteq\En(t)$, where $\En$ denotes the set of enabled actions. If $s=h$, the condition holds for every $t$ in every round.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|ccccc}
+\toprule
+\rowcolor{soft} First deletion & $q$ & $y$ & $z$ & $u$ & $e$ \\
+\midrule
+$p$ & 3 & 1 & 1 & 1 & 1\\
+$x$ & 1 & 2 & 2 & 1 & 1\\
+$t$ & 1 & 1 & 1 & $\infty$ & 1\\
+$h$ & $\infty$ & $\infty$ & $\infty$ & $\infty$ & $\infty$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Both $(x,y)$ and $(x,z)$ lose in round 2. The former fails on $c$, the latter on $b$, since $(t,e)\notin R_1$. The pair $(p,q)$ loses in round 3. The stable relation $R_3=R_4$ consists of $(t,u)$ and the entire $h$-row.
+
+From $(p,q)$, play $a$. Choose $c$ after reply $y$ and $b$ after reply $z$. Both branches reach $(t,e)$, where $d$ wins. Both roots have exactly the prefixes of $abd$ and $acd$ as finite traces. Adding $y\step{c}u$ restores $p\simu q$. A witness is
+$\{(p,q),(x,y),(t,u),(h,e)\}$.
+
+\ex{5}{Prove correctness and bound the cost}
+$F$ is monotone because a witness in $R$ remains a witness in every superset. Since $F(R_0)\subseteq R_0$, induction gives $R_{i+1}\subseteq R_i$. There are at most $n^2$ strict rounds and one final equality test.
+
+For any simulation $D$, we have $D\subseteq F(D)$. From $D\subseteq R_i$, monotonicity gives $D\subseteq F(D)\subseteq F(R_i)=R_{i+1}$. Thus every simulation survives every round. At stability, $R_*=F(R_*)$ itself satisfies the matching condition, so it is the greatest simulation. In the left LTS, $h\simu t$ while $t\not\simu h$. A partition alone cannot record such a one-way comparison.
+
+Let $d(s)$ be the outdegree of $s$. With constant-time membership tests in $R_i$, scanning outgoing lists for a pair $(s,t)$ costs at most $O((1+d(s))(1+d(t)))$. Summing over pairs gives $O((n+m)^2)$ per round and $O((n^2+1)(n+m)^2)$ overall. This is a simple upper bound for the specified implementation.
+
+\newpage
+\mast{The worklist algorithm}
+\ex{6}{Update only the affected pairs}
+Write $\Post_a(t)$ for the $a$-successors of $t$ and store incoming lists $\Pre_a(v)=\{t\mid t\step{a}v\}$. Use a Boolean flag per pair. The operation \textsc{offer}$(s,t)$ sets the flag and enqueues the pair on its first call only. Queued pairs stay in $R$ until popped.
+\begingroup
+\small
+\begin{tabbing}
+\hspace{4mm}\=\hspace{4mm}\=\hspace{4mm}\=\hspace{4mm}\=\kill
+$R\gets S\times S$. Initialize an empty queue and clear all flags.\\
+For every $t,a,u$, set $C(t,a,u)\gets |\Post_a(t)|$.\\
+For each $(s,t)$ with $\En(s)\not\subseteq\En(t)$, \textsc{offer}$(s,t)$.\\
+\textbf{while} the queue is nonempty:\\
+\>pop $(u,v)$ and remove it from $R$\\
+\>\textbf{for each} incoming edge $t\step{a}v$:\\
+\>\>$C(t,a,u)\gets C(t,a,u)-1$\\
+\>\>\textbf{if} $C(t,a,u)=0$:\\
+\>\>\>\textbf{for each} $s\in\Pre_a(u)$: \textsc{offer}$(s,t)$\\
+\textbf{return} $R$
+\end{tabbing}
+\endgroup
+The initial queue contains no pair with a deadlock on the left. A deadlock on the right puts every pair with an enabled move on the left into the queue.
+
+Initially $C(q,a,x)=2$. Processing the first of $(x,y),(x,z)$ leaves one reply, so this challenge still has a match. Processing the second reduces the count to zero and offers $(p,q)$.
+
+\textbf{Correctness.} After each completed pop and its updates, the counters count exactly the remaining replies in $R$. An initially missing action or a zero counter for a transition $s\step{a}u$ certifies that $(s,t)$ has no witness in $R$ for that move. Any simulation contained in $R$ must exclude $(s,t)$, and this certificate persists while the pair is queued. Thus every deletion is sound. At termination, any unsupported challenge would have been detected at initialization or when its counter first reached zero. Its source pair would already have been removed. The returned relation is therefore a simulation and contains every simulation.
+
+\textbf{Cost.} With a fixed alphabet, setup takes $O(n^2+m)$ time. For each $u$, processing pairs $(u,v)$ scans each incoming edge of the system at most once, hence $O(nm)$ decrements overall. For each fixed $t$, each $(a,u)$ counter reaches zero at most once, and the lists $\Pre_a(u)$ have total length $m$. The total cost of these scans is also $O(nm)$. Flags and queue operations cost $O(n^2+nm)$ including repeated offers. Total time is $O(n^2+nm)$ and space is $O(n^2+m)$.
+
+\ex{$\star$ 7}{How many rounds can be necessary?}
+After $j$ consecutive $a$-moves the unique pair is $(x_{j\bmod k},y_{j\bmod(k+1)})$. A $b$-challenge wins precisely when $j+1$ is divisible by both $k$ and $k+1$. These numbers are coprime, so the first such $j$ is $k(k+1)-1$. Any earlier enabled $b$ takes both players to $\bot$. The shortest forced win has $k(k+1)$ moves, and a pair survives $R_i$ exactly when all challenges can be matched for $i$ rounds (by induction on $i$). Its first deletion is therefore in round $k(k+1)$. There are $n=2k+2$ states and $O(n)$ edges, giving $\Theta(n^2)$ strict rounds.
+
+\vfill
+{\footnotesize\textit{Further reading.} M. R. Henzinger, T. A. Henzinger and P. W. Kopke.
+\href{https://doi.org/10.1109/SFCS.1995.492576}{Computing simulations on finite and infinite graphs}. FOCS 1995.}
+
+\else
+\mast{Computing the simulation preorder}
+For states of a finite action-labelled LTS, write $s\simu t$ when $t$ simulates $s$. A relation $D$ is a simulation if, whenever $(s,t)\in D$, every move $s\step{a}u$ has a reply $t\step{a}v$ with $(u,v)\in D$. The goal is to compute the greatest such relation.
+
+\ex{1}{The greatest simulation}
+Let $\mathcal{S}$ be the set of all simulations on the state set $S$, and
+let $G=\bigcup_{D\in\mathcal{S}}D$. Prove that $G$ is a simulation and
+that every simulation is contained in $G$. Conclude that $G$ is the
+greatest simulation under inclusion.
+
+\ex{2}{The simulation game}
+Define a game from a pair of states $(s,t)$. Spoiler chooses a transition
+from $s$, and Duplicator must match it with a transition from $t$ carrying
+the same action. If Duplicator cannot respond, Spoiler wins; otherwise
+the target states form the next position. Duplicator wins an infinite
+play, as well as a position where Spoiler has no move.
+\begin{enumerate}
+\item Prove that if $(s,t)$ belongs to a simulation, Duplicator has a
+winning strategy from $(s,t)$.
+\item Prove the converse: Let $(s,t)$  the positions from which Duplicator has a
+winning strategy form a simulation. Deduce that Duplicator wins from
+$(s,t)$ exactly when $s\simu t$.
+\end{enumerate}
+
+\ex{3}{Simulation approximants and game depth}
+Set $R_0=S\times S$ and, for $i\geq 0$, define
+\[
+ R_{i+1}=F(R_i),\qquad
+ F(R)=\{(s,t)\mid \forall\,s\step{a}u\ \exists\,t\step{a}v
+                       \text{ with }(u,v)\in R\}.
+\]
+Prove by induction on $i$ that $(s,t)\in R_i$ exactly when Duplicator
+can survive the first $i$ rounds of the simulation game from $(s,t)$.
+Explain what the first round in which a pair is removed tells you about
+Spoiler's strategy.
+
+\begin{enumerate}
+\item Prove that $F$ is monotone and the approximants decrease. 
+Bound the number of strict rounds.
+\item Show that every simulation is contained in every $R_i$ and that the stable relation is itself a simulation. Give two states from $A$ illustrating why a partition alone cannot represent the output.
+\end{enumerate}
+
+
+
+
+\ex{4}{Compute the relation by hand}
+The tables list all successors for each action. A dash denotes an empty successor set.
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{minipage}[t]{.46\linewidth}\centering
+{\sffamily\small\bfseries Left LTS $A$}\par\vspace{2pt}
+\begin{tabular}{c|cccc}
+\toprule\rowcolor{soft} State & $a$ & $b$ & $c$ & $d$\\\midrule
+$p$ & $x$ & $\nil$ & $\nil$ & $\nil$\\
+$x$ & $\nil$ & $t$ & $t$ & $\nil$\\
+$t$ & $\nil$ & $\nil$ & $\nil$ & $h$\\
+$h$ & $\nil$ & $\nil$ & $\nil$ & $\nil$\\\bottomrule
+\end{tabular}\end{minipage}
+\hfill
+\begin{minipage}[t]{.49\linewidth}\centering
+{\sffamily\small\bfseries Right LTS $B$}\par\vspace{2pt}
+\begin{tabular}{c|cccc}
+\toprule\rowcolor{soft} State & $a$ & $b$ & $c$ & $d$\\\midrule
+$q$ & $y,z$ & $\nil$ & $\nil$ & $\nil$\\
+$y$ & $\nil$ & $u$ & $e$ & $\nil$\\
+$z$ & $\nil$ & $e$ & $u$ & $\nil$\\
+$u$ & $\nil$ & $\nil$ & $\nil$ & $e$\\
+$e$ & $\nil$ & $\nil$ & $\nil$ & $\nil$\\\bottomrule
+\end{tabular}\end{minipage}
+\end{center}
+\begin{enumerate}
+\item Compute all approximants until two consecutive relations agree.
+\end{enumerate}
+
+\ex{5}{Update only the affected pairs}
+Design algorithm that check simulation between two LTSs in time $O(n^2+nm)$ and space $O(n^2+m)$, where $n$ is the number of states and $m$ the number of transitions.
+
+Hint: maintain \[
+C[q,a,x]=\bigl|\{y\mid q\xrightarrow{a}y\text{ in }B,\ (x,y)\in R\}\bigr|.
+\]
+\fi
+\end{document}
