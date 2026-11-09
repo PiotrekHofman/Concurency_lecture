@@ -1915,13 +1915,8 @@
   \]
   differ as words, but may represent the same concurrent computation.
 
-  \begin{alertblock}{Important distinction}
-    Confluence says that computations can be joined.
-    It does \emph{not} by itself tell us which actions are independent.
-  \end{alertblock}
 
-  \Takeaway{Commuting diamonds suggest that some ordering information
-  in an interleaving trace may be accidental.}
+
 \end{frame}
 
 
@@ -1949,303 +1944,303 @@
 \end{frame}
 
 
-% ----------------------------------------------------------------------
-\begin{frame}{What should a harmless internal step do?}
-  Suppose
-  \[
-      s\step{\tau}t
-      \qquad\text{and}\qquad
-      s\step{a}u.
-  \]
+% % ----------------------------------------------------------------------
+% \begin{frame}{What should a harmless internal step do?}
+%   Suppose
+%   \[
+%       s\step{\tau}t
+%       \qquad\text{and}\qquad
+%       s\step{a}u.
+%   \]
 
-  If the internal step is behaviourally harmless, performing it first
-  should not destroy the visible possibility $a$.
+%   If the internal step is behaviourally harmless, performing it first
+%   should not destroy the visible possibility $a$.
 
-  Ideally the two orders can be reconciled:
-  \[
-  \begin{tikzpicture}[baseline=-2mm,x=1.5cm,y=.9cm]
-    \node[st] (s) at (0,1) {$s$};
-    \node[st] (t) at (1.8,1) {$t$};
-    \node[st] (u) at (0,-.5) {$u$};
-    \node[st] (v) at (1.8,-.5) {$v$};
+%   Ideally the two orders can be reconciled:
+%   \[
+%   \begin{tikzpicture}[baseline=-2mm,x=1.5cm,y=.9cm]
+%     \node[st] (s) at (0,1) {$s$};
+%     \node[st] (t) at (1.8,1) {$t$};
+%     \node[st] (u) at (0,-.5) {$u$};
+%     \node[st] (v) at (1.8,-.5) {$v$};
 
-    \draw[tauedge] (s)--node[lab,above] {$\tau$}(t);
-    \draw[trans] (s)--node[lab,left] {$a$}(u);
-    \draw[trans,dashed] (t)--node[lab,right] {$a$}(v);
-    \draw[tauedge,dashed] (u)--node[lab,below] {$\tau^*$}(v);
-  \end{tikzpicture}
-  \]
+%     \draw[tauedge] (s)--node[lab,above] {$\tau$}(t);
+%     \draw[trans] (s)--node[lab,left] {$a$}(u);
+%     \draw[trans,dashed] (t)--node[lab,right] {$a$}(v);
+%     \draw[tauedge,dashed] (u)--node[lab,below] {$\tau^*$}(v);
+%   \end{tikzpicture}
+%   \]
 
-  \begin{block}{Interpretation}
-    Doing the internal work first, or doing the visible action first,
-    leads to behaviourally compatible states.
-  \end{block}
+%   \begin{block}{Interpretation}
+%     Doing the internal work first, or doing the visible action first,
+%     leads to behaviourally compatible states.
+%   \end{block}
 
-  % \Takeaway{$\tau$-confluence expresses that internal computation
-  % commutes with the competing observable behaviour.}
-\end{frame}
+%   % \Takeaway{$\tau$-confluence expresses that internal computation
+%   % commutes with the competing observable behaviour.}
+% \end{frame}
 
-% ----------------------------------------------------------------------
-\begin{frame}{Confluence of $\tau$-steps alone is not enough}
-  Consider
-  \[
-      S=\tau.a.\nil+b.\nil.
-  \]
+% % ----------------------------------------------------------------------
+% \begin{frame}{Confluence of $\tau$-steps alone is not enough}
+%   Consider
+%   \[
+%       S=\tau.a.\nil+b.\nil.
+%   \]
 
-  The relation consisting only of $\tau$-steps is trivially confluent:
-  there is only one internal transition.
+%   The relation consisting only of $\tau$-steps is trivially confluent:
+%   there is only one internal transition.
 
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{.45\textwidth}\centering
-      \begin{tikzpicture}[x=1cm,y=1cm]
-        \node[st] (s) at (0,1.0) {$S$};
-        \node[st] (a) at (-1.3,-.3) {$a.0$};
-        \node[terminal] (z) at (1.3,-.3) {$0$};
+%   \begin{columns}[T,onlytextwidth]
+%     \begin{column}{.45\textwidth}\centering
+%       \begin{tikzpicture}[x=1cm,y=1cm]
+%         \node[st] (s) at (0,1.0) {$S$};
+%         \node[st] (a) at (-1.3,-.3) {$a.0$};
+%         \node[terminal] (z) at (1.3,-.3) {$0$};
 
-        \draw[tauedge] (s)--node[lab,left] {$\tau$}(a);
-        \draw[trans] (s)--node[lab,right] {$b$}(z);
-        \draw[trans,dashed] (a)--node[lab,below] {$b\ ?$}(z);
-      \end{tikzpicture}
-    \end{column}
+%         \draw[tauedge] (s)--node[lab,left] {$\tau$}(a);
+%         \draw[trans] (s)--node[lab,right] {$b$}(z);
+%         \draw[trans,dashed] (a)--node[lab,below] {$b\ ?$}(z);
+%       \end{tikzpicture}
+%     \end{column}
 
-    \begin{column}{.51\textwidth}
-      \begin{alertblock}{But the $\tau$-step is not harmless}
-        Before the internal step, $b$ is possible.
+%     \begin{column}{.51\textwidth}
+%       \begin{alertblock}{But the $\tau$-step is not harmless}
+%         Before the internal step, $b$ is possible.
 
-        \medskip
-        After
-        \[
-            S\step{\tau}a.0,
-        \]
-        the $b$-alternative has disappeared.
-      \end{alertblock}
-    \end{column}
-  \end{columns}
+%         \medskip
+%         After
+%         \[
+%             S\step{\tau}a.0,
+%         \]
+%         the $b$-alternative has disappeared.
+%       \end{alertblock}
+%     \end{column}
+%   \end{columns}
 
-  \[
-      S\not\approx_{\mathrm b}a.0.
-  \]
+%   \[
+%       S\not\approx_{\mathrm b}a.0.
+%   \]
 
-  \Takeaway{For behavioural reduction, an internal transition must
-  commute with \emph{all competing behaviour}, not only with other
-  internal transitions.}
-\end{frame}
+%   \Takeaway{For behavioural reduction, an internal transition must
+%   commute with \emph{all competing behaviour}, not only with other
+%   internal transitions.}
+% \end{frame}
 
 
-% ----------------------------------------------------------------------
-\begin{frame}{A local criterion: $T$-confluence}
-  Choose a set $T$ of internal transitions that we would like to treat
-  as harmless.
+% % ----------------------------------------------------------------------
+% \begin{frame}{A local criterion: $T$-confluence}
+%   Choose a set $T$ of internal transitions that we would like to treat
+%   as harmless.
 
-  \begin{block}{Idea}
-    Whenever a $T$-transition competes with another transition,
-    performing either one first should lead to the same state,
-    possibly after one further $T$-step.
-  \end{block}
+%   \begin{block}{Idea}
+%     Whenever a $T$-transition competes with another transition,
+%     performing either one first should lead to the same state,
+%     possibly after one further $T$-step.
+%   \end{block}
 
-  For every
-  \[
-      s\step{\tau}_T t
-      \qquad\text{and}\qquad
-      s\step{\alpha}u,
-  \]
-  require some $v$ such that
-  \[
-      t\optstep{\alpha}v,
-      \qquad
-      u=v
-      \quad\text{or}\quad
-      u\step{\tau}_T v.
-  \]
+%   For every
+%   \[
+%       s\step{\tau}_T t
+%       \qquad\text{and}\qquad
+%       s\step{\alpha}u,
+%   \]
+%   require some $v$ such that
+%   \[
+%       t\optstep{\alpha}v,
+%       \qquad
+%       u=v
+%       \quad\text{or}\quad
+%       u\step{\tau}_T v.
+%   \]
 
- \begin{minipage}[t]{0.44\textwidth}
-  \vspace{0pt}
-  \begin{tikzpicture}[x=1.1cm,y=.9cm]
-    \node[st] (s) at (0,1.1) {$s$};
-    \node[st] (t) at (2.8,1.1) {$t$};
-    \node[st] (u) at (0,-.5) {$u$};
-    \node[st] (v) at (2.8,-.5) {$v$};
+%  \begin{minipage}[t]{0.44\textwidth}
+%   \vspace{0pt}
+%   \begin{tikzpicture}[x=1.1cm,y=.9cm]
+%     \node[st] (s) at (0,1.1) {$s$};
+%     \node[st] (t) at (2.8,1.1) {$t$};
+%     \node[st] (u) at (0,-.5) {$u$};
+%     \node[st] (v) at (2.8,-.5) {$v$};
 
-    \draw[tauedge] (s)--node[lab,above] {$\tau\in T$}(t);
-    \draw[trans] (s)--node[lab,left] {$\alpha$}(u);
-    \draw[trans,dashed] (t)--node[lab,right] {$(\alpha)$}(v);
-    \draw[tauedge,dashed] (u)--node[lab,below] {$=$ or $\tau_T$}(v);
-  \end{tikzpicture}
+%     \draw[tauedge] (s)--node[lab,above] {$\tau\in T$}(t);
+%     \draw[trans] (s)--node[lab,left] {$\alpha$}(u);
+%     \draw[trans,dashed] (t)--node[lab,right] {$(\alpha)$}(v);
+%     \draw[tauedge,dashed] (u)--node[lab,below] {$=$ or $\tau_T$}(v);
+%   \end{tikzpicture}
 
- \end{minipage}
-  \begin{minipage}[t]{0.4\textwidth}
-    \vspace{0pt} \small
-  \Takeaway{A $T$-step can be moved before a competing action
-  without changing the resulting observable behaviour.}
+%  \end{minipage}
+%   \begin{minipage}[t]{0.4\textwidth}
+%     \vspace{0pt} \small
+%   \Takeaway{A $T$-step can be moved before a competing action
+%   without changing the resulting observable behaviour.}
   
-  \vspace{-0.3cm}
-  \Source{\cite[Section 2]{GP00}.}
-    \end{minipage}
+%   \vspace{-0.3cm}
+%   \Source{\cite[Section 2]{GP00}.}
+%     \end{minipage}
     
-  \end{frame}
+%   \end{frame}
 
   
 
-% ----------------------------------------------------------------------
-\begin{frame}{Confluent internal transitions are inert}
-  \begin{block}{Theorem}
-    If the LTS is $T$-confluent, then
-    \[
-        s\step{\tau}_T t
-        \quad\Longrightarrow\quad
-        s\approx_{\mathrm b}t.
-    \]
-  \end{block}
+% % ----------------------------------------------------------------------
+% \begin{frame}{Confluent internal transitions are inert}
+%   \begin{block}{Theorem}
+%     If the LTS is $T$-confluent, then
+%     \[
+%         s\step{\tau}_T t
+%         \quad\Longrightarrow\quad
+%         s\approx_{\mathrm b}t.
+%     \]
+%   \end{block}
 
-  Such a transition is called \textbf{inert}:
-  crossing it does not change the branching behaviour of the process.
+%   Such a transition is called \textbf{inert}:
+%   crossing it does not change the branching behaviour of the process.
 
-  \begin{block}{Why?}
-    Every transition competing with
-    \[
-        s\step{\tau}_T t
-    \]
-    can be moved across the $T$-transition using the confluence square.
-    Hence the states before and after the internal transition can match
-    each other's observable moves.
-  \end{block}
+%   \begin{block}{Why?}
+%     Every transition competing with
+%     \[
+%         s\step{\tau}_T t
+%     \]
+%     can be moved across the $T$-transition using the confluence square.
+%     Hence the states before and after the internal transition can match
+%     each other's observable moves.
+%   \end{block}
 
-  \[
-      \boxed{
-      \text{local commutation}
-      \quad\Longrightarrow\quad
-      \text{behavioural equivalence}
-      }
-  \]
+%   \[
+%       \boxed{
+%       \text{local commutation}
+%       \quad\Longrightarrow\quad
+%       \text{behavioural equivalence}
+%       }
+%   \]
 
-  % \Takeaway{Confluence gives a structural criterion for recognising
-  % internal transitions that may be abstracted away.}
-  % \Source{\cite[Section 2]{GP00}.}
-\end{frame}
+%   % \Takeaway{Confluence gives a structural criterion for recognising
+%   % internal transitions that may be abstracted away.}
+%   % \Source{\cite[Section 2]{GP00}.}
+% \end{frame}
 
-% ----------------------------------------------------------------------
-\begin{frame}{From inertness to state-space reduction}
-  If an internal transition is confluent, it is tempting to perform it
-  immediately and ignore the competing transitions.
+% % ----------------------------------------------------------------------
+% \begin{frame}{From inertness to state-space reduction}
+%   If an internal transition is confluent, it is tempting to perform it
+%   immediately and ignore the competing transitions.
 
-  \begin{center}
-  \begin{tikzpicture}[x=1cm,y=1cm,st/.append style={minimum size=6.5mm}]
-    \node[st] (s) at (0,1.0) {$s$};
-    \node[st] (t) at (2,1.0) {$t$};
-    \node[st] (u) at (0,-.6) {$u$};
-    \node[st] (v) at (2,-.6) {$v$};
+%   \begin{center}
+%   \begin{tikzpicture}[x=1cm,y=1cm,st/.append style={minimum size=6.5mm}]
+%     \node[st] (s) at (0,1.0) {$s$};
+%     \node[st] (t) at (2,1.0) {$t$};
+%     \node[st] (u) at (0,-.6) {$u$};
+%     \node[st] (v) at (2,-.6) {$v$};
 
-    \draw[tauedge] (s)--node[lab,above] {$\tau_T$}(t);
-    \draw[trans] (s)--node[lab,left] {$a$}(u);
-    \draw[trans] (t)--node[lab,right] {$a$}(v);
-    \draw[tauedge] (u)--node[lab,below] {$\tau_T$}(v);
+%     \draw[tauedge] (s)--node[lab,above] {$\tau_T$}(t);
+%     \draw[trans] (s)--node[lab,left] {$a$}(u);
+%     \draw[trans] (t)--node[lab,right] {$a$}(v);
+%     \draw[tauedge] (u)--node[lab,below] {$\tau_T$}(v);
 
-    \node[font=\Large,text=Muted] at (3.4,.2) {$\Longrightarrow$};
+%     \node[font=\Large,text=Muted] at (3.4,.2) {$\Longrightarrow$};
 
-    \node[st] (s2) at (4.7,1.0) {$s$};
-    \node[st] (t2) at (6.7,1.0) {$t$};
-    \node[st] (v2) at (6.7,-.6) {$v$};
+%     \node[st] (s2) at (4.7,1.0) {$s$};
+%     \node[st] (t2) at (6.7,1.0) {$t$};
+%     \node[st] (v2) at (6.7,-.6) {$v$};
 
-    \draw[tauedge] (s2)--node[lab,above] {$\tau_T$}(t2);
-    \draw[trans] (t2)--node[lab,right] {$a$}(v2);
-  \end{tikzpicture}
-  \end{center}
+%     \draw[tauedge] (s2)--node[lab,above] {$\tau_T$}(t2);
+%     \draw[trans] (t2)--node[lab,right] {$a$}(v2);
+%   \end{tikzpicture}
+%   \end{center}
 
-  \begin{block}{But one more condition is needed}
-    If internal transitions can continue forever, always giving them
-    priority may prevent observable behaviour forever.
-  \end{block}
+%   \begin{block}{But one more condition is needed}
+%     If internal transitions can continue forever, always giving them
+%     priority may prevent observable behaviour forever.
+%   \end{block}
 
-  Therefore, under $T$-confluence and suitable $\tau$-convergence,
-  confluent internal transitions can be prioritised soundly.
+%   Therefore, under $T$-confluence and suitable $\tau$-convergence,
+%   confluent internal transitions can be prioritised soundly.
 
-  \Takeaway{Confluence explains why an alternative is redundant;
-  convergence ensures that prioritising internal work does not trap
-  the execution forever.}
-\end{frame}
+%   \Takeaway{Confluence explains why an alternative is redundant;
+%   convergence ensures that prioritising internal work does not trap
+%   the execution forever.}
+% \end{frame}
 
-% ----------------------------------------------------------------------
-\begin{frame}{Why convergence still matters}
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \node[st] (s) at (0,0) {$s$};
-    \node[terminal] (z) at (2.4,0) {$0$};
+% % ----------------------------------------------------------------------
+% \begin{frame}{Why convergence still matters}
+%   \centering
+%   \begin{tikzpicture}[x=1cm,y=1cm]
+%     \node[st] (s) at (0,0) {$s$};
+%     \node[terminal] (z) at (2.4,0) {$0$};
 
-    \draw[tauedge] (s) edge[loop above] node[lab] {$\tau_T$} (s);
-    \draw[trans] (s)--node[lab,above] {$a$}(z);
+%     \draw[tauedge] (s) edge[loop above] node[lab] {$\tau_T$} (s);
+%     \draw[trans] (s)--node[lab,above] {$a$}(z);
 
-    \node[font=\Large,text=Muted] at (4,0) {$\Longrightarrow$};
+%     \node[font=\Large,text=Muted] at (4,0) {$\Longrightarrow$};
 
-    \node[st] (s2) at (6,0) {$s$};
-    \draw[tauedge] (s2) edge[loop above] node[lab] {$\tau_T$} (s2);
-  \end{tikzpicture}
+%     \node[st] (s2) at (6,0) {$s$};
+%     \draw[tauedge] (s2) edge[loop above] node[lab] {$\tau_T$} (s2);
+%   \end{tikzpicture}
 
-  \vspace{4mm}
+%   \vspace{4mm}
 
-  \begin{alertblock}{The internal transition is inert, but naive priority is unsound}
-    The $\tau$-loop does not change the state, so it is trivially confluent.
+%   \begin{alertblock}{The internal transition is inert, but naive priority is unsound}
+%     The $\tau$-loop does not change the state, so it is trivially confluent.
 
-    But if the scheduler always chooses it, the visible action $a$
-    disappears from the reduced system.
-  \end{alertblock}
+%     But if the scheduler always chooses it, the visible action $a$
+%     disappears from the reduced system.
+%   \end{alertblock}
 
-  \[
-      \text{inert transition}
-      \;\not\Rightarrow\;
-      \text{arbitrary deletion of competing transitions}.
-  \]
+%   \[
+%       \text{inert transition}
+%       \;\not\Rightarrow\;
+%       \text{arbitrary deletion of competing transitions}.
+%   \]
 
-  \Takeaway{Confluence deals with finite reordering.
-  Divergence is a separate issue.}
-\end{frame}
+%   \Takeaway{Confluence deals with finite reordering.
+%   Divergence is a separate issue.}
+% \end{frame}
 
-% ----------------------------------------------------------------------
-\begin{frame}{From confluence to non-interleaving semantics}
-  Confluence has repeatedly produced diagrams of the form
-  \[
-  \begin{tikzpicture}[baseline=-2mm,x=1.4cm,y=.85cm]
-    \node[st] (s) at (0,1) {$s$};
-    \node[st] (u) at (-1.5,0) {$u$};
-    \node[st] (v) at (1.5,0) {$v$};
-    \node[st] (w) at (0,-1.1) {$w$};
+% % ----------------------------------------------------------------------
+% \begin{frame}{From confluence to non-interleaving semantics}
+%   Confluence has repeatedly produced diagrams of the form
+%   \[
+%   \begin{tikzpicture}[baseline=-2mm,x=1.4cm,y=.85cm]
+%     \node[st] (s) at (0,1) {$s$};
+%     \node[st] (u) at (-1.5,0) {$u$};
+%     \node[st] (v) at (1.5,0) {$v$};
+%     \node[st] (w) at (0,-1.1) {$w$};
 
-    \draw[trans] (s)--node[lab,above left] {$a$}(u);
-    \draw[trans] (s)--node[lab,above right] {$b$}(v);
-    \draw[trans] (u)--node[lab,below left] {$b$}(w);
-    \draw[trans] (v)--node[lab,below right] {$a$}(w);
-  \end{tikzpicture}
-  \]
+%     \draw[trans] (s)--node[lab,above left] {$a$}(u);
+%     \draw[trans] (s)--node[lab,above right] {$b$}(v);
+%     \draw[trans] (u)--node[lab,below left] {$b$}(w);
+%     \draw[trans] (v)--node[lab,below right] {$a$}(w);
+%   \end{tikzpicture}
+%   \]
 
-  Interleaving semantics records two executions:
-  \[
-      ab
-      \qquad\text{and}\qquad
-      ba.
-  \]
+%   Interleaving semantics records two executions:
+%   \[
+%       ab
+%       \qquad\text{and}\qquad
+%       ba.
+%   \]
 
-  But if $a$ and $b$ are independent, these words differ only by
-  an arbitrary scheduling decision.
+%   But if $a$ and $b$ are independent, these words differ only by
+%   an arbitrary scheduling decision.
 
-  \begin{block}{Next step}
-    Mazurkiewicz traces identify words that differ only by exchanging
-    adjacent independent actions:
-    \[
-        uabv \equiv_I ubav
-        \qquad\text{whenever }(a,b)\in I.
-    \]
-    Partial-order semantics goes further and records the causal order
-    directly, instead of choosing one linearisation.
-  \end{block}
+%   \begin{block}{Next step}
+%     Mazurkiewicz traces identify words that differ only by exchanging
+%     adjacent independent actions:
+%     \[
+%         uabv \equiv_I ubav
+%         \qquad\text{whenever }(a,b)\in I.
+%     \]
+%     Partial-order semantics goes further and records the causal order
+%     directly, instead of choosing one linearisation.
+%   \end{block}
 
-  \begin{alertblock}{Confluence is only the motivation}
-    A commuting diamond does not by itself define independence.
-    In the next lecture we introduce an explicit independence relation
-    and distinguish causality from mere joinability.
-  \end{alertblock}
+%   \begin{alertblock}{Confluence is only the motivation}
+%     A commuting diamond does not by itself define independence.
+%     In the next lecture we introduce an explicit independence relation
+%     and distinguish causality from mere joinability.
+%   \end{alertblock}
 
-  \Takeaway{Interleaving semantics records an order even when the
-  system may not impose one.}
-\end{frame}
+%   \Takeaway{Interleaving semantics records an order even when the
+%   system may not impose one.}
+% \end{frame}
 
 
 % ----------------------------------------------------------------------
@@ -2398,43 +2393,43 @@
 \end{frame}
 
 % A5 ----------------------------------------------------------------
-\begin{frame}{\optional The precise divergence-preservation clause}
-  Let $R$ be a symmetric branching bisimulation.
-  \begin{block}{Explicit divergence condition}
-    If $p\,R\,q$ and there is an infinite path
-    \[
-      p=p_0\step{\tau}p_1\step{\tau}p_2\cdots
-      \quad\text{with }p_i\,R\,q\text{ for every }i,
-    \]
-    then there must be an infinite path
-    \[
-      q=q_0\step{\tau}q_1\step{\tau}q_2\cdots
-      \quad\text{with }p_i\,R\,q_j\text{ for all }i,j.
-    \]
-  \end{block}
-  We write $p\dbb q$ if some branching bisimulation satisfying this condition relates them.
-  \Takeaway{The condition concerns divergence \emph{within related behaviour}; it is not merely an extra Boolean label saying ``can diverge''.}
-  \Source{\cite[Section 3]{GLT09}; also \cite[Definition 2.1]{GLS20}.}
-\end{frame}
+% \begin{frame}{\optional The precise divergence-preservation clause}
+%   Let $R$ be a symmetric branching bisimulation.
+%   \begin{block}{Explicit divergence condition}
+%     If $p\,R\,q$ and there is an infinite path
+%     \[
+%       p=p_0\step{\tau}p_1\step{\tau}p_2\cdots
+%       \quad\text{with }p_i\,R\,q\text{ for every }i,
+%     \]
+%     then there must be an infinite path
+%     \[
+%       q=q_0\step{\tau}q_1\step{\tau}q_2\cdots
+%       \quad\text{with }p_i\,R\,q_j\text{ for all }i,j.
+%     \]
+%   \end{block}
+%   We write $p\dbb q$ if some branching bisimulation satisfying this condition relates them.
+%   \Takeaway{The condition concerns divergence \emph{within related behaviour}; it is not merely an extra Boolean label saying ``can diverge''.}
+%   \Source{\cite[Section 3]{GLT09}; also \cite[Definition 2.1]{GLS20}.}
+% \end{frame}
 
 % A6 ----------------------------------------------------------------
-\begin{frame}{\optional The inertness proof in detail}
-  Let $s\step{\tau}_T t$ and put $R=\Id\cup T\cup T^{-1}$.
-  \par\vspace{2mm}
-  \textbf{A move from $s$.} For $s\step{\alpha}u$, confluence gives
-  \[
-    t\optstep{\alpha}v,\qquad u=v\text{ or }u\step{\tau}_T v.
-  \]
-  The source pair is $(s,t)\in R$ and the target pair is $(u,v)\in R$.
-  \par\vspace{2mm}
-  \textbf{A move from $t$.} For $t\step{\alpha}v$, respond with
-  \[
-    s\step{\tau}_T t\step{\alpha}v.
-  \]
-  Use the identity pairs $(t,t)$ before the matching action and $(v,v)$ afterwards.
-  \Takeaway{Identity and converse pairs give the remaining cases. Thus $R$ is a branching bisimulation.}
-  \Source{Proof for the sufficient condition in \cite{GP00}.}
-\end{frame}
+% \begin{frame}{\optional The inertness proof in detail}
+%   Let $s\step{\tau}_T t$ and put $R=\Id\cup T\cup T^{-1}$.
+%   \par\vspace{2mm}
+%   \textbf{A move from $s$.} For $s\step{\alpha}u$, confluence gives
+%   \[
+%     t\optstep{\alpha}v,\qquad u=v\text{ or }u\step{\tau}_T v.
+%   \]
+%   The source pair is $(s,t)\in R$ and the target pair is $(u,v)\in R$.
+%   \par\vspace{2mm}
+%   \textbf{A move from $t$.} For $t\step{\alpha}v$, respond with
+%   \[
+%     s\step{\tau}_T t\step{\alpha}v.
+%   \]
+%   Use the identity pairs $(t,t)$ before the matching action and $(v,v)$ afterwards.
+%   \Takeaway{Identity and converse pairs give the remaining cases. Thus $R$ is a branching bisimulation.}
+%   \Source{Proof for the sufficient condition in \cite{GP00}.}
+% \end{frame}
 
 % A7 ----------------------------------------------------------------
 \begin{frame}{\optional Weak modal observations}
@@ -2460,6 +2455,9 @@
   \end{alertblock}
   \note{This is an explicit deduction from saturation and the finite-state HML theorem from Lecture 3. It makes no unqualified claim about CTL preservation on arbitrary action-labelled LTSs.}
 \end{frame}
+
+
+
 
 \section{References}
 % A8 ----------------------------------------------------------------
